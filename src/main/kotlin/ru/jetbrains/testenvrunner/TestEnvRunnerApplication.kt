@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
 @SpringBootApplication
-class TestEnvrunnerApplication
+class TestEnvRunnerApplication
 
 fun main(args: Array<String>) {
-    SpringApplication.run(TestEnvrunnerApplication::class.java, *args)
+    SpringApplication.run(TestEnvRunnerApplication::class.java, *args)
 }

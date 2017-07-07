@@ -14,7 +14,7 @@ class BashExecutor {
         val MSG_TIMEOUT_ERROR_BASH = "Execution time of Bash command \"%s\" exceeded the waiting time. "
         val MSG_ERROR_BASH = "Unexpected error during bash script execution. "
         val SUCCESS_BASH = "Bash script has been executed."
-        val DEFAULT_WAITING_TIME: Long = 2
+        val DEFAULT_WAITING_TIME: Long = 50
 
         /**
          * Running bash script
@@ -32,8 +32,7 @@ class BashExecutor {
             }
 
             var p: Process? = null
-
-            val output = try {
+            val result = try {
                 //set addition environment parameters
                 val env = pb.environment()
                 env.putAll(envParams)
@@ -46,22 +45,22 @@ class BashExecutor {
                 if (!p.waitFor(waitingTime, TimeUnit.SECONDS)) {
                     throw InterruptedException(MSG_TIMEOUT_ERROR_BASH.format(command.command))
                 }
-                val result = p.inputStream.bufferedReader().readText()
+                val output = p.inputStream.bufferedReader().readText()
 
                 LOG.info(SUCCESS_BASH + command.command)
-                result
+                ExecutionResult(output, p.exitValue())
             } catch (e: InterruptedException) {
                 LOG.error { e.message }
-                e.message ?: MSG_ERROR_BASH
+                ExecutionResult(e.message ?: MSG_ERROR_BASH)
             } catch (e: IOException) {
                 LOG.error { "$e.message + \n + ${e.stackTrace}" }
-                e.message ?: MSG_ERROR_BASH
+                ExecutionResult(e.message ?: MSG_ERROR_BASH)
             } finally {
                 if (p != null) {
                     p.destroyForcibly()
                 }
             }
-            return ExecutionResult(output)
+            return result
         }
     }
 }

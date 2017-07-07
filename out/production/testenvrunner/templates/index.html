@@ -30,6 +30,19 @@
 
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+            <!--/*@thymesVar id="command" type="ru.jetbrains.testenvrunner.model.ExecutionCommand"*/-->
+            <form th:object="${command}" method="POST" role="form" th:action="@{/result}">
+                <div class="form-group">
+                    <label for="executionCommand">Past command for execution here</label>
+                    <input type="text" class="form-control"
+                           name="command" id="executionCommand"
+                           placeholder="Enter Command"
+                           th:field="*{command}"/>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <br/>
             <form method="POST" role="form" th:action="@{/result_terraform}">
                 <div class="form-group">
                     <label for="executeTerraformBtn">Run hello-terraform command</label>
