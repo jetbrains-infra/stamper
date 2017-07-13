@@ -25,16 +25,17 @@
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <h1>Kotlin Spring MVC</h1>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <h2>List of available scripts</h2>
             <form method="POST" role="form" th:action="@{/result_terraform}">
-                <div class="form-group">
-                    <label for="executeTerraformBtn">Run hello-terraform command</label>
-                </div>
-                <button id="executeTerraformBtn" type="submit" class="btn btn-primary">run hello terraform</button>
+                <ul class="list-group">
+                    <!--/*@thymesVar id="scripts" type="java.util.List<ru.jetbrains.testenvrunner.model.TerraformScript>"*/-->
+                    <li th:each="script : ${scripts}" class="list-group-item">
+                        <span th:text="${script.name}">Script name</span>
+                        <button type="submit" name="run-script" class="btn btn-xs btn-info pull-right"
+                                th:value="${script.name}"> Run
+                        </button>
+                    </li>
+                </ul>
             </form>
         </div>
     </div>

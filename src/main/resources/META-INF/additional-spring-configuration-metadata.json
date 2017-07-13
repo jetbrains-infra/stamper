@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "datadir",
+      "type": "java.lang.String",
+      "description": "Description for datadir."
+    },
+    {
+      "name": "terraformrunner",
+      "type": "java.lang.String",
+      "description": "Description for terraformrunner."
+    }
+  ]
+}
