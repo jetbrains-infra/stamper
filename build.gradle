@@ -5,17 +5,17 @@ buildscript {
     }
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath('se.transmode.gradle:gradle-docker:1.2')
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+        classpath 'com.bmuschko:gradle-docker-plugin:3.0.12'
     }
 }
 group = 'nashikhmin'
 
-apply plugin: 'docker'
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-spring'
 apply plugin: 'idea'
@@ -39,22 +39,6 @@ repositories {
     mavenCentral()
 }
 
-task buildDocker(type: Docker, dependsOn: build) {
-    push = true
-    applicationName = jar.baseName
-    dockerfile = file('src/main/docker/Dockerfile')
-    doFirst {
-        copy {
-            from jar
-            into stageDir
-        }
-        copy {
-            from '.'
-            include 'data/system/**'
-            into stageDir
-        }
-    }
-}
 
 dependencies {
     compile "org.springframework.boot:spring-boot-configuration-processor"
@@ -66,4 +50,30 @@ dependencies {
     compile group: 'javax.inject', name: 'javax.inject', version: '1'
     testCompile group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: '1.1.3-2'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+apply plugin: 'com.bmuschko.docker-remote-api'
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+
+task buildImage(type: DockerBuildImage, dependsOn: build) {
+    mkdir('build/docker')
+    inputDir = file('build/docker')
+    tag = 'nashikhmin/test-env-runner:0.1'
+    doFirst {
+        copy {
+            from jar
+            into file('build/docker')
+        }
+        copy {
+            from file('src/main/docker/Dockerfile')
+            into file('build/docker/')
+        }
+    }
+}
+
+task pushImage(type: DockerPushImage, dependsOn: buildImage) {
+    imageName = 'nashikhmin/test-env-runner'
+    version = 0.1
 }

@@ -22,8 +22,18 @@ class TerraformExecutorTest : Assert() {
     lateinit var helloWorldScript: String
 
     @Test
-    fun executeTerraformScriptSuccess() {
-        val result = terraformExecurtor.executeTerraformScript(TerraformScript(File(helloWorldScript)))
-        assertTrue("The terraform script run fail. Exit code: ${result.exitValue}", result.exitValue == 0)
+    fun executeAndDestroyTerraformScriptSuccess() {
+        val script = TerraformScript(File(helloWorldScript))
+        //check run
+        val resultRun = terraformExecurtor.executeTerraformScript(script)
+        assertTrue("The terraform script run fail. Exit code: ${resultRun.exitValue}", resultRun.exitValue == 0)
+        //check that script state is run
+        assertTrue("The terraform script state fail. Script is stopped", terraformExecurtor.isScriptRun(script))
+        //check stop
+        val resultDestroy = terraformExecurtor.destroyTerraformScript(script)
+        assertTrue("The terraform script destroy fail. Exit code: ${resultDestroy.exitValue}", resultDestroy.exitValue == 0)
+        //check that script is stopped
+        assertFalse("The terraform script state fail. Script is run", terraformExecurtor.isScriptRun(script))
     }
+
 }

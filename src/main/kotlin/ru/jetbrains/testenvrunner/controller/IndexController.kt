@@ -14,14 +14,21 @@ class IndexController constructor(val terraformExecutor: TerraformExecutor, val 
     @RequestMapping(method = arrayOf(RequestMethod.GET))
     fun doIndexGet(model: Model): String {
         model.addAttribute("scripts", scriptRepository.getAll())
+        model.addAttribute("runscripts", scriptRepository.getAllRun())
         return "index"
     }
 
-    @RequestMapping("/result_terraform", method = arrayOf(RequestMethod.POST), params = arrayOf("run-script"))
+    @RequestMapping("/result_terraform", method = arrayOf(RequestMethod.POST), params = arrayOf("action", "script-name"))
     fun doExecResultTerraformPost(model: Model, req: HttpServletRequest): String {
-        val scriptName = req.getParameter("run-script")
+        val scriptName = req.getParameter("script-name")
+        val action = req.getParameter("action")
         val terraformScript = scriptRepository.get(scriptName)
-        val result = terraformExecutor.executeTerraformScript(terraformScript)
+
+        val result = when (action) {
+            "run" -> terraformExecutor.executeTerraformScript(terraformScript)
+            "destroy" -> terraformExecutor.destroyTerraformScript(terraformScript)
+            else -> throw Exception("Illegal action parameter")
+        }
         model.addAttribute("result", result)
         return "result"
     }

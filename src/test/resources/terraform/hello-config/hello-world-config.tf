@@ -1,9 +1,10 @@
 provider "docker" {
 }
-resource "docker_image" "ubuntu" {
-  name = "ubuntu:precise"
+resource "docker_image" "nginx" {
+  name = "nginx:1.11-alpine"
 }
-resource "docker_container" "ubuntu" {
-  name = "hello-server"
-  image = "${docker_image.ubuntu.latest}"
+
+resource "docker_container" "nginx" {
+  name = "nginx-test"
+  image = "${docker_image.nginx.latest}"
 }
