@@ -17,6 +17,7 @@ target/
 
 *.tfplan
 *.tfstate*
+*.tfvars*
 
 ### NetBeans ###
 nbproject/private/
@@ -29,8 +30,6 @@ nbdist/
 
 ### Gradle ###
 .gradle
-/build/
-
 # Ignore Gradle GUI config
 gradle-app.setting
 

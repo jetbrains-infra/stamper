@@ -6,7 +6,7 @@ data class ExecutionCommand(var command: String = "")
 
 data class ExecutionResult(val output: String = "", val exitValue: Int = -1)
 
-data class TerraformScript(val scriptDir: File) {
+data class TerraformScript(val scriptDir: File, val params: Map<String, Any?> = emptyMap()) {
     val absolutePath: String
         get() = scriptDir.absolutePath
     val name: String

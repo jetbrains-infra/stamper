@@ -14,21 +14,35 @@ class IndexController constructor(val terraformExecutor: TerraformExecutor, val 
     @RequestMapping(method = arrayOf(RequestMethod.GET))
     fun doIndexGet(model: Model): String {
         model.addAttribute("scripts", scriptRepository.getAll())
-        model.addAttribute("runscripts", scriptRepository.getAllRun())
+        model.addAttribute("runscripts", scriptRepository.getAllRunning())
         return "index"
     }
 
-    @RequestMapping("/result_terraform", method = arrayOf(RequestMethod.POST), params = arrayOf("action", "script-name"))
-    fun doExecResultTerraformPost(model: Model, req: HttpServletRequest): String {
+    @RequestMapping(value = "/result_terraform", method = arrayOf(RequestMethod.POST), params = arrayOf("action=run"))
+    fun runScript(model: Model, req: HttpServletRequest): String {
         val scriptName = req.getParameter("script-name")
-        val action = req.getParameter("action")
         val terraformScript = scriptRepository.get(scriptName)
 
-        val result = when (action) {
-            "run" -> terraformExecutor.executeTerraformScript(terraformScript)
-            "destroy" -> terraformExecutor.destroyTerraformScript(terraformScript)
-            else -> throw Exception("Illegal action parameter")
-        }
+        val parameterMap = req.parameterMap.filter { it.key != "action" && it.key != "script-name" }.map { it.key to it.value[0] }.toMap()
+        scriptRepository.setParamValue(scriptName, parameterMap)
+        val result = terraformExecutor.executeTerraformScript(terraformScript)
+        model.addAttribute("result", result)
+        return "result"
+    }
+
+    @RequestMapping(value = "/run_param", method = arrayOf(RequestMethod.POST), params = arrayOf("action=run", "script-name"))
+    fun openScriptRunForm(model: Model, req: HttpServletRequest): String {
+        val scriptName = req.getParameter("script-name")
+        val terraformScript = scriptRepository.get(scriptName)
+        model.addAttribute("script", terraformScript)
+        return "run_param"
+    }
+
+    @RequestMapping(value = "/result_terraform", method = arrayOf(RequestMethod.POST), params = arrayOf("action=destroy", "script-name"))
+    fun destroyScript(model: Model, req: HttpServletRequest): String {
+        val scriptName = req.getParameter("script-name")
+        val terraformScript = scriptRepository.get(scriptName)
+        val result = terraformExecutor.destroyTerraformScript(terraformScript)
         model.addAttribute("result", result)
         return "result"
     }

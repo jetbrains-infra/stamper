@@ -35,5 +35,4 @@ class TerraformExecutorTest : Assert() {
         //check that script is stopped
         assertFalse("The terraform script state fail. Script is run", terraformExecurtor.isScriptRun(script))
     }
-
 }

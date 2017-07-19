@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous"/>
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous"/>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <h1><a href="/">Terraform Script Runner</a></h1>
+            <h2> The run parameters</h2>
+            <form method="POST" role="form" th:action="@{/result_terraform}">
+                <!--/*@thymesVar id="script" type="ru.jetbrains.testenvrunner.model.TerraformScript"*/-->
+                <th:block th:with="params=${script.params}">
+                    <div th:each="parameter : ${params}" class="form-group">
+                        <label th:text="${parameter.key}" th:for="${parameter.key}">
+                            Parameter name
+                        </label>
+                        <label>
+                            <input type="text" class="form-control" th:value="${parameter.value['default']?:''}"
+                                   th:id="${parameter.key}" th:name="${parameter.key}" th:title="${parameter.key}"/>
+                        </label>
+                    </div>
+                    <button type="submit" name="action" class="btn btn-sm btn-success " value="run"> Run
+                    </button>
+                    <input type="hidden" name="script-name" th:value="${script.name}"/>
+                </th:block>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
