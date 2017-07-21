@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous"/>
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous"/>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <h1><a href="/">Terraform Script Runner</a></h1>
+            <!--/*@thymesVar id="script" type="ru.jetbrains.testenvrunner.model.TerraformScript"*/-->
+            <h2 th:text="${script.name}">Terraform Script</h2>
+            <h3>Usage link</h3>
+            <!--/*@thymesVar id="link" type="java.lang.String"*/-->
+            <p>
+                <a href="/" th:if="${not link.isEmpty()}" th:href="${link}" th:text="${link}">URL: localhost:8080</a>
+                <span th:if="${link.isEmpty()}">The link does not exist</span>
+
+            </p>
+            <h3>Stop script</h3>
+            <form method="POST" role="form" th:action="@{/result_terraform}">
+                <button type="submit" name="script-name" th:value="${script.name}"
+                        class="btn btn-sm btn-info btn-danger">
+                    Destroy
+                </button>
+                <input type="hidden" name="action" value="destroy"/>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

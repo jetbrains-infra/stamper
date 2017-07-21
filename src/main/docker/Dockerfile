@@ -5,11 +5,6 @@ ENV TERRAFORM_VERSION=0.9.11
 
 VOLUME ["/data"]
 
-#WORKDIR /data
-
-#ENTRYPOINT ["/usr/bin/terraform"]
-
-#CMD ["--help"]
 
 RUN apk update && \
     apk add bash ca-certificates git openssl unzip wget && \

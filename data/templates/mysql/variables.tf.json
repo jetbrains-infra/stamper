@@ -1,0 +1,13 @@
+{
+  "variable": {
+    "version": {
+      "default": "latest"
+    },
+    "external_port": {
+      "default": "3306"
+    },
+    "container_name": {
+      "default": "mysql"
+    }
+  }
+}

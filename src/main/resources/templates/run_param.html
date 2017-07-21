@@ -29,18 +29,31 @@
             <form method="POST" role="form" th:action="@{/result_terraform}">
                 <!--/*@thymesVar id="script" type="ru.jetbrains.testenvrunner.model.TerraformScript"*/-->
                 <th:block th:with="params=${script.params}">
-                    <div th:each="parameter : ${params}" class="form-group">
-                        <label th:text="${parameter.key}" th:for="${parameter.key}">
-                            Parameter name
-                        </label>
-                        <label>
-                            <input type="text" class="form-control" th:value="${parameter.value['default']?:''}"
-                                   th:id="${parameter.key}" th:name="${parameter.key}" th:title="${parameter.key}"/>
-                        </label>
+                    <div class="form-group">
+                        <div>
+                            <label th:for="stack-name">
+                                Stack name
+                            </label>
+                            <label>
+                                <input type="text" name="stack-name" id="stack-name" th:value="${script.name}"
+                                       class="form-control"/>
+                            </label>
+                        </div>
+
+                        <div th:each="parameter : ${params}">
+                            <label th:text="${parameter.key}" th:for="${parameter.key}">
+                                Parameter name
+                            </label>
+                            <label>
+                                <input type="text" class="form-control" th:value="${parameter.value['default']?:''}"
+                                       th:id="${parameter.key}" th:name="${parameter.key}" th:title="${parameter.key}"/>
+                            </label>
+                        </div>
+                        <button type="submit" name="action" class="btn btn-sm btn-success " value="run"> Run
+                        </button>
+                        <input type="hidden" name="script-name" th:value="${script.name}"/>
                     </div>
-                    <button type="submit" name="action" class="btn btn-sm btn-success " value="run"> Run
-                    </button>
-                    <input type="hidden" name="script-name" th:value="${script.name}"/>
+
                 </th:block>
             </form>
         </div>

@@ -5,10 +5,6 @@ resource "docker_image" "nginx" {
 }
 
 resource "docker_container" "nginx" {
-  name = "nginx-test"
+  name = "nginx-server"
   image = "${docker_image.nginx.latest}"
-}
-
-output "link" {
-  value = "http://google.ru"
 }

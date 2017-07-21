@@ -11,7 +11,7 @@ import java.io.FileFilter
 import java.io.IOException
 
 @Repository
-class ScriptRepository constructor(@Value("\${datadir}") val scriptFolder: String, val terraformExecutor: TerraformExecutor) {
+class TemplateRepository constructor(@Value("\${templates}") val scriptFolder: String, val terraformExecutor: TerraformExecutor) {
     //consts
     val MSG_DIR_DOES_NOT_EXIST = ("The script %s does not exist in the system")
 
@@ -21,28 +21,15 @@ class ScriptRepository constructor(@Value("\${datadir}") val scriptFolder: Strin
         return scripts.toList()
     }
 
-    fun getAllRunning(): List<TerraformScript> {
-        val scripts = getAll()
-
-        return scripts.filter { terraformExecutor.isScriptRun(it) }
-    }
-
     fun get(name: String): TerraformScript {
-        val script = File("$scriptFolder$name")
+        val script = File("$scriptFolder/$name")
         if (!script.exists())
             throw IOException(MSG_DIR_DOES_NOT_EXIST.format(name))
         return TerraformScript(script, getParam(name))
     }
 
-    fun setParamValue(name: String, params: Map<String, Any>) {
-        val json = JsonObject(params)
-        val fileParams = File("$scriptFolder$name/terraform.tfvars.json")
-        fileParams.createNewFile()
-        fileParams.writeText(json.toJsonString(true))
-    }
-
     private fun getParam(name: String): Map<String, Any?> {
-        val paramsFile = File("$scriptFolder$name/variables.tf.json")
+        val paramsFile = File("$scriptFolder/$name/variables.tf.json")
         if (!paramsFile.exists())
             return emptyMap()
         val parser: Parser = Parser()
