@@ -22,11 +22,16 @@
 </head>
 <body>
 <div class="container">
+    <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+        </ul>
+        <h1><a href="/" class="muted">Terraform Script Runner</a></h1>
+    </div>
+
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <h1><a href="/">Terraform Script Runner</a></h1>
             <h2> The run parameters</h2>
-            <form method="POST" role="form" th:action="@{/result_terraform}">
+            <form method="POST" th:action="@{/result_terraform}">
                 <!--/*@thymesVar id="script" type="ru.jetbrains.testenvrunner.model.TerraformScript"*/-->
                 <th:block th:with="params=${script.params}">
                     <div class="form-group">
@@ -35,7 +40,7 @@
                                 Stack name
                             </label>
                             <label>
-                                <input type="text" name="stack-name" id="stack-name" th:value="${script.name}"
+                                <input name="stack-name" id="stack-name" th:value="${script.name}"
                                        class="form-control"/>
                             </label>
                         </div>
@@ -45,11 +50,11 @@
                                 Parameter name
                             </label>
                             <label>
-                                <input type="text" class="form-control" th:value="${parameter.value['default']?:''}"
+                                <input class="form-control" th:value="${parameter.value['default']?:''}"
                                        th:id="${parameter.key}" th:name="${parameter.key}" th:title="${parameter.key}"/>
                             </label>
                         </div>
-                        <button type="submit" name="action" class="btn btn-sm btn-success " value="run"> Run
+                        <button name="action" class="btn btn-sm btn-success " value="run"> Run
                         </button>
                         <input type="hidden" name="script-name" th:value="${script.name}"/>
                     </div>

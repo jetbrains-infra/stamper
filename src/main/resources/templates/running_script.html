@@ -22,21 +22,38 @@
 </head>
 <body>
 <div class="container">
+    <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+        </ul>
+        <h1><a href="/" class="muted">Terraform Script Runner</a></h1>
+    </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <h1><a href="/">Terraform Script Runner</a></h1>
             <!--/*@thymesVar id="script" type="ru.jetbrains.testenvrunner.model.TerraformScript"*/-->
-            <h2 th:text="${script.name}">Terraform Script</h2>
-            <h3>Usage link</h3>
+            <h2><b>Stack:</b> <span th:text="${script.name}"> Ubuntu</span></h2>
+
             <!--/*@thymesVar id="link" type="java.lang.String"*/-->
             <p>
+                <b>Usage link:</b>
                 <a href="/" th:if="${not link.isEmpty()}" th:href="${link}" th:text="${link}">URL: localhost:8080</a>
                 <span th:if="${link.isEmpty()}">The link does not exist</span>
 
             </p>
+            <!--/*@thymesVar id="stack" type="ru.jetbrains.testenvrunner.model.Stack"*/-->
+
+            <p>
+                <b>Creation date:</b> <span th:text="${stack.createdDate}">14:34 23/05/2016</span>
+                <br/>
+            </p>
+            <p th:if="${stack.user!=null}">
+                <b>User name:</b> <span th:text="${stack.user.name}">User name</span>
+                <br/>
+                <b>User email:</b> <span th:text="${stack.user.email}">User email</span>
+                <br/>
+            </p>
             <h3>Stop script</h3>
-            <form method="POST" role="form" th:action="@{/result_terraform}">
-                <button type="submit" name="script-name" th:value="${script.name}"
+            <form method="POST" th:action="@{/result_terraform}">
+                <button name="script-name" th:value="${script.name}"
                         class="btn btn-sm btn-info btn-danger">
                     Destroy
                 </button>

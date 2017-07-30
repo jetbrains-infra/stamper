@@ -5,7 +5,6 @@ import org.junit.Before
 import org.junit.Test
 import ru.jetbrains.testenvrunner.model.TerraformScript
 import java.io.File
-import java.io.IOException
 import javax.inject.Inject
 import kotlin.test.assertFailsWith
 
@@ -50,7 +49,7 @@ class TemplateRepositoryTest : ScriptTest() {
 
     @Test
     fun getNonexistentScriptTest() {
-        assertFailsWith(IOException::class) {
+        assertFailsWith(Exception::class) {
             templateRepository.get("nonexistent")
         }
     }

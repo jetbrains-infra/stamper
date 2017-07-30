@@ -5,7 +5,7 @@ ENV TERRAFORM_VERSION=0.9.11
 
 VOLUME ["/data"]
 
-
+# Install terraform
 RUN apk update && \
     apk add bash ca-certificates git openssl unzip wget && \
     cd /tmp && \
@@ -19,5 +19,6 @@ ENV PATH="/usr/bin/terraform:${PATH}"
 
 RUN sh -c 'touch /app.jar'
 
+
 ENV JAVA_OPTS=""
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS  -Dspring.profiles.active=container -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]

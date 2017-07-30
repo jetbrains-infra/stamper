@@ -1,6 +1,7 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
 
+out/
 data/stacks
 ### STS ###
 .apt_generated

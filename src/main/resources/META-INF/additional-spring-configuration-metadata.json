@@ -9,6 +9,16 @@
       "name": "terraformrunner",
       "type": "java.lang.String",
       "description": "Description for terraformrunner."
+    },
+    {
+      "name": "stacks",
+      "type": "java.lang.String",
+      "description": "Description for stacks."
+    },
+    {
+      "name": "templates",
+      "type": "java.lang.String",
+      "description": "Description for templates."
     }
   ]
 }

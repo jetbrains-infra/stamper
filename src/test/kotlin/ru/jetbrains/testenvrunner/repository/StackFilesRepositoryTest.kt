@@ -5,13 +5,12 @@ import org.junit.Before
 import org.junit.Test
 import ru.jetbrains.testenvrunner.model.TerraformScript
 import java.io.File
-import java.io.IOException
 import javax.inject.Inject
 import kotlin.test.assertFailsWith
 
-class StackRepositoryTest : ScriptTest() {
+class StackFilesRepositoryTest : ScriptTest() {
     @Inject
-    private lateinit var stackRepository: StackRepository
+    private lateinit var stackFilesRepository: StackFilesRepository
 
     @Before
     fun setUp() = removeAllData()
@@ -21,19 +20,19 @@ class StackRepositoryTest : ScriptTest() {
 
     @Test
     fun getAllStacksList() {
-        assertEquals("there are not all tests", 0, stackRepository.getAll().size.toLong())
+        assertEquals("there are not all tests", 0, stackFilesRepository.getAll().size.toLong())
 
         val scripts = listOf(TerraformScript(File("${stacksFolder}/addAll1")), TerraformScript(File("${stacksFolder}/addAll2")))
         scripts.forEach({ addFakeStack(it.name) })
 
-        val actualScripts = stackRepository.getAll()
+        val actualScripts = stackFilesRepository.getAll()
         assertTrue("The getAll function return incorrect list of scripts", scripts.containsAll(actualScripts) && actualScripts.containsAll(scripts))
     }
 
     @Test
     fun getNonexistentStackTest() {
-        assertFailsWith(IOException::class) {
-            stackRepository.get("nonexistent")
+        assertFailsWith(Exception::class) {
+            stackFilesRepository.get("nonexistent")
         }
     }
 
@@ -41,7 +40,7 @@ class StackRepositoryTest : ScriptTest() {
     fun getStackTest() {
         val script = TerraformScript(File("${stacksFolder}/add"))
         addFakeStack(script.name)
-        assertEquals("The gotten script is not the same with added", script, stackRepository.get(script.name))
+        assertEquals("The gotten script is not the same with added", script, stackFilesRepository.get(script.name))
     }
 
     @Test
@@ -51,7 +50,7 @@ class StackRepositoryTest : ScriptTest() {
         val stackName = "stack"
         val template = addFakeTemplate("template", params)
 
-        val createdStack = stackRepository.create(stackName, template, paramsValues)
+        val createdStack = stackFilesRepository.create(stackName, template, paramsValues)
 
         assertFileExists(createdStack.absolutePath + "/variables.tf.json")
         assertJsonFile(createdStack.absolutePath + "/terraform.tfvars.json", paramsValues)

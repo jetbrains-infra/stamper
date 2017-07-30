@@ -23,19 +23,40 @@
 <body>
 <div class="container">
 
+    <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+            <!--/*@thymesVar id="user" type="ru.jetbrains.testenvrunner.model.User"*/-->
+            <li th:if="${user!=null}">
+                <b>User:</b>
+                <span th:text="${user.name}">Ivan Ivanov</span>
+            </li>
+            <li>
+                <form method="post" th:if="${user==null}" th:action="@{/login}">
+                    <button class="btn btn-sm btn-success ">Login</button>
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                </form>
+            </li>
+            <li>
+                <form method="post" th:if="${user!=null}" action="/logout">
+                    <button class="btn btn-sm btn-success">Logout</button>
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                </form>
+            </li>
+        </ul>
+        <h1><a href="/" class="muted">Terraform Script Runner</a></h1>
+    </div>
+
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <h1><a href="/">Terraform Script Runner</a></h1>
             <h2>List of available stacks</h2>
-
             <ul class="list-group">
                 <!--/*@thymesVar id="templates" type="java.util.List<ru.jetbrains.testenvrunner.model.TerraformScript>"*/-->
                 <li th:each="template : ${templates}" class="list-group-item">
-                    <form method="POST" role="form" th:action="@{/run_param}">
+                    <form method="POST" th:action="@{/run_param}">
                         <th:block th:with="name=${template.name}">
                             <span th:text="${name}">Terraform script</span>
                         </th:block>
-                        <button type="submit" name="action" class="btn btn-xs btn-success pull-right" value="run"> Run
+                        <button name="action" class="btn btn-xs btn-success pull-right" value="run"> Run
                         </button>
                         <input type="hidden" name="script-name" th:value="${template.name}"/>
                     </form>
@@ -46,10 +67,10 @@
             <ul class="list-group">
                 <!--/*@thymesVar id="stacks" type="java.util.List<ru.jetbrains.testenvrunner.model.TerraformScript>"*/-->
                 <li th:each="stack : ${stacks}" class="list-group-item">
-                    <form method="POST" role="form" th:action="@{/result_terraform}">
+                    <form method="POST" th:action="@{/result_terraform}">
                         <th:block th:with="name=${stack.name}">
                             <a th:href="@{/script/{id}(id=${name})}" th:text="${name}">Running terraform script</a>
-                            <button type="submit" name="script-name" th:value="${stack.name}"
+                            <button name="script-name" th:value="${stack.name}"
                                     class="btn btn-xs btn-info btn-danger pull-right">
                                 Destroy
                             </button>

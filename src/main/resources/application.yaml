@@ -1,0 +1,24 @@
+stacks: ./data/stacks
+templates: ./data/templates
+
+
+security:
+  oauth2:
+    client:
+      clientId: 759913667428-fnjj8ofelfk9asa0lnoadrnqun5l5veo.apps.googleusercontent.com
+      clientSecret: ZwLBr4iqlscXdfD7hFK7_-Dy
+      accessTokenUri: https://www.googleapis.com/oauth2/v4/token
+      userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
+      clientAuthenticationScheme: form
+      scope:
+        - openid
+        - email
+        - profile
+    resource:
+      userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
+      preferTokenInfo: true
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017

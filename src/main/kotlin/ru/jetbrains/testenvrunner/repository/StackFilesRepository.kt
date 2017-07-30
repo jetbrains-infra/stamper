@@ -11,7 +11,7 @@ import java.io.FileFilter
 import java.io.IOException
 
 @Repository
-class StackRepository constructor(@Value("\${stacks}") val stackFolder: String, val terraformExecutor: TerraformExecutor) {
+class StackFilesRepository constructor(@Value("\${stacks}") val stackFolder: String, val terraformExecutor: TerraformExecutor) {
     //consts
     val MSG_DIR_DOES_NOT_EXIST = ("The script %s does not exist in the system")
 
@@ -50,7 +50,7 @@ class StackRepository constructor(@Value("\${stacks}") val stackFolder: String, 
     fun get(name: String): TerraformScript {
         val script = File("$stackFolder/$name")
         if (!script.exists())
-            throw IOException(MSG_DIR_DOES_NOT_EXIST.format(name))
+            throw Exception(MSG_DIR_DOES_NOT_EXIST.format(name))
         return TerraformScript(script, getParam(name))
     }
 

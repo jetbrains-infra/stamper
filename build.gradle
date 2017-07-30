@@ -6,14 +6,30 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        maven { url 'http://repo.spring.io/plugins-release' }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
         classpath 'com.bmuschko:gradle-docker-plugin:3.0.12'
+        classpath 'io.spring.gradle:propdeps-plugin:0.0.9.RELEASE'
     }
 }
+
+configure(allprojects) {
+    apply plugin: 'propdeps'
+    apply plugin: 'propdeps-maven'
+    apply plugin: 'propdeps-idea'
+    apply plugin: 'propdeps-eclipse'
+}
+
+dependencies {
+    optional "org.springframework.boot:spring-boot-configuration-processor"
+}
+
+compileJava.dependsOn(processResources)
+
 group = 'nashikhmin'
 
 apply plugin: 'kotlin'
@@ -26,7 +42,7 @@ jar {
     version = '0.1'
 }
 
-version =  jar.version
+version = jar.version
 sourceCompatibility = 1.8
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
@@ -45,8 +61,11 @@ dependencies {
     compile "org.springframework.boot:spring-boot-configuration-processor"
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile 'org.springframework.boot:spring-boot-starter-web'
+    compile group: 'org.springframework.boot', name: "spring-boot-starter-security", version: '1.5.4.RELEASE'
+    compile 'org.springframework.security.oauth:spring-security-oauth2'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:${kotlinVersion}"
     compile "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
+    compile "org.springframework.boot:spring-boot-starter-data-mongodb"
     compile group: 'io.github.microutils', name: 'kotlin-logging', version: '1.4.5'
     compile group: 'javax.inject', name: 'javax.inject', version: '1'
     compile 'com.beust:klaxon:0.30'
