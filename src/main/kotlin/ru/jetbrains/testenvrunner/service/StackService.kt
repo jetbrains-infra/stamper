@@ -30,6 +30,16 @@ class StackService constructor(
     }
 
     /**
+     * get status of stack
+     * @param stack that is checked
+     * @return string with status of this stack
+     */
+    fun getStatus(stack: Stack): String {
+        val script = stackFilesRepository.get(stack.name)
+        return terraformExecutorService.getStatus(script).output
+    }
+
+    /**
      * Get stack by name,
      * if stack does not exist in the system return null
      */

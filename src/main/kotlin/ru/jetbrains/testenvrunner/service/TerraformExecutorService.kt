@@ -4,6 +4,7 @@ import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
 import org.springframework.stereotype.Service
 import ru.jetbrains.testenvrunner.model.TerraformScript
+import ru.jetbrains.testenvrunner.utils.ExecuteResult
 import ru.jetbrains.testenvrunner.utils.ExecuteResultHandler
 import ru.jetbrains.testenvrunner.utils.executeCommandAsync
 import ru.jetbrains.testenvrunner.utils.executeCommandSync
@@ -41,6 +42,17 @@ class TerraformExecutorService {
         val msg: String = "No state file was found"
         if (result.exception != null && !result.output.contains(msg)) throw result.exception
         return !result.output.isEmpty() && !result.output.contains(msg)
+    }
+
+    /**
+     * Get status of Terraform script
+     * @param script checked script
+     * @return status result
+     */
+    fun getStatus(script: TerraformScript): ExecuteResult {
+        val result = executeCommandSync("terraform show -no-color", directory = script.absolutePath)
+        if (result.exception != null) throw result.exception
+        return result
     }
 
     /**

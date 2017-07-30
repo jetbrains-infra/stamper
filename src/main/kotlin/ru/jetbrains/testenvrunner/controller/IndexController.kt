@@ -74,6 +74,7 @@ class IndexController constructor(
         val stack = stackService.getStack(stackName) ?: throw Exception("Stack is not found!")
         model.addAttribute("stack", stack)
         model.addAttribute("link", stackService.getStackRunLink(stack))
+        model.addAttribute("status", stackService.getStatus(stack))
         return "running_script"
     }
 }
