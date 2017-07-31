@@ -1,6 +1,7 @@
 package ru.jetbrains.testenvrunner.utils
 
 import org.apache.commons.exec.*
+import org.apache.commons.exec.environment.EnvironmentUtils
 import java.io.File
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
@@ -89,7 +90,7 @@ fun executeCommandAsync(command: String, directory: String = "",
             queue.add(line)
         }
     })
-    executor.execute(cmdLine, resultHandler)
+    executor.execute(cmdLine, EnvironmentUtils.getProcEnvironment(), resultHandler)
     return queue
 }
 

@@ -1,0 +1,13 @@
+{
+  "variable": {
+    "version": {
+      "default": "1.11-alpine"
+    },
+    "external_port": {
+      "default": "8080"
+    },
+    "container_name": {
+      "default": "nginx"
+    }
+  }
+}

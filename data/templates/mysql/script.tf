@@ -22,5 +22,5 @@ resource "docker_container" "mysql" {
 }
 
 output "link" {
-  value = "http://google.ru"
+  value = "/testenv.labs.intellij.net:${var.external_port}"
 }

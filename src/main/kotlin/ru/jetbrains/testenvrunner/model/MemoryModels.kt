@@ -5,7 +5,7 @@ import java.io.File
 
 data class TerraformScript(val scriptDir: File, val params: Map<String, Any?> = emptyMap()) {
     val absolutePath: String
-        get() = scriptDir.absolutePath
+        get() = scriptDir.canonicalPath
     val name: String
         get() = scriptDir.name
 }
