@@ -53,6 +53,7 @@
                 <!--/*@thymesVar id="templates" type="java.util.List<ru.jetbrains.testenvrunner.model.TerraformScript>"*/-->
                 <li th:each="template : ${templates}" class="list-group-item">
                     <form method="POST" th:action="@{/run_param}">
+                        <!--/*@thymesVar id="template" type="ru.jetbrains.testenvrunner.model.TerraformScript"*/-->
                         <th:block th:with="name=${template.name}">
                             <span th:text="${name}">Terraform script</span>
                         </th:block>
@@ -65,7 +66,7 @@
 
             <h2>List of running stacks</h2>
             <ul class="list-group">
-                <!--/*@thymesVar id="stacks" type="java.util.List<ru.jetbrains.testenvrunner.model.TerraformScript>"*/-->
+                <!--/*@thymesVar id="stacks" type="java.util.List<ru.jetbrains.testenvrunner.model.Stack>"*/-->
                 <li th:each="stack : ${stacks}" class="list-group-item">
                     <form method="POST" th:action="@{/result_terraform}">
                         <th:block th:with="name=${stack.name}">

@@ -5,12 +5,11 @@ import com.beust.klaxon.Parser
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
 import ru.jetbrains.testenvrunner.model.TerraformScript
-import ru.jetbrains.testenvrunner.utils.TerraformExecutor
 import java.io.File
 import java.io.FileFilter
 
 @Repository
-class TemplateRepository constructor(@Value("\${templates}") val scriptFolder: String, val terraformExecutor: TerraformExecutor) {
+class TemplateRepository constructor(@Value("\${templates}") val scriptFolder: String) {
     //consts
     val MSG_DIR_DOES_NOT_EXIST = "The script %s does not exist in the system"
 

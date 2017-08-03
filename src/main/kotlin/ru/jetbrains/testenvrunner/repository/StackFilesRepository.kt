@@ -5,14 +5,13 @@ import com.beust.klaxon.Parser
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
 import ru.jetbrains.testenvrunner.model.TerraformScript
-import ru.jetbrains.testenvrunner.utils.TerraformExecutor
 import java.io.File
 import java.io.FileFilter
 import java.io.IOException
 
 @Repository
-class StackFilesRepository constructor(@Value("\${stacks}") val stackFolder: String, val terraformExecutor: TerraformExecutor) {
-    //consts
+class StackFilesRepository constructor(@Value("\${stacks}") val stackFolder: String) {
+    //constants
     val MSG_DIR_DOES_NOT_EXIST = ("The script %s does not exist in the system")
 
     /**

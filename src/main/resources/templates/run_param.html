@@ -15,10 +15,13 @@
           integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
           crossorigin="anonymous"/>
 
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
+
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
             crossorigin="anonymous"></script>
+
 </head>
 <body>
 <div class="container">
@@ -31,38 +34,42 @@
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <h2> The run parameters</h2>
-            <form method="POST" th:action="@{/result_terraform}">
+            <form method="POST" id="run_form" class="form-horizontal" th:action="@{/result_terraform}">
                 <!--/*@thymesVar id="script" type="ru.jetbrains.testenvrunner.model.TerraformScript"*/-->
                 <th:block th:with="params=${script.params}">
                     <div class="form-group">
-                        <div>
-                            <label th:for="stack-name">
-                                Stack name
-                            </label>
-                            <label>
-                                <input name="stack-name" id="stack-name" th:value="${script.name}"
-                                       class="form-control"/>
-                            </label>
+                        <label th:for="stack_name" class="col-xs-3 control-label">Stack name</label>
+                        <div class="col-xs-5">
+                            <input name="stack_name" id="stack_name" th:value="${script.name}" class="form-control"/>
+                            <span id="stack_name_error_span" style="display: none" class="help-block">The stack with this name already exists</span>
                         </div>
-
-                        <div th:each="parameter : ${params}">
-                            <label th:text="${parameter.key}" th:for="${parameter.key}">
-                                Parameter name
-                            </label>
-                            <label>
-                                <input class="form-control" th:value="${parameter.value['default']?:''}"
-                                       th:id="${parameter.key}" th:name="${parameter.key}" th:title="${parameter.key}"/>
-                            </label>
-                        </div>
-                        <button name="action" class="btn btn-sm btn-success " value="run"> Run
-                        </button>
-                        <input type="hidden" name="script-name" th:value="${script.name}"/>
                     </div>
 
+                    <div th:each="parameter : ${params}" class="form-group">
+                        <label th:text="${parameter.key}" th:for="${parameter.key}" class="col-xs-3 control-label">Parameter
+                            name</label>
+                        <div class="col-xs-5">
+                            <input class="form-control" th:value="${parameter.value['default']?:''}"
+                                   th:id="${parameter.key}" th:name="${parameter.key}" th:title="${parameter.key}"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-9 col-xs-offset-3">
+                            <button id="run-script-btn" class="btn btn-primary">Run stack</button>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="action" value="run"/>
+                    <input type="hidden" name="script_name" th:value="${script.name}"/>
                 </th:block>
             </form>
         </div>
     </div>
 </div>
+
+<script type="text/javascript"
+        src="webjars/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" src="js/run_script.js"></script>
 </body>
 </html>

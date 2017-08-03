@@ -22,7 +22,8 @@ class StackFilesRepositoryTest : ScriptTest() {
     fun getAllStacksList() {
         assertEquals("there are not all tests", 0, stackFilesRepository.getAll().size.toLong())
 
-        val scripts = listOf(TerraformScript(File("${stacksFolder}/addAll1")), TerraformScript(File("${stacksFolder}/addAll2")))
+        val scripts = listOf(TerraformScript(File("$stacksFolder/addAll1")),
+                TerraformScript(File("$stacksFolder/addAll2")))
         scripts.forEach({ addFakeStack(it.name) })
 
         val actualScripts = stackFilesRepository.getAll()
@@ -38,7 +39,7 @@ class StackFilesRepositoryTest : ScriptTest() {
 
     @Test
     fun getStackTest() {
-        val script = TerraformScript(File("${stacksFolder}/add"))
+        val script = TerraformScript(File("$stacksFolder/add"))
         addFakeStack(script.name)
         assertEquals("The gotten script is not the same with added", script, stackFilesRepository.get(script.name))
     }

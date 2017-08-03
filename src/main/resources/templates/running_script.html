@@ -29,8 +29,8 @@
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <!--/*@thymesVar id="script" type="ru.jetbrains.testenvrunner.model.TerraformScript"*/-->
-            <h2><b>Stack:</b> <span th:text="${script.name}"> Ubuntu</span></h2>
+            <!--/*@thymesVar id="stack" type="ru.jetbrains.testenvrunner.model.Stack"*/-->
+            <h2><b>Stack:</b> <span th:text="${stack.name}"> Ubuntu</span></h2>
 
             <!--/*@thymesVar id="link" type="java.lang.String"*/-->
             <p>
@@ -39,7 +39,7 @@
                 <span th:if="${link.isEmpty()}">The link does not exist</span>
 
             </p>
-            <!--/*@thymesVar id="stack" type="ru.jetbrains.testenvrunner.model.Stack"*/-->
+
 
             <p>
                 <b>Creation date:</b> <span th:text="${stack.createdDate}">14:34 23/05/2016</span>
@@ -53,7 +53,7 @@
             </p>
             <h3>Stop script</h3>
             <form method="POST" th:action="@{/result_terraform}">
-                <button name="script-name" th:value="${script.name}"
+                <button name="script-name" th:value="${stack.name}"
                         class="btn btn-sm btn-info btn-danger">
                     Destroy
                 </button>

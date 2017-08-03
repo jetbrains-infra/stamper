@@ -22,7 +22,8 @@ class TemplateRepositoryTest : ScriptTest() {
     fun getAllScriptsList() {
         assertEquals("there are not all tests", 0, templateRepository.getAll().size.toLong())
 
-        val scripts = listOf(TerraformScript(File("${templateFolder}/addAll1")), TerraformScript(File("${templateFolder}/addAll2")))
+        val scripts = listOf(TerraformScript(File("$templateFolder/addAll1")),
+                TerraformScript(File("$templateFolder/addAll2")))
         scripts.forEach { addFakeTemplate(it.name) }
 
         val actualScripts = templateRepository.getAll()
@@ -32,7 +33,7 @@ class TemplateRepositoryTest : ScriptTest() {
     @Test
     fun getScriptWithParamsTest() {
         val scriptName = "addparam"
-        val scriptFake = TerraformScript(File("${templateFolder}/$scriptName"))
+        val scriptFake = TerraformScript(File("$templateFolder/$scriptName"))
 
         val variables = mapOf("version" to mapOf("default" to "latest"))
         addFakeTemplate(scriptFake.name, variables)
@@ -42,7 +43,7 @@ class TemplateRepositoryTest : ScriptTest() {
 
     @Test
     fun getScriptWithoutParamsTest() {
-        val script = TerraformScript(File("${templateFolder}/add"))
+        val script = TerraformScript(File("$templateFolder/add"))
         addFakeTemplate(script.name)
         assertEquals("The gotten script is not the same with added", script, templateRepository.get(script.name))
     }

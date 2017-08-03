@@ -1,10 +1,7 @@
 package ru.jetbrains.testenvrunner.model
 
+import ru.jetbrains.testenvrunner.utils.ExecuteResultHandler
 import java.io.File
-
-data class ExecutionCommand(var command: String = "")
-
-data class ExecutionResult(val output: String = "", val exitValue: Int = -1)
 
 data class TerraformScript(val scriptDir: File, val params: Map<String, Any?> = emptyMap()) {
     val absolutePath: String
@@ -12,3 +9,8 @@ data class TerraformScript(val scriptDir: File, val params: Map<String, Any?> = 
     val name: String
         get() = scriptDir.name
 }
+
+data class StackExecutor(val stack: Stack, val executeResultHandler: ExecuteResultHandler) {
+    val id = executeResultHandler.id
+}
+

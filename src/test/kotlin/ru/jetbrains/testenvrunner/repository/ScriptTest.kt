@@ -23,14 +23,29 @@ open class ScriptTest : Assert() {
     @Value("\${templates}")
     lateinit var templateFolder: String
 
+    @Value("\${temp}")
+    lateinit var templFolder: String
+
+
     val MSG_DIR_IS_NOT_DELETED = ("The script %s does not exist in the system")
+
+    protected fun addTempDir(name: String): File {
+        return addFakeScriptDir(name, templFolder)
+    }
+
+    protected fun cleanTempDir() {
+        removeAllInDir(templFolder)
+    }
+
 
     protected fun addFakeTemplate(name: String, params: Map<String, Any> = emptyMap()): TerraformScript {
         val script = TerraformScript(File("$templateFolder/$name"))
         val dir = addFakeScriptDir(name, templateFolder)
         if (params.isEmpty()) return script
-        val fileName = "variables.tf.json"
 
+        val emptySript = File("$templateFolder/$name/main.tf")
+        emptySript.createNewFile()
+        val fileName = "variables.tf.json"
         val fullParam = mapOf("variable" to params)
         writeMapToJsonFile(dir, fileName, fullParam)
         return script

@@ -2,7 +2,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 
 out/
-data/stacks
+data/stacks/*
 ### STS ###
 .apt_generated
 .classpath
