@@ -1,5 +1,6 @@
 package ru.jetbrains.testenvrunner.service
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import ru.jetbrains.testenvrunner.model.Stack
 import ru.jetbrains.testenvrunner.model.StackExecutor
@@ -20,7 +21,12 @@ class StackService constructor(
         val stackRepository: StackRepository,
         val stackFilesRepository: StackFilesRepository,
         val terraformExecutorService: TerraformExecutorService,
-        val dateUtils: DateUtils) {
+        val dateUtils: DateUtils,
+        @Value("\${expire_day}") expireDateString: String,
+        @Value("\${notify_day}") notifyDateString: String) {
+
+    val expireDate = expireDateString.toInt()
+    val notifyDate = notifyDateString.toInt()
 
     /**
      * @return all run Stack in the system
@@ -74,9 +80,21 @@ class StackService constructor(
         }
         val stackDir = stackFilesRepository.create(stackName, templateScript, parameterMap)
         val result = terraformExecutorService.applyTerraformScript(stackDir)
-        val stack = Stack(stackName, dateUtils.getCurrentDate(), user)
+        val stack = createStack(stackName, user)
 
         return StackExecutor(stack, result)
+    }
+
+    /**
+     * Create stack
+     * @param stackName - name of Stack
+     * @param user - user that run Stack
+     * @return created Stack
+     */
+    fun createStack(stackName: String, user: User): Stack {
+        val currentDate = dateUtils.getCurrentDate()
+        return Stack(stackName, user, currentDate, dateUtils.addDaysToDate(currentDate, notifyDate),
+                dateUtils.addDaysToDate(currentDate, expireDate))
     }
 
     /**
@@ -115,6 +133,19 @@ class StackService constructor(
     }
 
     /**
+     * Sync destroy running stack
+     * @param stackName name of stack that should be destroyed
+     */
+    fun destroyStackSync(stackName: String) {
+        val stackExecutor = destroyStack(stackName)
+        stackExecutor.executeResultHandler.waitFor()
+        if (stackExecutor.executeResultHandler.exception != null) {
+            throw stackExecutor.executeResultHandler.exception!!
+        }
+        destroySuccess(stackExecutor)
+    }
+
+    /**
      * Handle a success run command
      * @param stackExecutor executor of stack command
      * @return result of script execution
@@ -127,5 +158,38 @@ class StackService constructor(
         user.listOfStacks.remove(stack.name)
         userRepository.save(user)
         stackRepository.removeByName(stack.name)
+    }
+
+    /**
+     * Get stacks that are expired
+     */
+    fun getExpiredStacks(): List<Stack> {
+        return getAllStacks().filter { dateUtils.getCurrentDate().after(it.expiredDate) }
+    }
+
+    /**
+     * Get stacks which users should be notified about stacks that will be expired
+     */
+    fun getNotifyStacks(): List<Stack> {
+        return getAllStacks().filter { dateUtils.getCurrentDate().after(it.notificationDate) }
+    }
+
+    /**
+     * Update notification date of stack
+     */
+    fun updateNotificationDates(vararg stacks: Stack) {
+        stacks.forEach { it.notificationDate = dateUtils.addDaysToDate(dateUtils.getCurrentDate(), notifyDate) }
+        stackRepository.save(stacks.asIterable())
+    }
+
+    /**
+     * Prolong the expire date
+     * @param stacks that will prolonged
+     */
+    fun prolongExpireDate(vararg stacks: Stack) {
+        val curDate = dateUtils.getCurrentDate()
+        stacks.forEach { it.expiredDate = dateUtils.addDaysToDate(curDate, expireDate) }
+        stacks.forEach { it.notificationDate = dateUtils.addDaysToDate(curDate, notifyDate) }
+        stackRepository.save(stacks.asIterable())
     }
 }

@@ -3,6 +3,7 @@ provider "docker" {
 
 resource "docker_image" "mysql" {
   name = "mysql/mysql-server:${var.version}"
+  keep_locally = true
 }
 
 resource "docker_container" "mysql" {
@@ -22,5 +23,5 @@ resource "docker_container" "mysql" {
 }
 
 output "link" {
-  value = "/testenv.labs.intellij.net:${var.external_port}"
+  value = "testenv.labs.intellij.net:${var.external_port}"
 }

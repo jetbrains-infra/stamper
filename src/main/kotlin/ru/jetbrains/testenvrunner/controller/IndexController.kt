@@ -6,6 +6,8 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import ru.jetbrains.testenvrunner.repository.ExecutingStacksRepository
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
 import ru.jetbrains.testenvrunner.service.StackService
@@ -61,20 +63,28 @@ class IndexController constructor(
 
     @RequestMapping(value = "/run_param", method = arrayOf(RequestMethod.POST),
             params = arrayOf("action=run", "script-name"))
-    fun openScriptRunForm(model: Model, req: HttpServletRequest): String {
-        val templateName = req.getParameter("script-name")
+    fun openScriptRunForm(model: Model, @RequestParam(value = "script-name") templateName: String): String {
         val terraformScript = templateRepository.get(templateName)
         model.addAttribute("script", terraformScript)
         return "run_param"
     }
 
     @RequestMapping(value = "/script/{id}", method = arrayOf(RequestMethod.GET))
-    fun openRunningScriptForm(model: Model, @PathVariable(value = "id") stackName: String,
-                              req: HttpServletRequest): String {
+    fun openRunningScriptForm(model: Model, @PathVariable(value = "id") stackName: String): String {
         val stack = stackService.getStack(stackName) ?: throw Exception("Stack is not found!")
         model.addAttribute("stack", stack)
         model.addAttribute("link", stackService.getStackRunLink(stack))
         model.addAttribute("status", stackService.getStatus(stack))
         return "running_script"
+    }
+
+    @RequestMapping(value = "/stack/{id}/prolong", method = arrayOf(RequestMethod.GET))
+    fun prolongStackExpireDate(model: Model, @PathVariable(value = "id") stackName: String,
+                               redirectAttrs: RedirectAttributes): String {
+        val stack = stackService.getStack(stackName) ?: throw Exception("Stack does not exists")
+        stackService.prolongExpireDate(stack)
+        model.addAttribute("msg", "The stack expire date is successfully prolonged")
+        redirectAttrs.addFlashAttribute("msg", "The stack expire date is successfully prolonged")
+        return "redirect:/script/$stackName"
     }
 }

@@ -1,12 +1,15 @@
 stacks: ./data/stacks
 templates: ./data/templates
 
+expire_day: ${EXPIRE_DAY}
+notify_day: ${NOTIFY_DAY}
+web_address: ${WEB_ADDRESS}
 
 security:
   oauth2:
     client:
       clientId: 759913667428-fnjj8ofelfk9asa0lnoadrnqun5l5veo.apps.googleusercontent.com
-      clientSecret: ZwLBr4iqlscXdfD7hFK7_-Dy
+      clientSecret: ${OAUTH2_SECRET}
       accessTokenUri: https://www.googleapis.com/oauth2/v4/token
       userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
       clientAuthenticationScheme: form
@@ -17,9 +20,23 @@ security:
     resource:
       userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
       preferTokenInfo: true
-
 spring:
   data:
-     mongodb:
-       host: ${DB_HOST}
-       port: 27017
+    mongodb:
+      host: ${DB_HOST}
+      port: 27017
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    username: ${EMAIL_LOGIN}
+    password: ${EMAIL_PASSWORD}

@@ -11,8 +11,16 @@ class DateUtils {
      * Get current date as String
      * @return Current date in "HH:mm dd/MM/yy" format
      */
-    fun getCurrentDate(): String {
+    fun getCurrentDateAsString(): String {
         return dateFormat.format(Date())
+    }
+
+    /**
+     * Get current date
+     * @return Current date in "HH:mm dd/MM/yy" format
+     */
+    fun getCurrentDate(): Date {
+        return Date()
     }
 
     /**
@@ -22,5 +30,12 @@ class DateUtils {
      */
     fun parseDate(stringDate: String): Date {
         return dateFormat.parse(stringDate)
+    }
+
+    fun addDaysToDate(date: Date, days: Int): Date {
+        val c = Calendar.getInstance()
+        c.time = date
+        c.add(Calendar.DATE, days) //same with c.add(Calendar.DAY_OF_MONTH, 1);
+        return c.time ?: throw Exception("the exception in Java calendar")
     }
 }
