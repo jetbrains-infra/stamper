@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import ru.jetbrains.testenvrunner.model.TerraformScript
+import ru.jetbrains.testenvrunner.model.TerraformScriptParams
 import java.io.File
 import java.io.IOException
 
@@ -29,6 +30,8 @@ open class ScriptTest : Assert() {
 
     val MSG_DIR_IS_NOT_DELETED = ("The script %s does not exist in the system")
 
+    protected fun emptyTerraformScriptParams() = TerraformScriptParams()
+
     protected fun addTempDir(name: String): File {
         return addFakeScriptDir(name, templFolder)
     }
@@ -37,9 +40,8 @@ open class ScriptTest : Assert() {
         removeAllInDir(templFolder)
     }
 
-
     protected fun addFakeTemplate(name: String, params: Map<String, Any> = emptyMap()): TerraformScript {
-        val script = TerraformScript(File("$templateFolder/$name"))
+        val script = TerraformScript(File("$templateFolder/$name"), emptyTerraformScriptParams())
         val dir = addFakeScriptDir(name, templateFolder)
         if (params.isEmpty()) return script
 
@@ -52,7 +54,7 @@ open class ScriptTest : Assert() {
     }
 
     protected fun addFakeStack(name: String, params: Map<String, Any> = emptyMap(), paramsValues: Map<String, Any> = emptyMap()): TerraformScript {
-        val script = TerraformScript(File("$stacksFolder/$name"))
+        val script = TerraformScript(File("$stacksFolder/$name"), emptyTerraformScriptParams())
         val dir = addFakeScriptDir(name, stacksFolder)
 
         if (params.isEmpty()) return script

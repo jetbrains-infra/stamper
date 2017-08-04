@@ -4,6 +4,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import ru.jetbrains.testenvrunner.model.TerraformScript
+import ru.jetbrains.testenvrunner.model.TerraformScriptParam
 import java.io.File
 import javax.inject.Inject
 import kotlin.test.assertFailsWith
@@ -22,8 +23,8 @@ class TemplateRepositoryTest : ScriptTest() {
     fun getAllScriptsList() {
         assertEquals("there are not all tests", 0, templateRepository.getAll().size.toLong())
 
-        val scripts = listOf(TerraformScript(File("$templateFolder/addAll1")),
-                TerraformScript(File("$templateFolder/addAll2")))
+        val scripts = listOf(TerraformScript(File("$templateFolder/addAll1"), emptyTerraformScriptParams()),
+                TerraformScript(File("$templateFolder/addAll2"), emptyTerraformScriptParams()))
         scripts.forEach { addFakeTemplate(it.name) }
 
         val actualScripts = templateRepository.getAll()
@@ -33,17 +34,20 @@ class TemplateRepositoryTest : ScriptTest() {
     @Test
     fun getScriptWithParamsTest() {
         val scriptName = "addparam"
-        val scriptFake = TerraformScript(File("$templateFolder/$scriptName"))
+        val scriptFake = TerraformScript(File("$templateFolder/$scriptName"), emptyTerraformScriptParams())
 
         val variables = mapOf("version" to mapOf("default" to "latest"))
         addFakeTemplate(scriptFake.name, variables)
         val script = templateRepository.get(scriptName)
-        assertEquals("Parameters are not the same", variables, script.params)
+
+        val expectedParams = emptyTerraformScriptParams()
+        expectedParams.add(TerraformScriptParam("version", defaultValue = "latest"))
+        assertEquals("Parameters are not the same", expectedParams, script.params)
     }
 
     @Test
     fun getScriptWithoutParamsTest() {
-        val script = TerraformScript(File("$templateFolder/add"))
+        val script = TerraformScript(File("$templateFolder/add"), emptyTerraformScriptParams())
         addFakeTemplate(script.name)
         assertEquals("The gotten script is not the same with added", script, templateRepository.get(script.name))
     }

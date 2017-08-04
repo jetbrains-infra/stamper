@@ -4,6 +4,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import ru.jetbrains.testenvrunner.model.TerraformScript
+import ru.jetbrains.testenvrunner.model.TerraformScriptParams
 import java.io.File
 import javax.inject.Inject
 import kotlin.test.assertFailsWith
@@ -22,8 +23,8 @@ class StackFilesRepositoryTest : ScriptTest() {
     fun getAllStacksList() {
         assertEquals("there are not all tests", 0, stackFilesRepository.getAll().size.toLong())
 
-        val scripts = listOf(TerraformScript(File("$stacksFolder/addAll1")),
-                TerraformScript(File("$stacksFolder/addAll2")))
+        val scripts = listOf(TerraformScript(File("$stacksFolder/addAll1"), emptyTerraformScriptParams()),
+                TerraformScript(File("$stacksFolder/addAll2"), emptyTerraformScriptParams()))
         scripts.forEach({ addFakeStack(it.name) })
 
         val actualScripts = stackFilesRepository.getAll()
@@ -39,7 +40,7 @@ class StackFilesRepositoryTest : ScriptTest() {
 
     @Test
     fun getStackTest() {
-        val script = TerraformScript(File("$stacksFolder/add"))
+        val script = TerraformScript(File("$stacksFolder/add"), TerraformScriptParams())
         addFakeStack(script.name)
         assertEquals("The gotten script is not the same with added", script, stackFilesRepository.get(script.name))
     }

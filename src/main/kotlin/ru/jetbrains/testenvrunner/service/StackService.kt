@@ -74,7 +74,6 @@ class StackService constructor(
     fun runStack(templateName: String, stackName: String, parameterMap: Map<String, String>,
                  user: User?): StackExecutor {
         val templateScript = templateRepository.get(templateName)
-
         if (user == null) {
             throw Exception("Sorry, you should bw logged before to run stack")
         }
@@ -117,6 +116,11 @@ class StackService constructor(
      */
     fun runStackError(stackExecutor: StackExecutor) {
         val stack = stackExecutor.stack
+        try {
+            destroyStack(stackExecutor.stack.name)
+        } catch (e: Exception) {
+            println(e.message + e.stackTrace)
+        }
         stackFilesRepository.remove(stack.name)
     }
 

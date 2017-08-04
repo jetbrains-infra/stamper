@@ -5,23 +5,13 @@
     <meta charset="UTF-8"/>
     <title>Title</title>
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-          crossorigin="anonymous"/>
-
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-          crossorigin="anonymous"/>
-
-    <link rel="stylesheet" type="text/css" href="css/main.css"/>
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-            crossorigin="anonymous"></script>
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
 </head>
 <body>
 <div class="container">
@@ -46,11 +36,20 @@
                     </div>
 
                     <div th:each="parameter : ${params}" class="form-group">
-                        <label th:text="${parameter.key}" th:for="${parameter.key}" class="col-xs-3 control-label">Parameter
-                            name</label>
+                        <label th:text="${parameter.name}" th:for="${parameter.name}" class="col-xs-3 control-label">
+                            Parameter name
+                        </label>
                         <div class="col-xs-5">
-                            <input class="form-control" th:value="${parameter.value['default']?:''}"
-                                   th:id="${parameter.key}" th:name="${parameter.key}" th:title="${parameter.key}"/>
+                            <select th:if="${!parameter.getAvailableValues().isEmpty()}"
+                                    class="selectpicker form-control" th:name="${parameter.name}"
+                                    data-live-search="true">
+                                <option th:each="value : ${parameter.getAvailableValues()}" th:value="${value}"
+                                        th:text="${value}"></option>
+                            </select>
+
+                            <input th:if="${parameter.getAvailableValues().isEmpty()}" class="form-control"
+                                   th:value="${parameter.defaultValue}"
+                                   th:name="${parameter.name}"/>
                         </div>
                     </div>
 

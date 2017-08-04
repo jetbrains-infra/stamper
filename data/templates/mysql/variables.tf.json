@@ -1,7 +1,7 @@
 {
   "variable": {
     "version": {
-      "default": "latest"
+      "description": "tags:mysql/mysql-server"
     },
     "external_port": {
       "default": "3306"

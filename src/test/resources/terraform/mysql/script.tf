@@ -3,6 +3,7 @@ provider "docker" {
 
 resource "docker_image" "mysql" {
   name = "mysql/mysql-server:${var.version}"
+  keep_locally = true
 }
 
 resource "docker_container" "mysql" {

@@ -2,6 +2,7 @@ provider "docker" {
 }
 resource "docker_image" "nginx" {
   name = "nginx:1.11-alpine"
+  keep_locally = true
 }
 
 resource "docker_container" "nginx" {

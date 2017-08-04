@@ -1,7 +1,7 @@
 provider "docker" {
 }
 resource "docker_image" "ubuntu" {
-  name = "ubuntu:precise"
+  name = "ubuntu:${var.version}"
 }
 resource "docker_container" "ubuntu" {
   name = "ubuntu-server"

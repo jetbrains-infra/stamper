@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import ru.jetbrains.testenvrunner.repository.ExecutingStacksRepository
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
+import ru.jetbrains.testenvrunner.service.DockerHubService
 import ru.jetbrains.testenvrunner.service.StackService
 import ru.jetbrains.testenvrunner.service.UserService
 import javax.servlet.http.HttpServletRequest
@@ -20,7 +21,8 @@ class IndexController constructor(
         val userService: UserService,
         val stackService: StackService,
         val templateRepository: TemplateRepository,
-        val executingStacks: ExecutingStacksRepository) {
+        val executingStacks: ExecutingStacksRepository,
+        val dockerHubService: DockerHubService) {
 
     @RequestMapping(method = arrayOf(RequestMethod.GET))
     fun indexGet(model: Model, auth: OAuth2Authentication?): String {
@@ -65,6 +67,7 @@ class IndexController constructor(
             params = arrayOf("action=run", "script-name"))
     fun openScriptRunForm(model: Model, @RequestParam(value = "script-name") templateName: String): String {
         val terraformScript = templateRepository.get(templateName)
+        dockerHubService.fillAvailableDockerTags(terraformScript)
         model.addAttribute("script", terraformScript)
         return "run_param"
     }
