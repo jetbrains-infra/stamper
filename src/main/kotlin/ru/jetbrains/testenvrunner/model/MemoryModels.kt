@@ -1,6 +1,5 @@
 package ru.jetbrains.testenvrunner.model
 
-import ru.jetbrains.testenvrunner.utils.ExecuteResultHandler
 import java.io.File
 
 fun createTerraformParam(name: String, param: Map<String, Any?>): TerraformScriptParam {
@@ -33,9 +32,5 @@ data class TerraformScript(val scriptDir: File, val params: TerraformScriptParam
         get() = scriptDir.canonicalPath
     val name: String
         get() = scriptDir.name
-}
-
-data class StackExecutor(val stack: Stack, val executeResultHandler: ExecuteResultHandler) {
-    val id = executeResultHandler.id
 }
 

@@ -16,3 +16,16 @@
         transform: rotate(360deg);
     }
 }
+
+.margined-side {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.flex {
+    display: inline-flex;
+}
+
+.margin-btn {
+    margin-right: 3px;
+}

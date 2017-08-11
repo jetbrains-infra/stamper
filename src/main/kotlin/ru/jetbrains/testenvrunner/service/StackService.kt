@@ -1,9 +1,12 @@
 package ru.jetbrains.testenvrunner.service
 
+import org.apache.commons.exec.ExecuteException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import ru.jetbrains.testenvrunner.exception.DeleteBeforeDestroyException
+import ru.jetbrains.testenvrunner.model.ExecuteOperation
 import ru.jetbrains.testenvrunner.model.Stack
-import ru.jetbrains.testenvrunner.model.StackExecutor
+import ru.jetbrains.testenvrunner.model.StackStatus
 import ru.jetbrains.testenvrunner.model.User
 import ru.jetbrains.testenvrunner.repository.StackFilesRepository
 import ru.jetbrains.testenvrunner.repository.StackRepository
@@ -21,28 +24,41 @@ class StackService constructor(
         val stackRepository: StackRepository,
         val stackFilesRepository: StackFilesRepository,
         val terraformExecutorService: TerraformExecutorService,
+        val operationService: OperationService,
         val dateUtils: DateUtils,
-        @Value("\${expire_day}") expireDateString: String,
-        @Value("\${notify_day}") notifyDateString: String) {
-
-    val expireDate = expireDateString.toInt()
-    val notifyDate = notifyDateString.toInt()
+        @Value("\${expire_day}") val expireDate: Int,
+        @Value("\${notify_day}") val notifyDate: Int) {
 
     /**
      * @return all run Stack in the system
      */
     fun getAllStacks(): List<Stack> {
-        return stackRepository.findAll()
+        val stacks = stackRepository.findAll()
+        stacks.forEach { setStatus(it) }
+        return stacks
     }
 
     /**
-     * get status of stack
+     * Get status of stack
      * @param stack that is checked
      * @return string with status of this stack
      */
     fun getStatus(stack: Stack): String {
         val script = stackFilesRepository.get(stack.name)
-        return terraformExecutorService.getStatus(script).output
+        return try {
+            terraformExecutorService.getStatus(script).output
+        } catch (e: ExecuteException) {
+            ""
+        }
+    }
+
+    /**
+     * Is the stack under an operation or not
+     * @param stack that is checked
+     */
+    fun isLoading(stack: Stack): Boolean {
+        val lastOperation = stack.operations.last()
+        return !operationService.isCompleted(lastOperation)
     }
 
     /**
@@ -50,7 +66,23 @@ class StackService constructor(
      * if stack does not exist in the system return null
      */
     fun getStack(name: String): Stack? {
-        return stackRepository.findByName(name)
+        val stack = stackRepository.findByName(name)
+        if (stack == null) return stack
+        setStatus(stack)
+        return stack
+    }
+
+    private fun setStatus(stack: Stack) {
+        stack.status = StackStatus.APPLIED
+        if (isLoading(stack)) stack.status = StackStatus.IN_PROGRESS
+        if (isFailed(stack)) stack.status = StackStatus.FAILED
+        if (isDestroyed(stack)) stack.status = StackStatus.DESTROYED
+
+    }
+
+    private fun isFailed(stack: Stack): Boolean {
+        val lastOperation = stack.operations.last()
+        return operationService.isFailed(lastOperation)
     }
 
     /**
@@ -63,6 +95,13 @@ class StackService constructor(
         return terraformExecutorService.getRunLink(terraformScript)
     }
 
+    fun getComplectedStackOperations(stack: Stack): List<ExecuteOperation> {
+        val operations = operationService.getList(stack.operations)
+        if (isLoading(stack))
+            return operations.subList(0, operations.size - 1)
+        return operations
+    }
+
     /**
      * Async run stack from template with params by user
      * @param templateName name of running template
@@ -72,16 +111,54 @@ class StackService constructor(
      * @return result handler
      */
     fun runStack(templateName: String, stackName: String, parameterMap: Map<String, String>,
-                 user: User?): StackExecutor {
+                 user: User?): String {
         val templateScript = templateRepository.get(templateName)
         if (user == null) {
             throw Exception("Sorry, you should bw logged before to run stack")
         }
         val stackDir = stackFilesRepository.create(stackName, templateScript, parameterMap)
-        val result = terraformExecutorService.applyTerraformScript(stackDir)
         val stack = createStack(stackName, user)
+        val id = terraformExecutorService.applyTerraformScript(stackDir)
+        stack.operations.add(id)
+        saveStack(stack)
+        return id
+    }
 
-        return StackExecutor(stack, result)
+    /**
+     * Async destroy running stack
+     * @param stackName name of stack that should be destroyed
+     * @return operation ID
+     */
+    fun destroyStack(stackName: String): String {
+        val script = stackFilesRepository.get(stackName)
+        val id = terraformExecutorService.destroyTerraformScript(script)
+        val stack = stackRepository.findByName(stackName) ?: throw Exception("The stack is not found in the Database")
+        stack.operations.add(id)
+        stackRepository.save(stack)
+        return id
+    }
+
+    /**
+     * Delete the stack
+     * @param stackName name of stack that should be deleted
+     * @throws [DeleteBeforeDestroyException] if the user tries to delete the not destroyed stack
+     */
+    fun deleteStack(stackName: String) {
+        val stack = stackRepository.findByName(stackName) ?: throw Exception("The stack is not found in Database")
+        val user = userRepository.findByEmail(stack.user.email) ?: throw Exception("The user is not found in Database")
+        if (!isDestroyed(stack)) {
+            throw DeleteBeforeDestroyException(stack)
+        }
+        operationService.removeAll(stack.operations)
+        stackFilesRepository.remove(stack.name)
+        user.listOfStacks.remove(stack.name)
+        userRepository.save(user)
+        stackRepository.delete(stack)
+    }
+
+    private fun isDestroyed(stack: Stack): Boolean {
+        val status = getStatus(stack)
+        return status.isEmpty() || status.startsWith("\n\nOutputs:")
     }
 
     /**
@@ -93,75 +170,18 @@ class StackService constructor(
     fun createStack(stackName: String, user: User): Stack {
         val currentDate = dateUtils.getCurrentDate()
         return Stack(stackName, user, currentDate, dateUtils.addDaysToDate(currentDate, notifyDate),
-                dateUtils.addDaysToDate(currentDate, expireDate))
+                dateUtils.addDaysToDate(currentDate, expireDate), mutableListOf(), StackStatus.IN_PROGRESS)
     }
 
     /**
-     * Handle a success run command
-     * @param stackExecutor executor of stack command
-     * @return result of script execution
+     * Save stack in DB
+     * @param stack that will be saved
      */
-    fun runStackSuccess(stackExecutor: StackExecutor) {
-        val stack = stackExecutor.stack
+    private fun saveStack(stack: Stack) {
         val user = stack.user
         user.listOfStacks.add(stack.name)
         userRepository.save(user)
         stackRepository.save(stack)
-    }
-
-    /**
-     * Handle a error run command
-     * @param stackExecutor executor of stack command
-     * @return result of script execution
-     */
-    fun runStackError(stackExecutor: StackExecutor) {
-        val stack = stackExecutor.stack
-        try {
-            destroyStack(stackExecutor.stack.name)
-        } catch (e: Exception) {
-            println(e.message + e.stackTrace)
-        }
-        stackFilesRepository.remove(stack.name)
-    }
-
-    /**
-     * Async destroy running stack
-     * @param stackName name of stack that should be destroyed
-     * @return result of execution
-     */
-    fun destroyStack(stackName: String): StackExecutor {
-        val script = stackFilesRepository.get(stackName)
-        val stack = stackRepository.findByName(stackName) ?: throw Exception("The stack is not found in the Database")
-        val result = terraformExecutorService.destroyTerraformScript(script)
-        return StackExecutor(stack, result)
-    }
-
-    /**
-     * Sync destroy running stack
-     * @param stackName name of stack that should be destroyed
-     */
-    fun destroyStackSync(stackName: String) {
-        val stackExecutor = destroyStack(stackName)
-        stackExecutor.executeResultHandler.waitFor()
-        if (stackExecutor.executeResultHandler.exception != null) {
-            throw stackExecutor.executeResultHandler.exception!!
-        }
-        destroySuccess(stackExecutor)
-    }
-
-    /**
-     * Handle a success run command
-     * @param stackExecutor executor of stack command
-     * @return result of script execution
-     */
-    fun destroySuccess(stackExecutor: StackExecutor) {
-        val stack = stackExecutor.stack
-        val user = userRepository.findByEmail(stack.user.email) ?: throw Exception("The user is not found in Database")
-
-        stackFilesRepository.remove(stack.name)
-        user.listOfStacks.remove(stack.name)
-        userRepository.save(user)
-        stackRepository.removeByName(stack.name)
     }
 
     /**
@@ -195,5 +215,14 @@ class StackService constructor(
         stacks.forEach { it.expiredDate = dateUtils.addDaysToDate(curDate, expireDate) }
         stacks.forEach { it.notificationDate = dateUtils.addDaysToDate(curDate, notifyDate) }
         stackRepository.save(stacks.asIterable())
+    }
+
+    fun getRunningCommandId(stack: Stack): String? {
+        val lastOperation = stack.operations.last()
+        if (operationService.isCompleted(lastOperation)) {
+            return null
+        } else {
+            return lastOperation
+        }
     }
 }

@@ -2,12 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en"
       xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <link rel="stylesheet" type="text/css" href="src/main/resources/static/css/main.css"/>
+    <link rel="stylesheet" type="text/css" href="src/main/resources/static/css/main.css"/>
     <meta charset="UTF-8"/>
     <title>Title</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
 </head>
 <body>
 <div class="container">
@@ -36,6 +41,16 @@
 
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <!--/*@thymesVar id="msg" type="java.lang.String"*/-->
+            <div class="alert alert-success" th:if="${msg != null}">
+                <strong th:text="${msg}">The stack is prolonged!</strong>
+            </div>
+
+            <!--/*@thymesVar id="msg_error" type="java.lang.String"*/-->
+            <div class="alert alert-danger" th:if="${msg_error != null}">
+                <strong th:text="${msg_error}">The error!</strong>
+            </div>
+
             <h2>List of available stacks</h2>
             <ul class="list-group">
                 <!--/*@thymesVar id="templates" type="java.util.List<ru.jetbrains.testenvrunner.model.TerraformScript>"*/-->
@@ -56,16 +71,33 @@
             <ul class="list-group">
                 <!--/*@thymesVar id="stacks" type="java.util.List<ru.jetbrains.testenvrunner.model.Stack>"*/-->
                 <li th:each="stack : ${stacks}" class="list-group-item">
-                    <form method="POST" th:action="@{/result_terraform}">
-                        <th:block th:with="name=${stack.name}">
-                            <a th:href="@{/script/{id}(id=${name})}" th:text="${name}">Running terraform script</a>
+                    <th:block th:with="name=${stack.name}">
+                        <span th:if="${stack.status.IN_PROGRESS.toString().equals(stack.status.toString())}"
+                              id="loader-icon" class="fa fa-circle-o-notch fa-spin"></span>
+                        <span th:if="${stack.status.DESTROYED.toString().equals(stack.status.toString())}"
+                              id="destroyed-icon" class="glyphicon glyphicon-remove"></span>
+                        <span th:if="${stack.status.APPLIED.toString().equals(stack.status.toString())}"
+                              id="applied-icon" class="glyphicon glyphicon-ok"></span>
+                        <span th:if="${stack.status.FAILED.toString().equals(stack.status.toString())}"
+                              id="failed-icon" class="fa fa-exclamation-circle"></span>
+                        <a th:href="@{/script/{id}(id=${name})}" th:text="${name}">Running terraform script</a>
+                    </th:block>
+                    <div class="row flex pull-right">
+                        <form method="POST" th:action="@{/result_terraform}">
                             <button name="script-name" th:value="${stack.name}"
-                                    class="btn btn-xs btn-info btn-danger pull-right">
+                                    class="btn  btn-xs btn-info btn-warning margin-btn">
                                 Destroy
                             </button>
                             <input type="hidden" name="action" value="destroy"/>
-                        </th:block>
-                    </form>
+                        </form>
+
+                        <form method="POST" th:action="@{/delete_stack}">
+                            <button name="stack_name" th:value="${stack.name}"
+                                    class="btn btn-xs  btn-danger margin-btn">
+                                <span class="glyphicon glyphicon-remove-circle">Delete</span>
+                            </button>
+                        </form>
+                    </div>
                 </li>
             </ul>
         </div>

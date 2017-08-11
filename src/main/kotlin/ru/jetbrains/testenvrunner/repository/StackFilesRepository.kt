@@ -33,7 +33,11 @@ class StackFilesRepository constructor(@Value("\${stacks}") stackFolder: String)
         dir.deleteRecursively()
     }
 
-
+    /**
+     * Set values of params in tfvars.json file
+     * @param name - name of stack
+     * @param params - variables of the stack
+     */
     fun setParamValue(name: String, params: Map<String, Any>) {
         val json = JsonObject(params)
         val fileParams = File("$scriptFolder/$name/terraform.tfvars.json")

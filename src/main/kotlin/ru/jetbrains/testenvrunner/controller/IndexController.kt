@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
-import ru.jetbrains.testenvrunner.repository.ExecutingStacksRepository
+import ru.jetbrains.testenvrunner.exception.DeleteBeforeDestroyException
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
 import ru.jetbrains.testenvrunner.service.DockerHubService
 import ru.jetbrains.testenvrunner.service.StackService
@@ -21,7 +21,6 @@ class IndexController constructor(
         val userService: UserService,
         val stackService: StackService,
         val templateRepository: TemplateRepository,
-        val executingStacks: ExecutingStacksRepository,
         val dockerHubService: DockerHubService) {
 
     @RequestMapping(method = arrayOf(RequestMethod.GET))
@@ -45,23 +44,35 @@ class IndexController constructor(
 
         val user = userService.getUserByAuth(auth)
 
-        val stackExecutor = stackService.runStack(templateName, stackName, parameterMap, user)
-        executingStacks.add(stackExecutor.id, stackExecutor)
-        model.addAttribute("handlerId", stackExecutor.id)
+        val operationId = stackService.runStack(templateName, stackName, parameterMap, user)
+        model.addAttribute("handlerId", operationId)
         model.addAttribute("command", "apply")
         return "async"
     }
 
     @RequestMapping(value = "/result_terraform", method = arrayOf(RequestMethod.POST),
             params = arrayOf("action=destroy", "script-name"))
-    fun destroyScript(model: Model, req: HttpServletRequest): String {
+    fun destroyStack(model: Model, req: HttpServletRequest): String {
         val stackName = req.getParameter("script-name")
-        val stackExecutor = stackService.destroyStack(stackName)
-        executingStacks.add(stackExecutor.id, stackExecutor)
-        model.addAttribute("handlerId", stackExecutor.id)
+        val operationId = stackService.destroyStack(stackName)
+        model.addAttribute("handlerId", operationId)
         model.addAttribute("command", "destroy")
         return "async"
     }
+
+    @RequestMapping(value = "/delete_stack", method = arrayOf(RequestMethod.POST))
+    fun deleteStack(model: Model, @RequestParam(value = "stack_name") stackName: String,
+                    redirectAttrs: RedirectAttributes): String {
+        try {
+            stackService.deleteStack(stackName)
+            redirectAttrs.addFlashAttribute("msg", "The stack is successfully deleted")
+        } catch (e: DeleteBeforeDestroyException) {
+            redirectAttrs.addFlashAttribute("msg_error",
+                    "The stack '${e.stack.name}' cannot be deleted. Destroy the stack  and try to delete the stack again.")
+        }
+        return "redirect:/#"
+    }
+
 
     @RequestMapping(value = "/run_param", method = arrayOf(RequestMethod.POST),
             params = arrayOf("action=run", "script-name"))
@@ -77,7 +88,7 @@ class IndexController constructor(
         val stack = stackService.getStack(stackName) ?: throw Exception("Stack is not found!")
         model.addAttribute("stack", stack)
         model.addAttribute("link", stackService.getStackRunLink(stack))
-        model.addAttribute("status", stackService.getStatus(stack))
+        model.addAttribute("operations", stackService.getComplectedStackOperations(stack))
         return "running_script"
     }
 

@@ -6,8 +6,15 @@
     <title>Title</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
+    <script type="text/javascript" th:src="@{/js/stack_card.js}"></script>
+    <link rel="stylesheet" type="text/css" href="/css/main.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
 </head>
 <body>
 <div class="container">
@@ -24,7 +31,7 @@
             </div>
 
             <!--/*@thymesVar id="stack" type="ru.jetbrains.testenvrunner.model.Stack"*/-->
-            <h2><b>Stack:</b> <span th:text="${stack.name}"> Ubuntu</span></h2>
+            <h2><b>Stack:</b> <span id="stack_name" th:value="${stack.name}" th:text="${stack.name}"> Ubuntu</span></h2>
 
             <!--/*@thymesVar id="link" type="java.lang.String"*/-->
             <p>
@@ -44,10 +51,31 @@
                 <br/>
             </p>
 
+            <div>
+                <p>
+                    <b>Status:</b> <span id="stack_status"></span>
+                    <span id="loader-icon" class="fa fa-circle-o-notch fa-spin"></span>
+                    <span id="applied-icon" class="glyphicon glyphicon-ok"></span>
+                    <span id="destroyed-icon" class="glyphicon glyphicon-remove"></span>
+                    <span id="failed-icon" class="fa fa-exclamation-circle"></span>
+                </p>
+            </div>
             <h3><a href="#detailed" data-toggle="collapse">Details</a></h3>
             <div id="detailed" class="collapse">
-                <!--/*@thymesVar id="status" type="java.lang.String"*/-->
-                <pre th:text="${status}">Very important information</pre>
+                <pre id="stack_status_info"></pre>
+            </div>
+
+            <h3><a href="#operations" data-toggle="collapse">Operations</a></h3>
+            <div id="operations" class="collapse">
+                <!--/*@thymesVar id="operations" type="java.util.List<ru.jetbrains.testenvrunner.model.ExecuteOperation>"*/-->
+                <div th:each="operation : ${operations}">
+                    <h4><a th:href="'#'+${operation.id}" data-toggle="collapse"
+                           th:text="${operation.command}">Command</a></h4>
+                    <div th:id="${operation.id}" class="collapse">
+                        <!--/*@thymesVar id="status" type="java.lang.String"*/-->
+                        <pre th:text="${operation.getExecuteResult().getOutput()}">Output</pre>
+                    </div>
+                </div>
             </div>
 
 

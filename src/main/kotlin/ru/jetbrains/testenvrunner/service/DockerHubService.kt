@@ -25,17 +25,47 @@ class DockerHubService {
      * @return list of available tags
      */
     private fun getAvailableTags(dockerImage: String): List<String> {
+        return try {
+            if (dockerImage.startsWith("http")) {
+                getFromPrivateV2Repo(dockerImage)
+            } else {
+                getFromV1DockerHubRepo(dockerImage)
+            }
+        } catch (e: Exception) {
+            return emptyList()
+        }
+    }
+
+    private fun getFromV1DockerHubRepo(dockerImage: String): List<String> {
         val restTemplate = RestTemplate()
-        val fooResourceUrl = "https://registry.hub.docker.com/v1/repositories/$dockerImage/tags"
-        val response = restTemplate.getForEntity(fooResourceUrl, String::class.java)
+        val resourceUrl = getUrl(dockerImage)
+        val response = restTemplate.getForEntity(resourceUrl, String::class.java)
 
         val json = Parser().parse(StringBuilder(response.body)) as JsonArray<*>
 
-        val availableVersions = mutableListOf<String>()
-        json.forEach {
+        val availableVersions = json.toList().map {
             val item = it as JsonObject
-            availableVersions.add(item["name"].toString())
+            item["name"].toString()
         }
         return availableVersions
+    }
+
+    private fun getFromPrivateV2Repo(dockerImageTagsUrl: String): List<String> {
+        val restTemplate = RestTemplate()
+        val response = restTemplate.getForEntity(dockerImageTagsUrl, String::class.java)
+
+        val json = Parser().parse(StringBuilder(response.body)) as JsonObject
+        val tags = json["tags"] as JsonArray<*>
+
+        val availableVersions = tags.toList().map { it as String }
+        return availableVersions
+    }
+
+    private fun getUrl(dockerImage: String): String {
+        var imageName = dockerImage
+        if (!imageName.contains("/")) {
+            imageName = "library/$imageName"
+        }
+        return "https://registry.hub.docker.com/v1/repositories/$imageName/tags"
     }
 }

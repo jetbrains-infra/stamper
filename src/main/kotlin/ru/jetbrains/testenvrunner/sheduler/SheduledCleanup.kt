@@ -15,7 +15,7 @@ class ScheduledCleanup constructor(val stackService: StackService,
 
     val relativeAddress = "/stack/%s/prolong"
 
-    @Scheduled(cron = "0/10 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     fun cleanupStacks() {
         notifyUsers()
         destroyExpiredStacks()
@@ -43,6 +43,6 @@ class ScheduledCleanup constructor(val stackService: StackService,
 
     fun destroyExpiredStacks() {
         val expiredStacks = stackService.getExpiredStacks()
-        expiredStacks.forEach { stackService.destroyStackSync(it.name) }
+        expiredStacks.forEach { stackService.destroyStack(it.name) }
     }
 }

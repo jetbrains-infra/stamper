@@ -2,107 +2,55 @@ package ru.jetbrains.testenvrunner.utils
 
 import org.apache.commons.exec.*
 import org.apache.commons.exec.environment.EnvironmentUtils
+import ru.jetbrains.testenvrunner.model.ExecuteOperation
+import ru.jetbrains.testenvrunner.model.ExecuteResult
+import ru.jetbrains.testenvrunner.model.ExecuteResultHandler
+import ru.jetbrains.testenvrunner.model.OperationStatus
 import java.io.File
-import java.util.concurrent.BlockingQueue
-import java.util.concurrent.LinkedBlockingQueue
 
-/**
- * Particular result of executing, during the process
- */
-data class ExecuteResultParticle(val newText: String, val isEnd: Boolean, val exception: ExecuteException? = null)
+fun MutableList<String>.asString() = this.joinToString(separator = "\n") { it }.removeSuffix("\n")
 
-/**
- * Full results of executing that can be gotten after end of executing the operation
- */
-data class ExecuteResult(val output: String, val exitCode: Int, val exception: ExecuteException? = null)
-
-/**
- * Executor result handler that get all information about executing
- */
-open class ExecuteResultHandler(val resultHandler: DefaultExecuteResultHandler) {
-
-    val id = generateRandomWord()
-    val queue: BlockingQueue<String> = LinkedBlockingQueue()
-
-    val output: MutableList<String> = mutableListOf()
-
-    fun add(string: String) = queue.offer(string)
-
-    val newOutput: MutableList<String>
-        get() {
-            val result = mutableListOf<String>()
-            queue.drainTo(result)
-            output.addAll(result)
-            return result
-        }
-
-    val newOutputString: String
-        get() {
-            return newOutput.joinToString(separator = "\n") { it }.removeSuffix("\n")
-        }
-
-    val exception: ExecuteException?
-        get() = try {
-            resultHandler.exception
-        } catch (e: IllegalStateException) {
-            null
-        }
-
-    val executeResultParticle: ExecuteResultParticle
-        get() = ExecuteResultParticle(newOutputString, isEnd(), exception = exception)
-
-    val executionResult: ExecuteResult
-        get() {
-            resultHandler.waitFor()
-            newOutput
-            return ExecuteResult(output.joinToString(separator = "\n") { it }.removeSuffix("\n"),
-                    resultHandler.exitValue, exception = exception)
-        }
-
-    fun waitFor() = resultHandler.waitFor()
-    fun isEnd() = resultHandler.hasResult()
-}
 
 val DEFAULT_WAITING_TIME: Long = 360
+
 /**
  * Execute command asynchronously
- * @param command - command that is performed
- * @param directory - directory, where the command is performed
+ * @param executeOperation - operation that is performed
  * @param timeout - timeout that restricts the time for executing of the command
  * @return  handler for executing result
  *
  */
-fun executeCommandAsync(command: String, directory: String = "",
+fun executeCommandAsync(executeOperation: ExecuteOperation,
                         timeout: Long = DEFAULT_WAITING_TIME): ExecuteResultHandler {
-    val cmdLine = CommandLine.parse(command)
-    val resultHandler = DefaultExecuteResultHandler()
-
-    val queue = ExecuteResultHandler(resultHandler)
+    val cmdLine = CommandLine.parse(executeOperation.command)
     val watchdog = ExecuteWatchdog((timeout * 1000))
     val executor = DefaultExecutor()
-    if (!directory.isEmpty()) {
-        executor.workingDirectory = File(directory)
+    if (!executeOperation.directory.isEmpty()) {
+        executor.workingDirectory = File(executeOperation.directory)
     }
+
+    val resultHandler = ExecuteResultHandler(executeOperation)
     executor.watchdog = watchdog
     executor.streamHandler = PumpStreamHandler(object : LogOutputStream() {
 
         override fun processLine(line: String, level: Int) {
-            queue.add(line)
+            resultHandler.add(line)
         }
     })
     executor.execute(cmdLine, EnvironmentUtils.getProcEnvironment(), resultHandler)
-    return queue
+    executeOperation.status = OperationStatus.RUNNING
+    return resultHandler
 }
 
 /**
  * Execute command synchronously
- * @param command - command that is performed
- * @param directory - directory, where the command is performed
+ * @param executeOperation - operation that is performed
  * @param timeout - timeout that restricts the time for executing of the command
  * @return result of executing
  *
  */
-fun executeCommandSync(command: String, directory: String = "", timeout: Long = DEFAULT_WAITING_TIME): ExecuteResult {
-    val handler = executeCommandAsync(command, directory, timeout)
-    return handler.executionResult
+fun executeCommandSync(executeOperation: ExecuteOperation, timeout: Long = DEFAULT_WAITING_TIME): ExecuteResult {
+    val resultHandler = executeCommandAsync(executeOperation, timeout)
+    resultHandler.waitFor()
+    return executeOperation.executeResult
 }
