@@ -14,7 +14,6 @@ RUN apk update && \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/* && \
     rm -rf /var/tmp/*
-
 ENV PATH="/usr/bin/terraform:${PATH}"
 
 RUN sh -c 'touch /app.jar'

@@ -8,18 +8,15 @@ web_address: ${WEB_ADDRESS}
 security:
   oauth2:
     client:
-      clientId: 759913667428-fnjj8ofelfk9asa0lnoadrnqun5l5veo.apps.googleusercontent.com
+      clientId: ${OAUTH_CLIENT_ID}
       clientSecret: ${OAUTH2_SECRET}
-      accessTokenUri: https://www.googleapis.com/oauth2/v4/token
-      userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
-      clientAuthenticationScheme: form
+      accessTokenUri: ${OAUTH_ACCESS_TOKEN_URI}
+      userAuthorizationUri: ${OAUTH_AUTHRIZATION_URI}
       scope:
         - openid
         - email
-        - profile
     resource:
-      userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
-      preferTokenInfo: true
+      userInfoUri: ${OAUTH_USER_INFO_URI}
 spring:
   data:
     mongodb:

@@ -8,18 +8,15 @@ web_address: 127.0.0.1:8080
 security:
   oauth2:
     client:
-      clientId: 759913667428-fnjj8ofelfk9asa0lnoadrnqun5l5veo.apps.googleusercontent.com
-      clientSecret: ${OAUTH2_SECRET}
-      accessTokenUri: https://www.googleapis.com/oauth2/v4/token
-      userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
-      clientAuthenticationScheme: form
+      clientId: c7442f0f-d891-4163-a9bd-698016427c11
+      clientSecret: WL8jAmjsRFut
+      accessTokenUri: https://hub-staging.labs.intellij.net/api/rest/oauth2/token
+      userAuthorizationUri: https://hub-staging.labs.intellij.net/api/rest/oauth2/auth
       scope:
         - openid
         - email
-        - profile
     resource:
-      userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
-      preferTokenInfo: true
+      userInfoUri: https://hub-staging.labs.intellij.net/api/rest/oauth2/userinfo
 spring:
   data:
     mongodb:
@@ -40,3 +37,8 @@ spring:
           writetimeout: 5000
     username: ${EMAIL_LOGIN}
     password: ${EMAIL_PASSWORD}
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
