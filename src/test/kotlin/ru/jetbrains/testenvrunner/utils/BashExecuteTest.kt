@@ -1,6 +1,5 @@
 package ru.jetbrains.testenvrunner.utils
 
-import org.apache.commons.exec.ExecuteException
 import org.junit.Test
 import ru.jetbrains.testenvrunner.model.ExecuteOperation
 import ru.jetbrains.testenvrunner.model.ExecuteResult
@@ -65,17 +64,10 @@ class BashExecuteTest : ScriptTest() {
         assertTrue("There another exception ", exception!!.contains("No such file or directory"))
     }
 
-    private fun assertTimeoutException(exception: ExecuteException?) {
-        val TERMINATED_BY_SIGTERM_EXIT_CODE = 143
-        assertNotNull("There is not a timeoutException exception", exception)
-        assertEquals("There another exit code", TERMINATED_BY_SIGTERM_EXIT_CODE, exception!!.exitValue)
-    }
-
     private fun create(command: String, directory: String = "", keepInSystem: Boolean = true): ExecuteOperation {
         val id = generateRandomWord()
-        val executeOperation = ExecuteOperation(command, directory, ExecuteResult(), OperationStatus.CREATED, id,
+        return ExecuteOperation(command, directory, ExecuteResult(), OperationStatus.CREATED, id,
                 keepInSystem, "terraform apply", DateUtils().getCurrentDate())
-        return executeOperation
     }
 
 }

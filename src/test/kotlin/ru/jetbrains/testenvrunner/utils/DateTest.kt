@@ -5,8 +5,8 @@ import org.junit.Test
 import java.text.SimpleDateFormat
 
 class DateTest : Assert() {
-    val dateUtil = DateUtils()
-    val dateFormat = SimpleDateFormat("HH:mm dd/MM/yy")
+    private val dateUtil = DateUtils()
+    private val dateFormat = SimpleDateFormat("HH:mm dd/MM/yy")
     @Test
     fun getCurrentDateTest() {
         val curDateString = dateUtil.getCurrentDateAsString()

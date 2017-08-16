@@ -44,8 +44,8 @@ class TerraformExecutorService(val operationService: OperationService,
      */
     fun isScriptRun(script: TerraformScript): Boolean {
         val result = executeTerraformCommandSync("terraform state list", script)
-        val msgStateFile: String = "No state file was found"
-        val msgEnv: String = "Environment \"${script.name}\" doesn't exist!"
+        val msgStateFile = "No state file was found"
+        val msgEnv = "Environment \"${script.name}\" doesn't exist!"
         if (result.exception != null && !result.output.contains(msgStateFile) && !result.output.contains(msgEnv)) {
             println(result.exception!!)
             result.exception!!

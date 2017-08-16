@@ -50,7 +50,7 @@ data class ExecuteOperation @PersistenceConstructor constructor(val command: Str
  * Executor result handler that get all information about executing
  */
 class ExecuteResultHandler(val operation: ExecuteOperation,
-                           val additionHandler: OperationResutHandler? = null) : DefaultExecuteResultHandler() {
+                           private val additionHandler: OperationResutHandler? = null) : DefaultExecuteResultHandler() {
 
     fun add(string: String) = operation.executeResult.outputList.add(string)
 

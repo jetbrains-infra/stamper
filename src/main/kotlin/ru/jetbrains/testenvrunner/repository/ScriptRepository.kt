@@ -44,7 +44,7 @@ abstract class ScriptRepository constructor(val scriptFolder: String) {
         val paramsFile = File("$scriptFolder/$name/variables.tf.json")
         if (!paramsFile.exists())
             return TerraformScriptParams()
-        val parser: Parser = Parser()
+        val parser = Parser()
         val json: JsonObject = parser.parse(paramsFile.absolutePath) as JsonObject
         val parameterMap = json["variable"] as JsonObject
 

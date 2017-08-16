@@ -17,7 +17,7 @@ import java.io.IOException
 @RunWith(SpringRunner::class)
 @TestPropertySource(locations = arrayOf("classpath:test.properties"))
 @SpringBootTest
-open class ScriptTest : Assert() {
+class ScriptTest : Assert() {
     @Value("\${stacks}")
     lateinit var stacksFolder: String
 
@@ -76,7 +76,7 @@ open class ScriptTest : Assert() {
     protected fun assertJsonFile(filePath: String, actualMap: Map<String, Any>) {
         assertFileExists(filePath)
         val file = File(filePath)
-        val parser: Parser = Parser()
+        val parser = Parser()
         val json: JsonObject = parser.parse(file.absolutePath) as JsonObject
         assertEquals("The content of JSON file  ${file.name} is not the same with expected", actualMap, json.map)
     }

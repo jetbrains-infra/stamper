@@ -11,7 +11,7 @@ class OperationCleanup constructor(val operationService: OperationService,
                                    val stackService: StackService,
                                    val dateUtils: DateUtils) {
 
-    @Scheduled(cron = "0/10 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     fun cleanupOperation() {
         val stacks = stackService.getAllStacks()
         val stacksOperations = stacks.map { it.operations }.flatten().map { operationService.get(it) }.toSet()

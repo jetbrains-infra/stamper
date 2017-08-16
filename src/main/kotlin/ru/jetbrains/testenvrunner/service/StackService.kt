@@ -153,5 +153,4 @@ class StackService constructor(
         saveStack(stack)
         return id
     }
-
 }

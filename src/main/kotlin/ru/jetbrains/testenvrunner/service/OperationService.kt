@@ -11,8 +11,8 @@ import ru.jetbrains.testenvrunner.utils.generateRandomWord
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-final class OperationService(val operationRepository: OperationRepository,
-                             val dateUtils: DateUtils) {
+final class OperationService(private val operationRepository: OperationRepository,
+                             private val dateUtils: DateUtils) {
     companion object {
         lateinit var operationService: OperationService
     }
@@ -57,7 +57,15 @@ final class OperationService(val operationRepository: OperationRepository,
         println("Operation successfully performed $operation")
     }
 
-    fun complete(operation: ExecuteOperation) {
+    fun isCompleted(operationId: String): Boolean {
+        return !operations.containsKey(operationId)
+    }
+
+    fun getAll(): List<ExecuteOperation> {
+        return operationRepository.findAll()
+    }
+
+    private fun complete(operation: ExecuteOperation) {
         if (operation.keepInSystem)
             operationRepository.save(operation)
         removeFromMemory(operation.id)
@@ -65,19 +73,6 @@ final class OperationService(val operationRepository: OperationRepository,
 
     private fun removeFromMemory(operationId: String) {
         operations.remove(operationId)
-    }
-
-    fun isCompleted(operationId: String): Boolean {
-        return !operations.containsKey(operationId)
-    }
-
-    fun isFailed(operationId: String): Boolean {
-        val operation = get(operationId)
-        return operation.status == OperationStatus.FAILED
-    }
-
-    fun getAll(): List<ExecuteOperation> {
-        return operationRepository.findAll()
     }
 }
 

@@ -38,7 +38,7 @@ fun main(args: Array<String>) {
 }
 
 private fun disableSalSilicateCheck(): Array<TrustManager> {
-    val trustAllCerts = arrayOf<TrustManager>(object : X509ExtendedTrustManager() {
+    return arrayOf(object : X509ExtendedTrustManager() {
 
         override fun checkClientTrusted(x509Certificates: Array<X509Certificate>, s: String) {
         }
@@ -67,6 +67,5 @@ private fun disableSalSilicateCheck(): Array<TrustManager> {
         override fun checkServerTrusted(x509Certificates: Array<X509Certificate>, s: String, sslEngine: SSLEngine) {
         }
     })
-    return trustAllCerts
 }
 

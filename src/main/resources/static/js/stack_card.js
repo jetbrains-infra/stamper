@@ -125,7 +125,7 @@ function renderLog(log_div, operation) {
         <div>
             <h3><a href="#${operation.id}" data-toggle="collapse">${operation.title}</a></h3>
             <div id="${operation.id}" class="collapse" >
-                <pre>${operation.executeResult.output}</pre>
+                <pre>${operation["executeResult"]["output"]}</pre>
             </div>
         </div>
     `);
@@ -138,15 +138,18 @@ $("#destroy-btn").click(function () {
 });
 
 class StackDestroyer {
-    run() {
-        this.runDestroy();
-    }
-
-    updateViewToDestroyed() {
+    static updateViewToDestroyed() {
         hide_elements();
         status_info.html("Stack is destroyed and deleted.");
         stack_status.html("DESTROYED");
         $("#destroyed-icon").show();
+    }
+
+    run() {
+        hide_elements();
+        stack_status.html("IN_PROGRESS");
+        $("#loader-icon").show();
+        this.runDestroy();
     }
 
     runDestroy() {
@@ -159,7 +162,7 @@ class StackDestroyer {
             timeout: 600000,
             success: function (id) {
                 operationId = id;
-                const operationLog = new OperationLog(id, context.updateViewToDestroyed, updateStackCardInfo);
+                const operationLog = new OperationLog(id, StackDestroyer.updateViewToDestroyed, updateStackCardInfo);
                 operationLog.run();
                 console.log("SUCCESS get destroy operation id: ", stackName);
             },

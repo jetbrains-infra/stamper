@@ -43,11 +43,10 @@ class DockerHubService {
 
         val json = Parser().parse(StringBuilder(response.body)) as JsonArray<*>
 
-        val availableVersions = json.toList().map {
+        return json.toList().map {
             val item = it as JsonObject
             item["name"].toString()
         }
-        return availableVersions
     }
 
     private fun getFromPrivateV2Repo(dockerImageTagsUrl: String): List<String> {
@@ -57,8 +56,7 @@ class DockerHubService {
         val json = Parser().parse(StringBuilder(response.body)) as JsonObject
         val tags = json["tags"] as JsonArray<*>
 
-        val availableVersions = tags.toList().map { it as String }
-        return availableVersions
+        return tags.toList().map { it as String }
     }
 
     private fun getUrl(dockerImage: String): String {
