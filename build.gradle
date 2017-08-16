@@ -81,17 +81,17 @@ apply plugin: 'com.bmuschko.docker-remote-api'
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 
-task buildImage(type: DockerBuildImage, dependsOn: build) {
+task buildImageApp(type: DockerBuildImage, dependsOn: build) {
     mkdir('build/docker')
     inputDir = file('build/docker')
-    tag = 'nashikhmin/test-env-runner:0.1'
+    tag = 'nashikhmin/stamper:0.1'
     doFirst {
         copy {
             from jar
             into file('build/docker')
         }
         copy {
-            from file('src/main/docker/Dockerfile')
+            from file('src/main/docker/app/Dockerfile')
             into file('build/docker/')
         }
         copy {
@@ -103,7 +103,25 @@ task buildImage(type: DockerBuildImage, dependsOn: build) {
     }
 }
 
-task pushImage(type: DockerPushImage, dependsOn: buildImage) {
-    imageName = 'nashikhmin/test-env-runner'
+
+task buildImageEnv(type: DockerBuildImage) {
+    mkdir('build/docker')
+    inputDir = file('build/docker')
+    tag = 'nashikhmin/stamper-env:0.1'
+    doFirst {
+        copy {
+            from file('src/main/docker/env/Dockerfile')
+            into file('build/docker/')
+        }
+    }
+}
+
+task pushImageApp(type: DockerPushImage, dependsOn: buildImageApp) {
+    imageName = 'nashikhmin/stamper'
+    version = 0.1
+}
+
+task pushImageEnv(type: DockerPushImage, dependsOn: buildImageEnv) {
+    imageName = 'nashikhmin/stamper-env'
     version = 0.1
 }
