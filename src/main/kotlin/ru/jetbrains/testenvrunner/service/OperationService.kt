@@ -6,10 +6,13 @@ import ru.jetbrains.testenvrunner.model.ExecuteOperation
 import ru.jetbrains.testenvrunner.model.ExecuteResult
 import ru.jetbrains.testenvrunner.model.OperationStatus
 import ru.jetbrains.testenvrunner.repository.OperationRepository
+import ru.jetbrains.testenvrunner.utils.DateUtils
 import ru.jetbrains.testenvrunner.utils.generateRandomWord
+import java.util.concurrent.ConcurrentHashMap
 
 @Service
-final class OperationService(val operationRepository: OperationRepository) {
+final class OperationService(val operationRepository: OperationRepository,
+                             val dateUtils: DateUtils) {
     companion object {
         lateinit var operationService: OperationService
     }
@@ -18,24 +21,18 @@ final class OperationService(val operationRepository: OperationRepository) {
         operationService = this
     }
 
-    private val operations: MutableMap<String, ExecuteOperation> = mutableMapOf()
+    private val operations: ConcurrentHashMap<String, ExecuteOperation> = ConcurrentHashMap()
 
-    fun create(command: String, directory: String = "", keepInSystem: Boolean = true): ExecuteOperation {
+    fun create(command: String, directory: String = "", keepInSystem: Boolean = true,
+               title: String = command): ExecuteOperation {
         val id = generateRandomWord()
         val executeOperation = ExecuteOperation(command, directory, ExecuteResult(), OperationStatus.CREATED, id,
-                keepInSystem)
+                keepInSystem, title, dateUtils.getCurrentDate())
         operations[id] = executeOperation
         return executeOperation
     }
 
-    fun removeAll(removedIds: List<String>) {
-        removedIds.forEach { remove(it) }
-    }
-
-    private fun remove(operationId: String) {
-        removeFromMemory(operationId)
-        operationRepository.delete(operationId)
-    }
+    fun removeAll(operations: List<ExecuteOperation>) = operationRepository.delete(operations)
 
     fun get(operationId: String): ExecuteOperation {
         var operation = operations[operationId]
@@ -77,6 +74,10 @@ final class OperationService(val operationRepository: OperationRepository) {
     fun isFailed(operationId: String): Boolean {
         val operation = get(operationId)
         return operation.status == OperationStatus.FAILED
+    }
+
+    fun getAll(): List<ExecuteOperation> {
+        return operationRepository.findAll()
     }
 }
 

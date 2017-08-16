@@ -23,7 +23,7 @@ class BashExecuteTest : ScriptTest() {
         val handler = executeCommandAsync(command)
         handler.waitFor()
         val actual = handler.operation.executeResult.getParticleResult(0)
-        assertEquals("The result of bash script is not correct", ExecuteResultParticle("hello world", 1, true, null),
+        assertEquals("The result of bash script is not correct", ExecuteResultParticle("hello world", 1, true, null, 0),
                 actual)
     }
 
@@ -33,7 +33,7 @@ class BashExecuteTest : ScriptTest() {
         val handler = executeCommandAsync(command, timeout = 1)
         handler.waitFor()
         val exception = command.executeResult.getParticleResult(0).exception
-        assertTimeoutException(exception)
+        assertEquals("The exception message is wrong", "Process exited with an error: 143 (Exit value: 143)", exception)
     }
 
     @Test
@@ -41,7 +41,7 @@ class BashExecuteTest : ScriptTest() {
         val command = create("ping google.ru")
         val actual = executeCommandSync(command, timeout = 1)
         val exception = actual.exception
-        assertTimeoutException(exception)
+        assertEquals("The exception message is wrong", "Process exited with an error: 143 (Exit value: 143)", exception)
     }
 
     @Test
@@ -62,7 +62,7 @@ class BashExecuteTest : ScriptTest() {
         val exception = actual.exception
         assertNotNull("There is not an exception", exception)
 
-        assertTrue("There another exception ", exception!!.message!!.contains("No such file or directory"))
+        assertTrue("There another exception ", exception!!.contains("No such file or directory"))
     }
 
     private fun assertTimeoutException(exception: ExecuteException?) {
@@ -74,7 +74,7 @@ class BashExecuteTest : ScriptTest() {
     private fun create(command: String, directory: String = "", keepInSystem: Boolean = true): ExecuteOperation {
         val id = generateRandomWord()
         val executeOperation = ExecuteOperation(command, directory, ExecuteResult(), OperationStatus.CREATED, id,
-                keepInSystem)
+                keepInSystem, "terraform apply", DateUtils().getCurrentDate())
         return executeOperation
     }
 

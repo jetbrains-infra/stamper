@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.css"/>
+
+    <link rel="stylesheet" type="text/css" href="/css/main.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+</head>
+<body>
+<div class="container">
+    <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+        </ul>
+        <h1><a href="/" class="muted">Terraform Script Runner</a></h1>
+    </div>
+    <!--/*@thymesVar id="msg" type="java.lang.String"*/-->
+    <div class="alert alert-success" th:if="${msg != null}">
+        <strong th:text="${msg}">The stack is prolonged!</strong>
+    </div>
+
+    <!--/*@thymesVar id="stack" type="ru.jetbrains.testenvrunner.model.Stack"*/-->
+    <h2><b>Stack:</b> <span id="stack_name" th:value="${stack.name}" th:text="${stack.name}"> Ubuntu</span></h2>
+
+
+    <div class="row">
+        <div class="col-md-8">
+            <p>
+                <br/>
+                <b>Creation date:</b> <span th:text="${stack.createdDate}">14:34 23/05/2016</span>
+                <br/>
+                <b>Expired date:</b> <span th:text="${stack.expiredDate}">14:34 23/05/2016</span>
+                <br/>
+            </p>
+
+            <p th:if="${stack.user!=null}">
+                <b>User name:</b> <span th:text="${stack.user.name}">User name</span>
+                <br/>
+                <b>User email:</b> <span th:text="${stack.user.email}">User email</span>
+                <br/>
+            </p>
+            <div>
+                <p>
+                    <b>Status:</b> <span id="stack_status"></span>
+                    <span id="loader-icon" class="fa fa-circle-o-notch fa-spin"></span>
+                    <span id="applied-icon" class="glyphicon glyphicon-ok"></span>
+                    <span id="destroyed-icon" class="glyphicon glyphicon-remove"></span>
+                    <span id="failed-icon" class="fa fa-exclamation-circle"></span>
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row flex pull-right">
+                <form method="POST" th:action="@{/stack/}+${stack.name}+@{/apply}">
+                    <button id="apply-btn" name="script-name" th:value="${stack.name}"
+                            class="btn btn-success  margin-btn">
+                        Apply
+                    </button>
+                </form>
+
+                <div id="destroy-btn" class="btn  btn-danger margin-btn">
+                    Destroy
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr/>
+
+    <div>
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#1" data-toggle="tab">Overview</a></li>
+            <li><a href="#2" data-toggle="tab">Details</a></li>
+            <li><a href="#3" data-toggle="tab">Logs</a></li>
+        </ul>
+
+        <div class="tab-content ">
+            <div class="tab-pane active" id="1">
+                <div>
+                    <p>
+                        <b>Usage link:</b>
+                        <!--/*@thymesVar id="link" type="java.lang.String"*/-->
+                        <a href="/" th:if="${not link.isEmpty()}" th:href="${link}" th:text="${link}">URL:
+                            localhost:8080</a>
+                        <span th:if="${link.isEmpty()}">The link does not exist</span>
+                    </p>
+                </div>
+                <div id="executing_operation">
+                    <h2>Executing operation:</h2>
+                    <pre id="operation_output"></pre>
+                </div>
+            </div>
+            <div class="tab-pane" id="2">
+                <h3>Current stack status:</h3>
+                <pre id="stack_status_info"></pre>
+            </div>
+            <div class="tab-pane" id="3">
+                <div id="logs"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.js"></script>
+<script type="text/javascript" th:src="@{/js/stack_card.js}"></script>
+
+</body>
+</html>

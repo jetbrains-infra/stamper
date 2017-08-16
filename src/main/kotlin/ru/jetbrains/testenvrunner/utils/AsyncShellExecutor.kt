@@ -6,6 +6,7 @@ import ru.jetbrains.testenvrunner.model.ExecuteOperation
 import ru.jetbrains.testenvrunner.model.ExecuteResult
 import ru.jetbrains.testenvrunner.model.ExecuteResultHandler
 import ru.jetbrains.testenvrunner.model.OperationStatus
+import ru.jetbrains.testenvrunner.service.OperationResutHandler
 import java.io.File
 
 fun MutableList<String>.asString() = this.joinToString(separator = "\n") { it }.removeSuffix("\n")
@@ -21,7 +22,8 @@ val DEFAULT_WAITING_TIME: Long = 360
  *
  */
 fun executeCommandAsync(executeOperation: ExecuteOperation,
-                        timeout: Long = DEFAULT_WAITING_TIME): ExecuteResultHandler {
+                        timeout: Long = DEFAULT_WAITING_TIME,
+                        additionalHandler: OperationResutHandler? = null): ExecuteResultHandler {
     val cmdLine = CommandLine.parse(executeOperation.command)
     val watchdog = ExecuteWatchdog((timeout * 1000))
     val executor = DefaultExecutor()
@@ -29,7 +31,7 @@ fun executeCommandAsync(executeOperation: ExecuteOperation,
         executor.workingDirectory = File(executeOperation.directory)
     }
 
-    val resultHandler = ExecuteResultHandler(executeOperation)
+    val resultHandler = ExecuteResultHandler(executeOperation, additionalHandler)
     executor.watchdog = watchdog
     executor.streamHandler = PumpStreamHandler(object : LogOutputStream() {
 

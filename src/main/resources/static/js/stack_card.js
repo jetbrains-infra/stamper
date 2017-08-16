@@ -1,102 +1,248 @@
-var stack_name;
+const stackName = getStackName();
+
+function getStackName() {
+    const url = window.location.pathname;
+    return url.substring(url.lastIndexOf("/") + 1);
+}
 
 $(document).ready(function () {
-    stack_name = $("#stack_name");
-    hide_status_icons();
-    get_stack_status(stack_name.text());
+    const stackName = getStackName();
+
+    function getStackName() {
+        const url = window.location.pathname;
+        return url.substring(url.lastIndexOf("/") + 1);
+    }
+
+    $("#executing_operation").hide();
+    updateStackCardInfo(stackName);
 });
 
 
-var interval;
-var lastRead = 0;
+function updateStackCardInfo() {
+    updateLogs();
+    updateStackStatus();
+}
+
+const stack_status = $("#stack_status");
+const status_info = $("#stack_status_info");
 
 
-function hide_status_icons() {
+function hide_elements() {
+    $("#apply-btn").hide();
+    $("#destroy-btn").hide();
     $("#loader-icon").hide();
     $("#applied-icon").hide();
     $("#destroyed-icon").hide();
     $("#failed-icon").hide();
 }
 
-function get_stack_status(stack_name) {
-    var status_status = $("#stack_status");
-    var status_info = $("#stack_status_info");
-    hide_status_icons();
+
+function updateStackStatus() {
+    hide_elements();
+
     $.ajax({
         type: "GET",
-        url: "/api/stack/" + stack_name + "/status",
+        url: "/api/stack/" + stackName + "/status",
         cache: false,
         timeout: 600000,
         success: function (data) {
-            status_status.text(data["stackStatus"]);
-            if (data["stackStatus"] === "APPLIED") {
-                status_info.append("Stack status:\n");
-                status_info.append(data["output"]);
+            stack_status.html(data["stackStatus"]);
+
+            function onApply() {
+                status_info.html(data["output"]);
                 $("#applied-icon").show();
+                $("#destroy-btn").show();
             }
-            if (data["stackStatus"] === "FAILED") {
-                status_info.append("Stack status:\n");
-                status_info.append(data["output"]);
+
+            function onFail() {
+                status_info.html(data["output"]);
                 $("#failed-icon").show();
+                $("#apply-btn").show();
+                $("#destroy-btn").show();
             }
-            if (data["stackStatus"] === "IN_PROGRESS") {
-                var id = data["commandId"];
-                $("#loader-icon").show();
-                interval = setInterval(function () {
-                    ajax_get_script_output(id, status_info);
-                }, 1300);
-            }
-            if (data["stackStatus"] === "DESTROYED") {
+
+            function onDestroyed() {
                 $("#destroyed-icon").show();
-                status_info.append("Stack status:\nThe stack is completely destroyed now.\n");
-                status_info.append(data["output"]);
+                status_info.html("The stack is completely destroyed now.\n");
             }
-            console.log("SUCCESS get api/stack/" + stack_name + "/status", data);
+
+            function onInProgress() {
+                status_info.html("The stack is not created. Status is unavailable");
+                const id = data["commandId"];
+                $("#loader-icon").show();
+                const operationLog = new OperationLog(id, updateStackCardInfo, updateStackCardInfo);
+                operationLog.run();
+            }
+
+            switch (data["stackStatus"]) {
+                case "APPLIED":
+                    onApply();
+                    break;
+                case"FAILED":
+                    onFail();
+                    break;
+                case "IN_PROGRESS":
+                    onInProgress();
+                    break;
+                case "DESTROYED":
+                    onDestroyed();
+                    break;
+                default:
+                    alert("Unknown stack status");
+            }
+            console.log(`SUCCESS get api/stack/${stackName}/status`, data);
         },
         error: function (e) {
-            console.log("ERROR get api/stack/" + stack_name + "/status", e);
+            console.log(`ERROR get api/stack/${stackName}/status`, e);
         }
     });
 }
 
-function ajax_get_script_output(id, status) {
+
+function updateLogs() {
     $.ajax({
         type: "GET",
-        data: {
-            "id": id,
-            "start": lastRead
-        },
-        url: "/api/new-output/",
+        url: "/api/stack/" + stackName + "/logs",
         cache: false,
         timeout: 600000,
-        success: function (data) {
-            var json = data["newText"];
-            lastRead = data["last"];
-            if (json !== "") {
-                status.append(json + "\n");
-            }
-            if (data["end"] === true) {
-                clearInterval(interval);
-                $("#loader-icon").hide();
-                var exception = data["exception"];
-                if (exception === null) {
-                    status.append("\n-----------------------\nThe script executing is successfully completed.\n");
-                }
-                else {
-                    status.append("\n-----------------------\nThe script executing is  uncompleted.\n");
-                    status.append(exception);
-                }
-                get_stack_status(stack_name.text());
-                return;
-            }
-            console.log("SUCCESS : ", data);
+        success: function (logs) {
+            let log_div = $("#logs").html("");
+            logs.forEach(function (t) {
+                renderLog(log_div, t);
+            });
+            console.log("SUCCESS get logs : ", logs);
 
         },
         error: function (e) {
-            clearInterval(interval);
-            resultDiv.append("The error is gotten during the operation executing: " + e.responseText);
-            console.log("SCRIPT ERROR : ", e);
-            $("#loader-icon").hide();
+            console.log("ERROR get logs: ", e);
         }
     });
+}
+
+
+function renderLog(log_div, operation) {
+    log_div.append(`
+        <div>
+            <h3><a href="#${operation.id}" data-toggle="collapse">${operation.title}</a></h3>
+            <div id="${operation.id}" class="collapse" >
+                <pre>${operation.executeResult.output}</pre>
+            </div>
+        </div>
+    `);
+}
+
+
+$("#destroy-btn").click(function () {
+    const stackDestroyer = new StackDestroyer();
+    stackDestroyer.run();
+});
+
+class StackDestroyer {
+    run() {
+        this.runDestroy();
+    }
+
+    updateViewToDestroyed() {
+        hide_elements();
+        status_info.html("Stack is destroyed and deleted.");
+        stack_status.html("DESTROYED");
+        $("#destroyed-icon").show();
+    }
+
+    runDestroy() {
+        const context = this;
+        let operationId;
+        $.ajax({
+            type: "DELETE",
+            url: "/api/stack/" + stackName,
+            cache: false,
+            timeout: 600000,
+            success: function (id) {
+                operationId = id;
+                const operationLog = new OperationLog(id, context.updateViewToDestroyed, updateStackCardInfo);
+                operationLog.run();
+                console.log("SUCCESS get destroy operation id: ", stackName);
+            },
+            error: function (e) {
+                console.log("ERROR on get destroy operation id: ", e);
+            }
+        });
+    }
+}
+
+class OperationLog {
+    constructor(operationId, successHandler, failHandler) {
+        this.id = operationId;
+        this.success = successHandler;
+        this.fail = failHandler;
+        this.operationDiv = $("#executing_operation");
+        this.outputField = this.operationDiv.find("#operation_output");
+        this.outputField.html("");
+        this.isCompleted = false;
+    }
+
+    run() {
+        this.lastRead = 0;
+        this.operationDiv.show();
+
+        let context = this;
+        this.interval = setInterval(function () {
+            context.loadOperationOutput(context);
+        }, 600);
+    }
+
+    loadOperationOutput(context) {
+        $.ajax({
+            type: "GET",
+            data: {
+                "id": this.id,
+                "start": this.lastRead
+            },
+            url: "/api/new-output/",
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                context.onSuccess(data);
+            },
+            error: function (e) {
+                context.onFail(e);
+            }
+        });
+    }
+
+    onFail(e) {
+        clearInterval(this.interval);
+        this.outputField.append("Fail load operation output: " + e.responseText);
+        this.fail();
+    }
+
+    onSuccess(data) {
+        if (this.isCompleted === true) {
+            return;
+        }
+
+        const json = data["newText"];
+        this.lastRead = data["last"];
+
+        if (json !== "" && !this.isCompleted) {
+            this.outputField.append(json + "\n");
+        }
+        if (data["end"] === true) {
+            this.isCompleted = true;
+            clearInterval(this.interval);
+            const exception = data["exception"];
+            if (exception === null) {
+                this.outputField.append(
+                    "\n-----------------------\nThe script executing is successfully completed.\n");
+                this.success();
+            }
+            else {
+                this.outputField.append("\n-----------------------\nThe script executing is  failed.\n");
+                this.outputField.append(exception);
+                this.fail();
+            }
+
+        }
+        console.log("Success load operation output: ", data);
+    }
 }

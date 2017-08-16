@@ -9,9 +9,9 @@ import java.io.File
 import javax.inject.Inject
 import kotlin.test.assertFailsWith
 
-class StackFilesRepositoryTest : ScriptTest() {
+class StackDirectoryRepositoryTest : ScriptTest() {
     @Inject
-    private lateinit var stackFilesRepository: StackFilesRepository
+    private lateinit var stackDirectoryRepository: StackDirectoryRepository
 
     @Before
     fun setUp() = removeAllData()
@@ -21,20 +21,21 @@ class StackFilesRepositoryTest : ScriptTest() {
 
     @Test
     fun getAllStacksList() {
-        assertEquals("there are not all tests", 0, stackFilesRepository.getAll().size.toLong())
+        assertEquals("there are not all tests", 0, stackDirectoryRepository.getAll().size.toLong())
 
         val scripts = listOf(TerraformScript(File("$stacksFolder/addAll1"), emptyTerraformScriptParams()),
                 TerraformScript(File("$stacksFolder/addAll2"), emptyTerraformScriptParams()))
         scripts.forEach({ addFakeStack(it.name) })
 
-        val actualScripts = stackFilesRepository.getAll()
-        assertTrue("The getAll function return incorrect list of scripts", scripts.containsAll(actualScripts) && actualScripts.containsAll(scripts))
+        val actualScripts = stackDirectoryRepository.getAll()
+        assertTrue("The getAll function return incorrect list of scriptFolder",
+                scripts.containsAll(actualScripts) && actualScripts.containsAll(scripts))
     }
 
     @Test
     fun getNonexistentStackTest() {
         assertFailsWith(Exception::class) {
-            stackFilesRepository.get("nonexistent")
+            stackDirectoryRepository.get("nonexistent")
         }
     }
 
@@ -42,7 +43,7 @@ class StackFilesRepositoryTest : ScriptTest() {
     fun getStackTest() {
         val script = TerraformScript(File("$stacksFolder/add"), TerraformScriptParams())
         addFakeStack(script.name)
-        assertEquals("The gotten script is not the same with added", script, stackFilesRepository.get(script.name))
+        assertEquals("The gotten script is not the same with added", script, stackDirectoryRepository.get(script.name))
     }
 
     @Test
@@ -52,7 +53,7 @@ class StackFilesRepositoryTest : ScriptTest() {
         val stackName = "stack"
         val template = addFakeTemplate("template", params)
 
-        val createdStack = stackFilesRepository.create(stackName, template, paramsValues)
+        val createdStack = stackDirectoryRepository.create(stackName, template, paramsValues)
 
         assertFileExists(createdStack.absolutePath + "/variables.tf.json")
         assertJsonFile(createdStack.absolutePath + "/terraform.tfvars.json", paramsValues)

@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import ru.jetbrains.testenvrunner.exception.DeleteBeforeDestroyException
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
 import ru.jetbrains.testenvrunner.service.DockerHubService
+import ru.jetbrains.testenvrunner.service.StackInfoService
 import ru.jetbrains.testenvrunner.service.StackService
 import ru.jetbrains.testenvrunner.service.UserService
 import javax.servlet.http.HttpServletRequest
@@ -21,7 +22,8 @@ class IndexController constructor(
         val userService: UserService,
         val stackService: StackService,
         val templateRepository: TemplateRepository,
-        val dockerHubService: DockerHubService) {
+        val dockerHubService: DockerHubService,
+        val stackInfoService: StackInfoService) {
 
     @RequestMapping(method = arrayOf(RequestMethod.GET))
     fun indexGet(model: Model, auth: OAuth2Authentication?): String {
@@ -44,27 +46,23 @@ class IndexController constructor(
 
         val user = userService.getUserByAuth(auth)
 
-        val operationId = stackService.runStack(templateName, stackName, parameterMap, user)
-        model.addAttribute("handlerId", operationId)
-        model.addAttribute("command", "apply")
-        return "async"
+        stackService.runStack(templateName, stackName, parameterMap, user)
+        return "redirect:/script/$stackName"
     }
 
     @RequestMapping(value = "/result_terraform", method = arrayOf(RequestMethod.POST),
             params = arrayOf("action=destroy", "script-name"))
     fun destroyStack(model: Model, req: HttpServletRequest): String {
         val stackName = req.getParameter("script-name")
-        val operationId = stackService.destroyStack(stackName)
-        model.addAttribute("handlerId", operationId)
-        model.addAttribute("command", "destroy")
-        return "async"
+        stackService.destroyStack(stackName)
+        return "redirect:/#"
     }
 
     @RequestMapping(value = "/delete_stack", method = arrayOf(RequestMethod.POST))
     fun deleteStack(model: Model, @RequestParam(value = "stack_name") stackName: String,
                     redirectAttrs: RedirectAttributes): String {
         try {
-            stackService.deleteStack(stackName)
+            stackInfoService.deleteStack(stackName)
             redirectAttrs.addFlashAttribute("msg", "The stack is successfully deleted")
         } catch (e: DeleteBeforeDestroyException) {
             redirectAttrs.addFlashAttribute("msg_error",
@@ -84,12 +82,11 @@ class IndexController constructor(
     }
 
     @RequestMapping(value = "/script/{id}", method = arrayOf(RequestMethod.GET))
-    fun openRunningScriptForm(model: Model, @PathVariable(value = "id") stackName: String): String {
+    fun openStackCard(model: Model, @PathVariable(value = "id") stackName: String): String {
         val stack = stackService.getStack(stackName) ?: throw Exception("Stack is not found!")
         model.addAttribute("stack", stack)
-        model.addAttribute("link", stackService.getStackRunLink(stack))
-        model.addAttribute("operations", stackService.getComplectedStackOperations(stack))
-        return "running_script"
+        model.addAttribute("link", stackInfoService.getStackRunLink(stack))
+        return "stack_card"
     }
 
     @RequestMapping(value = "/stack/{id}/prolong", method = arrayOf(RequestMethod.GET))
@@ -99,6 +96,14 @@ class IndexController constructor(
         stackService.prolongExpireDate(stack)
         model.addAttribute("msg", "The stack expire date is successfully prolonged")
         redirectAttrs.addFlashAttribute("msg", "The stack expire date is successfully prolonged")
+        return "redirect:/script/$stackName"
+    }
+
+    @RequestMapping(value = "/stack/{id}/apply", method = arrayOf(RequestMethod.POST))
+    fun applyStack(model: Model, @PathVariable(value = "id") stackName: String,
+                   redirectAttrs: RedirectAttributes): String {
+        stackService.reapplyStack(stackName)
+        redirectAttrs.addFlashAttribute("msg", "try to reapply stack...")
         return "redirect:/script/$stackName"
     }
 }

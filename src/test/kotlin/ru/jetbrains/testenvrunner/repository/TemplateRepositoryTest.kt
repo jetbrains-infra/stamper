@@ -28,7 +28,8 @@ class TemplateRepositoryTest : ScriptTest() {
         scripts.forEach { addFakeTemplate(it.name) }
 
         val actualScripts = templateRepository.getAll()
-        assertTrue("The getAll function return incorrect list of scripts", scripts.containsAll(actualScripts) && actualScripts.containsAll(scripts))
+        assertTrue("The getAll function return incorrect list of scriptFolder",
+                scripts.containsAll(actualScripts) && actualScripts.containsAll(scripts))
     }
 
     @Test

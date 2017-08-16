@@ -14,8 +14,8 @@ abstract class ScriptRepository constructor(val scriptFolder: String) {
     val MSG_DIR_DOES_NOT_EXIST = "The script %s does not exist in the system"
 
     /**
-     * Get all scripts in folder
-     * @return available scripts
+     * Get all scriptFolder in folder
+     * @return available scriptFolder
      */
     fun getAll(): List<TerraformScript> {
         val directories = File(scriptFolder).listFiles(FileFilter { it.isDirectory })

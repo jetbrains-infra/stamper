@@ -9,7 +9,7 @@ import java.io.File
 import java.io.IOException
 
 @Repository
-class StackFilesRepository constructor(@Value("\${stacks}") stackFolder: String) : ScriptRepository(stackFolder) {
+class StackDirectoryRepository constructor(@Value("\${stacks}") stackFolder: String) : ScriptRepository(stackFolder) {
     /**
      * Create stack that will be run
      * @param name - name of stack (it must be unique)

@@ -94,6 +94,12 @@ task buildImage(type: DockerBuildImage, dependsOn: build) {
             from file('src/main/docker/Dockerfile')
             into file('build/docker/')
         }
+        copy {
+            from file('data/scripts/apply.sh')
+            from file('data/scripts/destroy.sh')
+            from file('data/scripts/show.sh')
+            into 'build/scripts/'
+        }
     }
 }
 

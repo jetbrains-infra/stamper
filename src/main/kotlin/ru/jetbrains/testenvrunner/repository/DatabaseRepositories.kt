@@ -12,6 +12,8 @@ interface UserRepository : MongoRepository<User, String> {
 
 interface StackRepository : MongoRepository<Stack, String> {
     fun findByName(firstName: String): Stack?
+
+    fun findByOperationsContains(operationId: String): Stack?
 }
 
 interface OperationRepository : MongoRepository<ExecuteOperation, String> {

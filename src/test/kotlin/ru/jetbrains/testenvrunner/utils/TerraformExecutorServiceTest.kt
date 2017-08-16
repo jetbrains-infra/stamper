@@ -10,6 +10,7 @@ import ru.jetbrains.testenvrunner.model.TerraformScript
 import ru.jetbrains.testenvrunner.repository.ScriptTest
 import ru.jetbrains.testenvrunner.service.OperationService
 import ru.jetbrains.testenvrunner.service.TerraformExecutorService
+import ru.jetbrains.testenvrunner.service.TerraformResultHandler
 import java.io.File
 import javax.inject.Inject
 
@@ -23,6 +24,8 @@ class TerraformExecutorServiceTest : ScriptTest() {
     @Inject
     lateinit var operationService: OperationService
 
+    @Inject
+    lateinit var terraformResulthandler: TerraformResultHandler
 
     @Value("\${script.helloworld}")
     lateinit var helloWorldScript: String
@@ -31,7 +34,7 @@ class TerraformExecutorServiceTest : ScriptTest() {
     fun executeAndDestroyTerraformScriptSuccess() {
         val script = TerraformScript(File(helloWorldScript), emptyTerraformScriptParams())
         //check run
-        val applyId = terraformExecutorService.applyTerraformScript(script)
+        val applyId = terraformExecutorService.applyTerraformScript(script, terraformResulthandler)
         waitFor(applyId)
         val runResult = operationService.get(applyId).executeResult
         assertEquals("The terraform script run fail. Exit code: ${runResult.exitCode}", 0, runResult.exitCode)
@@ -40,7 +43,7 @@ class TerraformExecutorServiceTest : ScriptTest() {
 
         assertEquals("The link is not the same", "http://google.ru", terraformExecutorService.getRunLink(script))
         //check stop
-        val destroyId = terraformExecutorService.destroyTerraformScript(script)
+        val destroyId = terraformExecutorService.destroyTerraformScript(script, terraformResulthandler)
         waitFor(destroyId)
         val destroyResult = operationService.get(applyId).executeResult
         assertEquals("The terraform script destroy fail. Exit code: ${destroyResult.exitCode}", 0,

@@ -33,7 +33,7 @@ fun main(args: Array<String>) {
 
     val sslContext = SSLContext.getInstance("SSL")
     sslContext.init(null, trustAllCerts, java.security.SecureRandom())
-    HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory())
+    HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.socketFactory)
     SpringApplication.run(TestEnvRunnerApplication::class.java, *args)
 }
 
