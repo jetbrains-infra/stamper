@@ -98,7 +98,7 @@ task buildImage(type: DockerBuildImage, dependsOn: build) {
             from file('data/scripts/apply.sh')
             from file('data/scripts/destroy.sh')
             from file('data/scripts/show.sh')
-            into 'build/scripts/'
+            into 'build/docker/scripts/'
         }
     }
 }
