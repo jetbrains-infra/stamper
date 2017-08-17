@@ -19,7 +19,7 @@ class TestEnvRunnerApplication : WebSecurityConfigurerAdapter() {
         http
                 .antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("/", "/login**", "/webjars/**")
+                .antMatchers("/", "/login**", "/webjars/**","/health")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
