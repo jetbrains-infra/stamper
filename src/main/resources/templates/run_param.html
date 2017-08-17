@@ -50,6 +50,8 @@
                             <input th:if="${parameter.getAvailableValues().isEmpty()}" class="form-control"
                                    th:value="${parameter.defaultValue}"
                                    th:name="${parameter.name}"/>
+                            <span id="tags-error-span" th:if="${!parameter.msg.isEmpty()}" th:text="${parameter.msg}"
+                                  class="error text-danger">Error</span>
                         </div>
                     </div>
 

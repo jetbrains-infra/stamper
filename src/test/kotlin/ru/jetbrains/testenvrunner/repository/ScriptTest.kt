@@ -3,6 +3,7 @@ package ru.jetbrains.testenvrunner.repository
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Value
@@ -27,8 +28,14 @@ class ScriptTest : Assert() {
     @Value("\${temp}")
     lateinit var templFolder: String
 
-
     val MSG_DIR_IS_NOT_DELETED = ("The script %s does not exist in the system")
+
+    @Before
+    fun init() {
+        File(templFolder).mkdirs()
+        File(templateFolder).mkdirs()
+        File(stacksFolder).mkdirs()
+    }
 
     protected fun emptyTerraformScriptParams() = TerraformScriptParams()
 

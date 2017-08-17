@@ -15,14 +15,8 @@ data class TerraformScriptParam(val name: String,
                                 val defaultValue: String = "",
                                 val description: String = "") {
 
-    val dockerHub: String get() {
-        val SIGN_OF_DOCKER_HUB = "tags:"
-        val lowerDescription = description.toLowerCase()
-        if (!lowerDescription.contains(SIGN_OF_DOCKER_HUB)) return ""
-        return lowerDescription.substringAfter(SIGN_OF_DOCKER_HUB)
-    }
-
     var availableValues: List<String> = emptyList()
+    var msg: String = ""
 }
 
 class TerraformScriptParams : ArrayList<TerraformScriptParam>()

@@ -1,13 +1,13 @@
 {
   "variable": {
     "version": {
-      "description": "docker-hub:nginx"
+      "description": "docker-registry:docker-registry.labs.intellij.net/base/alpine-jdk-tomcat"
     },
     "external_port": {
       "default": "8080"
     },
     "container_name": {
-      "default": "nginx"
+      "default": "tomcat"
     }
   }
 }

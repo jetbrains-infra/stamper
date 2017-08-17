@@ -1,7 +1,7 @@
 {
   "variable": {
     "version": {
-      "description": "tags:ubuntu"
+      "description": "docker-hub:ubuntu"
     }
   }
 }
