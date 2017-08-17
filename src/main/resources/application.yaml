@@ -2,9 +2,13 @@ stacks: ./data/stacks
 templates: ./data/templates
 terraform_commands: ./data/scripts
 
+terraform_image: jetbrainsinfra/terraform
+
 expire_day: 5
 notify_day: 4
 web_address: 127.0.0.1:8080
+
+
 
 security:
   oauth2:

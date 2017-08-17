@@ -1,7 +1,7 @@
 {
   "variable": {
     "version": {
-      "description": "tags:mysql/mysql-server"
+      "description": "docker-hub:mysql/mysql-server"
     },
     "external_port": {
       "default": "3306"

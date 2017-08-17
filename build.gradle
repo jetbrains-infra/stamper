@@ -117,6 +117,7 @@ task buildImageEnv(type: DockerBuildImage) {
     }
 }
 
+
 task pushImageApp(type: DockerPushImage, dependsOn: buildImageApp) {
     imageName = 'nashikhmin/stamper'
     version = 0.1

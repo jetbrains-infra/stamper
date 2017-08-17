@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import ru.jetbrains.testenvrunner.model.ExecuteResult
 import ru.jetbrains.testenvrunner.model.TerraformScript
+import ru.jetbrains.testenvrunner.service.OperationService.Companion.operationService
 import ru.jetbrains.testenvrunner.utils.executeCommandAsync
 import ru.jetbrains.testenvrunner.utils.executeCommandSync
 import java.io.File
@@ -15,6 +16,7 @@ import java.io.File
  */
 @Service
 class TerraformExecutorService(val operationService: OperationService,
+                              @Value("\${terraform_image}")  val terraformImage: String,
                                @Value("\${terraform_commands}") scriptFolderRelative: String) {
 
     val scriptFolder: String = File(scriptFolderRelative).canonicalPath
@@ -24,7 +26,7 @@ class TerraformExecutorService(val operationService: OperationService,
      * @param script script that will be run
      */
     fun applyTerraformScript(script: TerraformScript, handler: TerraformResultHandler?): String {
-        val cmd = "sh $scriptFolder/apply.sh ${script.name}"
+        val cmd = "sh $scriptFolder/apply.sh ${script.name} $terraformImage"
         return executeTerraformCommandAsync(cmd, script, title = "terraform apply", handler = handler)
     }
 
@@ -33,8 +35,22 @@ class TerraformExecutorService(val operationService: OperationService,
      * @param script the script that will be stopped
      */
     fun destroyTerraformScript(script: TerraformScript, handler: TerraformResultHandler?): String {
-        val cmd = "sh $scriptFolder/destroy.sh ${script.name}"
+        val cmd = "sh $scriptFolder/destroy.sh ${script.name} $terraformImage"
         return executeTerraformCommandAsync(cmd, script, "terraform destroy", handler = handler)
+    }
+
+    /**
+     * Get status of Terraform script
+     * @param script checked script
+     * @return status result
+     */
+    fun getStatus(script: TerraformScript): ExecuteResult {
+        val result = executeTerraformCommandSync("sh $scriptFolder/show.sh ${script.name} $terraformImage", script)
+        if (result.exception != null) {
+            println(result.exception!!)
+            result.exception!!
+        }
+        return result
     }
 
     /**
@@ -53,19 +69,7 @@ class TerraformExecutorService(val operationService: OperationService,
         return !result.output.isEmpty() && !result.output.contains(msgStateFile) && !result.output.contains(msgEnv)
     }
 
-    /**
-     * Get status of Terraform script
-     * @param script checked script
-     * @return status result
-     */
-    fun getStatus(script: TerraformScript): ExecuteResult {
-        val result = executeTerraformCommandSync("sh $scriptFolder/show.sh ${script.name}", script)
-        if (result.exception != null) {
-            println(result.exception!!)
-            result.exception!!
-        }
-        return result
-    }
+
 
     /**
      * Get link how to run stack

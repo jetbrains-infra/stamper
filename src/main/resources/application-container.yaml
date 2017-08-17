@@ -5,6 +5,7 @@ terraform_commands: ./data/scripts
 expire_day: ${EXPIRE_DAY}
 notify_day: ${NOTIFY_DAY}
 web_address: ${WEB_ADDRESS}
+terraform_image: ${TERRAFORM_IMAGE}
 
 security:
   oauth2:
