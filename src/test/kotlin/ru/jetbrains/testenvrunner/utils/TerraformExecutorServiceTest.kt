@@ -34,19 +34,19 @@ class TerraformExecutorServiceTest : ScriptTest() {
     fun executeAndDestroyTerraformScriptSuccess() {
         val script = TerraformScript(File(helloWorldScript), emptyTerraformScriptParams())
         //check run
-        val applyId = terraformExecutorService.applyTerraformScript(script, terraformResulthandler)
+        val applyId = terraformExecutorService.applyTerraformScript(script, null)
         waitFor(applyId)
         val runResult = operationService.get(applyId).executeResult
-        assertEquals("The terraform script run fail. Exit code: ${runResult.exitCode}", 0, runResult.exitCode)
+        assertEquals("The terraform script run fail. Msg: ${runResult.output}. Exit code: ${runResult.exitCode}", 0, runResult.exitCode)
         //check that script state is run
         assertTrue("The terraform script state fail. Script is stopped", terraformExecutorService.isScriptRun(script))
 
         assertEquals("The link is not the same", "http://google.ru", terraformExecutorService.getRunLink(script))
         //check stop
-        val destroyId = terraformExecutorService.destroyTerraformScript(script, terraformResulthandler)
+        val destroyId = terraformExecutorService.destroyTerraformScript(script, null)
         waitFor(destroyId)
         val destroyResult = operationService.get(applyId).executeResult
-        assertEquals("The terraform script destroy fail. Exit code: ${destroyResult.exitCode}", 0,
+        assertEquals("The terraform script destroy fail. Msg: ${destroyResult.output}. Exit code: ${destroyResult.exitCode}", 0,
                 destroyResult.exitCode)
         //check that script is stopped
         assertFalse("The terraform script state fail. Script is run", terraformExecutorService.isScriptRun(script))

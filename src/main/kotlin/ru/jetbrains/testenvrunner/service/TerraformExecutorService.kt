@@ -23,7 +23,7 @@ class TerraformExecutorService(val operationService: OperationService,
      * Plan and apply terraform script
      * @param script script that will be run
      */
-    fun applyTerraformScript(script: TerraformScript, handler: TerraformResultHandler): String {
+    fun applyTerraformScript(script: TerraformScript, handler: TerraformResultHandler?): String {
         val cmd = "sh $scriptFolder/apply.sh ${script.name}"
         return executeTerraformCommandAsync(cmd, script, title = "terraform apply", handler = handler)
     }
@@ -32,7 +32,7 @@ class TerraformExecutorService(val operationService: OperationService,
      * Destroy the run infrastructure
      * @param script the script that will be stopped
      */
-    fun destroyTerraformScript(script: TerraformScript, handler: TerraformResultHandler): String {
+    fun destroyTerraformScript(script: TerraformScript, handler: TerraformResultHandler?): String {
         val cmd = "sh $scriptFolder/destroy.sh ${script.name}"
         return executeTerraformCommandAsync(cmd, script, "terraform destroy", handler = handler)
     }
