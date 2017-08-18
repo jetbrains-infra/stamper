@@ -1,6 +1,6 @@
 stacks: ./data/stacks
 templates: ./data/templates
-terraform_commands: ./data/scripts
+terraform_commands: ./data/scripts-docker
 
 expire_day: ${EXPIRE_DAY}
 notify_day: ${NOTIFY_DAY}

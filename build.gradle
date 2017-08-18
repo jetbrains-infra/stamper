@@ -96,10 +96,10 @@ task buildImageApp(type: DockerBuildImage, dependsOn: build) {
             into file('build/docker/')
         }
         copy {
-            from file('data/scripts/apply.sh')
-            from file('data/scripts/destroy.sh')
-            from file('data/scripts/show.sh')
-            into 'build/docker/scripts/'
+            from file('data/scripts-docker/apply.sh')
+            from file('data/scripts-docker/destroy.sh')
+            from file('data/scripts-docker/show.sh')
+            into 'build/docker/scripts-docker/'
         }
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import ru.jetbrains.testenvrunner.exception.DeleteBeforeDestroyException
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
-import ru.jetbrains.testenvrunner.service.DockerHubService
+import ru.jetbrains.testenvrunner.service.DockerService
 import ru.jetbrains.testenvrunner.service.StackInfoService
 import ru.jetbrains.testenvrunner.service.StackService
 import ru.jetbrains.testenvrunner.service.UserService
@@ -22,7 +22,7 @@ class IndexController constructor(
         val userService: UserService,
         val stackService: StackService,
         val templateRepository: TemplateRepository,
-        val dockerHubService: DockerHubService,
+        val dockerService: DockerService,
         val stackInfoService: StackInfoService) {
 
     @RequestMapping(method = arrayOf(RequestMethod.GET))
@@ -76,7 +76,7 @@ class IndexController constructor(
             params = arrayOf("action=run", "script-name"))
     fun openScriptRunForm(model: Model, @RequestParam(value = "script-name") templateName: String): String {
         val terraformScript = templateRepository.get(templateName)
-        dockerHubService.fillAvailableDockerTags(terraformScript)
+        dockerService.fillAvailableDockerTags(terraformScript)
         model.addAttribute("script", terraformScript)
         return "run_param"
     }

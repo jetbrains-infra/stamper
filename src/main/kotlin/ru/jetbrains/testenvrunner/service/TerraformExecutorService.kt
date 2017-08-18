@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import ru.jetbrains.testenvrunner.model.ExecuteResult
 import ru.jetbrains.testenvrunner.model.TerraformScript
-import ru.jetbrains.testenvrunner.service.OperationService.Companion.operationService
 import ru.jetbrains.testenvrunner.utils.executeCommandAsync
 import ru.jetbrains.testenvrunner.utils.executeCommandSync
 import java.io.File
@@ -53,30 +52,13 @@ class TerraformExecutorService(val operationService: OperationService,
         return result
     }
 
-    /**
-     * Check the script is run
-     * @param script checked script
-     * @return is run or no
-     */
-    fun isScriptRun(script: TerraformScript): Boolean {
-        val result = executeTerraformCommandSync("terraform state list", script)
-        val msgStateFile = "No state file was found"
-        val msgEnv = "Environment \"${script.name}\" doesn't exist!"
-        if (result.exception != null && !result.output.contains(msgStateFile) && !result.output.contains(msgEnv)) {
-            println(result.exception!!)
-            result.exception!!
-        }
-        return !result.output.isEmpty() && !result.output.contains(msgStateFile) && !result.output.contains(msgEnv)
-    }
-
-
 
     /**
      * Get link how to run stack
      * This link should be formed in terraform output
      */
     fun getRunLink(script: TerraformScript): String {
-        val result = executeTerraformCommandSync("terraform output -no-color -json", script)
+        val result = executeTerraformCommandSync("sh $scriptFolder/output.sh ${script.name} $terraformImage", script)
         if (result.output.contains("The state file either has no outputs defined")) return ""
         if (result.exception != null) {
             println(result.exception!!)

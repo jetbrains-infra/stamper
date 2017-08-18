@@ -9,7 +9,7 @@ import ru.jetbrains.testenvrunner.model.TerraformScript
 import ru.jetbrains.testenvrunner.model.TerraformScriptParam
 
 @Service
-class DockerHubService {
+class DockerService {
     private val DOCKER_HUB_PREFIX: String = "docker-hub:"
     private val DOCKER_REGISTRY_PREFIX: String = "docker-registry:"
 
