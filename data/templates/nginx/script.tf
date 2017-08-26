@@ -5,7 +5,7 @@ resource "docker_image" "nginx" {
 }
 
 resource "docker_container" "nginx" {
-  name = "${var.container_name}"
+  name = "${var.name}"
   image = "${docker_image.nginx.latest}"
 
   ports {

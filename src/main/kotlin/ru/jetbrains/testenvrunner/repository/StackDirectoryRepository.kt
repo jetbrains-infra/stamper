@@ -5,7 +5,6 @@ import com.beust.klaxon.Parser
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
 import ru.jetbrains.testenvrunner.model.TerraformScript
-import ru.jetbrains.testenvrunner.model.TerraformScriptParams
 import java.io.File
 import java.io.IOException
 
@@ -15,6 +14,9 @@ class StackDirectoryRepository constructor(@Value("\${stacks}") stackFolder: Str
     override fun get(name: String): TerraformScript {
         val script = super.get(name)
         val fileParams = File("$scriptFolder/$name/terraform.tfvars.json")
+        if (!fileParams.exists())
+            return script
+
         val json: JsonObject = Parser().parse(fileParams.absolutePath) as JsonObject
         json.forEach { (k, v) ->
             run {
@@ -23,6 +25,7 @@ class StackDirectoryRepository constructor(@Value("\${stacks}") stackFolder: Str
                     param.value = v.toString()
             }
         }
+
         return script
     }
 
@@ -37,7 +40,7 @@ class StackDirectoryRepository constructor(@Value("\${stacks}") stackFolder: Str
         if (!dir.mkdir()) throw IOException("The directory already exists")
         template.scriptDir.listFiles().forEach { it.copyRecursively(File("${dir.absolutePath}/${it.name}")) }
         setParamValue(name, paramValues)
-        return TerraformScript(dir, TerraformScriptParams())
+        return get(name)
     }
 
     /**

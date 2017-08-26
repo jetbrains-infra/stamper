@@ -37,11 +37,12 @@ class TemplateRepositoryTest : ScriptTest() {
         val scriptName = "addparam"
         val scriptFake = TerraformScript(File("$templateFolder/$scriptName"), emptyTerraformScriptParams())
 
-        val variables = mapOf("version" to mapOf("default" to "latest"))
+        val variables = mapOf("version" to mapOf("default" to "latest"), "name" to mapOf("default" to "name"))
         addFakeTemplate(scriptFake.name, variables)
         val script = templateRepository.get(scriptName)
 
         val expectedParams = emptyTerraformScriptParams()
+        expectedParams.add(TerraformScriptParam("name", defaultValue = "name"))
         expectedParams.add(TerraformScriptParam("version", defaultValue = "latest"))
         assertEquals("Parameters are not the same", expectedParams, script.params)
     }

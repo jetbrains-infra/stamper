@@ -6,7 +6,7 @@
     "external_port": {
       "default": "3306"
     },
-    "container_name": {
+    "name": {
       "default": "mysql"
     }
   }

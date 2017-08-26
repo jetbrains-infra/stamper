@@ -6,7 +6,7 @@
     "external_port": {
       "default": "8080"
     },
-    "container_name": {
+    "name": {
       "default": "nginx"
     }
   }

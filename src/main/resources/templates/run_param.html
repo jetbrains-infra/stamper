@@ -27,32 +27,37 @@
             <form method="POST" id="run_form" class="form-horizontal" th:action="@{/result_terraform}">
                 <!--/*@thymesVar id="script" type="ru.jetbrains.testenvrunner.model.TerraformScript"*/-->
                 <th:block th:with="params=${script.params}">
-                    <div class="form-group">
-                        <label th:for="stack_name" class="col-xs-3 control-label">Stack name</label>
-                        <div class="col-xs-5">
-                            <input name="stack_name" id="stack_name" th:value="${script.name}" class="form-control"/>
-                            <span id="stack_name_error_span" style="display: none" class="help-block">The stack with this name already exists</span>
-                        </div>
-                    </div>
-
                     <div th:each="parameter : ${params}" class="form-group">
-                        <label th:text="${parameter.name}" th:for="${parameter.name}" class="col-xs-3 control-label">
-                            Parameter name
-                        </label>
-                        <div class="col-xs-5">
-                            <select th:if="${!parameter.getAvailableValues().isEmpty()}"
-                                    class="selectpicker form-control" th:name="${parameter.name}"
-                                    data-live-search="true">
-                                <option th:each="value : ${parameter.getAvailableValues()}" th:value="${value}"
-                                        th:text="${value}"></option>
-                            </select>
+                        <th:block th:if="${parameter.name.equals('name')}">
+                            <label th:for="stack_name" class="col-xs-3 control-label">Stack name</label>
+                            <div class="col-xs-5">
+                                <input name="name" id="name" th:value="${script.name}"
+                                       class="form-control"/>
+                                <span id="stack_name_error_span" style="display: none" class="help-block">The stack with this name already exists</span>
+                            </div>
+                        </th:block>
 
-                            <input th:if="${parameter.getAvailableValues().isEmpty()}" class="form-control"
-                                   th:value="${parameter.defaultValue}"
-                                   th:name="${parameter.name}"/>
-                            <span id="tags-error-span" th:if="${!parameter.msg.isEmpty()}" th:text="${parameter.msg}"
-                                  class="error text-danger">Error</span>
-                        </div>
+                        <th:block th:if="${!parameter.name.equals('name')}">
+                            <label th:text="${parameter.name}" th:for="${parameter.name}"
+                                   class="col-xs-3 control-label">
+                                Parameter name
+                            </label>
+                            <div class="col-xs-5">
+                                <select th:if="${!parameter.getAvailableValues().isEmpty()}"
+                                        class="selectpicker form-control" th:name="${parameter.name}"
+                                        data-live-search="true">
+                                    <option th:each="value : ${parameter.getAvailableValues()}" th:value="${value}"
+                                            th:text="${value}"></option>
+                                </select>
+
+                                <input th:if="${parameter.getAvailableValues().isEmpty()}" class="form-control"
+                                       th:value="${parameter.defaultValue}"
+                                       th:name="${parameter.name}"/>
+                                <span id="tags-error-span" th:if="${!parameter.msg.isEmpty()}"
+                                      th:text="${parameter.msg}"
+                                      class="error text-danger">Error</span>
+                            </div>
+                        </th:block>
                     </div>
 
                     <div class="form-group">

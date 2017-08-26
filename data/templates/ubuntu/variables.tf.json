@@ -2,6 +2,9 @@
   "variable": {
     "version": {
       "description": "docker-hub:ubuntu"
+    },
+    "name": {
+      "default": "ubuntu"
     }
   }
 }

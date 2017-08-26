@@ -8,7 +8,7 @@ resource "docker_image" "mysql" {
 
 resource "docker_container" "mysql" {
   image = "${docker_image.mysql.latest}"
-  name = "${var.container_name}"
+  name = "${var.name}"
   hostname = "mysql"
   must_run = true
   ports {

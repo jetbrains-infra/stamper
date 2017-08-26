@@ -54,6 +54,16 @@ abstract class ScriptRepository constructor(val scriptFolder: String) {
             val param = createTerraformParam(k, paramMap)
             terraformScriptParams.add(param)
         }
-        return terraformScriptParams
+        return paramsWithNameOnTheFirstPlace(terraformScriptParams)
+    }
+
+    private fun paramsWithNameOnTheFirstPlace(params: TerraformScriptParams): TerraformScriptParams {
+        val nameParam = params.firstOrNull { it.name == "name" } ?: throw Exception(
+                "The params does not contains name field")
+        val removeResult = params.remove(nameParam)
+        if (!removeResult)
+            throw Exception("The name param cannot be deleted from params")
+        params.add(0, nameParam)
+        return params
     }
 }

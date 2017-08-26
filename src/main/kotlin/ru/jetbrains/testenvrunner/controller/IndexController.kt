@@ -37,9 +37,9 @@ class IndexController constructor(
     @RequestMapping(value = "/result_terraform", method = arrayOf(RequestMethod.POST), params = arrayOf("action=run"))
     fun runStack(model: Model, req: HttpServletRequest, auth: OAuth2Authentication): String {
         val templateName = req.getParameter("script_name")
-        val stackName = req.getParameter("stack_name")
+        val stackName = req.getParameter("name")
 
-        val excludeParams = setOf("action", "script_name", "stack_name")
+        val excludeParams = setOf("action", "script_name")
         val parameterMap = req.parameterMap.filter {
             !excludeParams.contains(it.key)
         }.map { it.key to it.value[0] }.toMap()

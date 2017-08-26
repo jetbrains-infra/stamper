@@ -5,7 +5,7 @@ resource "docker_image" "tomcat" {
 }
 
 resource "docker_container" "tomcat" {
-  name = "${var.container_name}"
+  name = "${var.name}"
   image = "${docker_image.tomcat.latest}"
 
   ports {
