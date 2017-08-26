@@ -11,7 +11,7 @@ fun createTerraformParam(name: String, param: Map<String, Any?>): TerraformScrip
 }
 
 data class TerraformScriptParam(val name: String,
-                                val value: String = "",
+                                var value: String = "",
                                 val defaultValue: String = "",
                                 val description: String = "") {
 

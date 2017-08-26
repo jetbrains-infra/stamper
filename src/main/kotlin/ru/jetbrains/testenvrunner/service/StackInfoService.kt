@@ -41,7 +41,9 @@ class StackInfoService constructor(val operationService: OperationService,
 
     fun getParams(stack: Stack): Map<String, Any?> {
         val stackDir = stackDirectoryRepository.get(stack.name)
-        return terraformExecutorService.getOutputValues(stackDir)
+        val inputParams = stackDir.params.map { it.name to it.value }.toMap()
+        val outputParams = terraformExecutorService.getOutputValues(stackDir)
+        return inputParams + outputParams
     }
 
     fun getStackLogs(stack: Stack): List<ExecuteOperation> {
