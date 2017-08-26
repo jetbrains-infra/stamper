@@ -130,8 +130,10 @@ class StackService constructor(
      */
     fun createStack(stackName: String, user: User): Stack {
         val currentDate = dateUtils.getCurrentDate()
-        return Stack(stackName, user, currentDate, dateUtils.addDaysToDate(currentDate, notifyDate),
-                dateUtils.addDaysToDate(currentDate, expireDate), mutableListOf(), StackStatus.IN_PROGRESS)
+        return Stack(name = stackName, user = user, createdDate = currentDate,
+                notificationDate = dateUtils.addDaysToDate(currentDate, notifyDate),
+                expiredDate = dateUtils.addDaysToDate(currentDate, expireDate), operations = mutableListOf(),
+                status = StackStatus.IN_PROGRESS, params = emptyMap())
     }
 
     /**

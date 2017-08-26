@@ -85,7 +85,6 @@ class IndexController constructor(
     fun openStackCard(model: Model, @PathVariable(value = "id") stackName: String): String {
         val stack = stackService.getStack(stackName) ?: throw Exception("Stack is not found!")
         model.addAttribute("stack", stack)
-        model.addAttribute("link", stackInfoService.getStackRunLink(stack))
         return "stack_card"
     }
 

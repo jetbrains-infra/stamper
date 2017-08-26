@@ -18,3 +18,7 @@ resource "docker_container" "nginx" {
 output "link" {
   value = "http://localhost:${var.external_port}"
 }
+
+output "haha" {
+  value = "Hi hi!"
+}

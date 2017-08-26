@@ -17,6 +17,7 @@ data class Stack @PersistenceConstructor constructor(@Id val name: String,
                                                      var notificationDate: Date,
                                                      var expiredDate: Date,
                                                      val operations: MutableList<String>,
-                                                     var status: StackStatus)
+                                                     var status: StackStatus,
+                                                     var params: Map<String, Any?>)
 
 

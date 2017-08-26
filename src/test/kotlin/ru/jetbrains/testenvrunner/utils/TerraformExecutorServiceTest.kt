@@ -41,7 +41,7 @@ class TerraformExecutorServiceTest : ScriptTest() {
         //check that script state is run
         //assertTrue("The terraform script state fail. Script is stopped", terraformExecutorService.isScriptRun(script))
 
-        assertEquals("The link is not the same", "http://google.ru", terraformExecutorService.getRunLink(script))
+        assertEquals("The link is not the same", "http://google.ru", terraformExecutorService.getOutputValues(script))
         //check stop
         val destroyId = terraformExecutorService.destroyTerraformScript(script, null)
         waitFor(destroyId)

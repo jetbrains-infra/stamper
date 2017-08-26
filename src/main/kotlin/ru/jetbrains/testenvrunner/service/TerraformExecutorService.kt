@@ -57,16 +57,16 @@ class TerraformExecutorService(val operationService: OperationService,
      * Get link how to run stack
      * This link should be formed in terraform output
      */
-    fun getRunLink(script: TerraformScript): String {
+    fun getOutputValues(script: TerraformScript): Map<String, String> {
         val result = executeTerraformCommandSync("sh $scriptFolder/output.sh ${script.name} $terraformImage", script)
-        if (result.output.contains("The state file either has no outputs defined")) return ""
+        if (result.output.contains("The state file either has no outputs defined")) return emptyMap()
         if (result.exception != null) {
             println(result.exception!!)
             result.exception!!
-            return ""
+            return emptyMap()
         }
         val json: JsonObject = Parser().parse(StringBuilder(result.output)) as JsonObject
-        return (json["link"] as JsonObject)["value"] as String? ?: ""
+        return json.map { (k, v) -> k to (v as JsonObject)["value"] as String }.toMap()
     }
 
     private fun executeTerraformCommandAsync(cmd: String, script: TerraformScript, title: String = cmd,

@@ -19,6 +19,7 @@ class TerraformResultHandler(val stackRepository: StackRepository,
         when (operation.title) {
             "terraform apply" -> {
                 stack.status = StackStatus.APPLIED
+                stack.params = stackInfoService.getParams(stack)
                 stackRepository.save(stack)
             }
             "terraform destroy" -> {

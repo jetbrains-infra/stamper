@@ -83,14 +83,8 @@
 
         <div class="tab-content ">
             <div class="tab-pane active" id="1">
-                <div>
-                    <p>
-                        <b>Usage link:</b>
-                        <!--/*@thymesVar id="link" type="java.lang.String"*/-->
-                        <a href="/" th:if="${not link.isEmpty()}" th:href="${link}" th:text="${link}">URL:
-                            localhost:8080</a>
-                        <span th:if="${link.isEmpty()}">The link does not exist</span>
-                    </p>
+                <h3>Stack params:</h3>
+                <div id="stack-params">
                 </div>
                 <div id="executing_operation">
                     <h2>Executing operation:</h2>

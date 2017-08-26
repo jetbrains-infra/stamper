@@ -21,6 +21,7 @@ $(document).ready(function () {
 function updateStackCardInfo() {
     updateLogs();
     updateStackStatus();
+    updateStackParams();
 }
 
 const stack_status = $("#stack_status");
@@ -119,6 +120,30 @@ function updateLogs() {
     });
 }
 
+function updateStackParams() {
+    let param_element = $("#stack-params");
+
+    $.ajax({
+        type: "GET",
+        url: "/api/stack/" + stackName,
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
+            param_element.html("");
+            let params = data["params"];
+            if (jQuery.isEmptyObject(params)) {
+                renderParamsUnexist(param_element);
+            }
+            Object.entries(params).forEach(
+                ([key, value]) => renderParam(param_element, key, value)
+            );
+            console.log(`SUCCESS get api/stack/${stackName}`, data);
+        },
+        error: function (e) {
+            console.log(`ERROR get api/stack/${stackName}`, e);
+        }
+    });
+}
 
 function renderLog(log_div, operation) {
     log_div.append(`
@@ -128,6 +153,22 @@ function renderLog(log_div, operation) {
                 <pre>${operation["executeResult"]["output"]}</pre>
             </div>
         </div>
+    `);
+}
+
+function renderParam(param_element, param_name, param_value) {
+    param_element.append(`
+        <p>
+            <strong>${param_name}</strong>: ${param_value}
+        </p>
+    `);
+}
+
+function renderParamsUnexist(param_element) {
+    param_element.append(`
+        <p class="text-muted">
+            <i>There are not parameters for this stack</i>
+        </p>
     `);
 }
 
@@ -153,7 +194,6 @@ class StackDestroyer {
     }
 
     runDestroy() {
-        const context = this;
         let operationId;
         $.ajax({
             type: "DELETE",

@@ -39,14 +39,9 @@ class StackInfoService constructor(val operationService: OperationService,
         return stack.status == StackStatus.IN_PROGRESS
     }
 
-    /**
-     * Get use link for Stack
-     * @param stack, that is run
-     * @return using link
-     */
-    fun getStackRunLink(stack: Stack): String {
-        val terraformScript = stackDirectoryRepository.get(stack.name)
-        return terraformExecutorService.getRunLink(terraformScript)
+    fun getParams(stack: Stack): Map<String, Any?> {
+        val stackDir = stackDirectoryRepository.get(stack.name)
+        return terraformExecutorService.getOutputValues(stackDir)
     }
 
     fun getStackLogs(stack: Stack): List<ExecuteOperation> {
