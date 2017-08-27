@@ -1,6 +1,7 @@
 stacks: ./data/stacks
 templates: ./data/templates
 terraform_commands: ./data/scripts
+stack_volume: not_defined
 
 terraform_image: jetbrainsinfra/terraform
 
