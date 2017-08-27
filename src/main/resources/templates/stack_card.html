@@ -70,8 +70,33 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#" id="force-destroy-btn">Force destroy</a></li>
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#basicModal">
+                                Force destroy
+                            </a>
+                        </li>
                     </ul>
+                </div>
+
+                <div class="modal fade" id="basicModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button class="close" type="button" data-dismiss="modal">x</button>
+                                <h4 class="modal-title" id="myModalLabel">Force delete</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>Do you really want to delete the stack from the system? The real infrastructure may
+                                    not be deleted</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+                                <button class="btn btn-danger" type="button" id="force-destroy-btn"
+                                        data-dismiss="modal">Force delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
