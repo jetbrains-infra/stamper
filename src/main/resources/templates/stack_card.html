@@ -64,8 +64,14 @@
                     </button>
                 </form>
 
-                <div id="destroy-btn" class="btn  btn-danger margin-btn">
-                    Destroy
+                <div class="btn-group" id="destroy-group">
+                    <button type="button" id="destroy-btn" class="btn btn-danger margin-btn">Destroy</button>
+                    <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#" id="force-destroy-btn">Force destroy</a></li>
+                    </ul>
                 </div>
             </div>
         </div>

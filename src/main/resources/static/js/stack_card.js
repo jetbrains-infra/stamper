@@ -30,7 +30,7 @@ const status_info = $("#stack_status_info");
 
 function hide_elements() {
     $("#apply-btn").hide();
-    $("#destroy-btn").hide();
+    $("#destroy-group").hide();
     $("#loader-icon").hide();
     $("#applied-icon").hide();
     $("#destroyed-icon").hide();
@@ -52,14 +52,14 @@ function updateStackStatus() {
             function onApply() {
                 status_info.html(data["output"]);
                 $("#applied-icon").show();
-                $("#destroy-btn").show();
+                $("#destroy-group").show();
             }
 
             function onFail() {
                 status_info.html(data["output"]);
                 $("#failed-icon").show();
                 $("#apply-btn").show();
-                $("#destroy-btn").show();
+                $("#destroy-group").show();
             }
 
             function onDestroyed() {
@@ -175,8 +175,15 @@ function renderParamsUnexist(param_element) {
 
 $("#destroy-btn").click(function () {
     const stackDestroyer = new StackDestroyer();
-    stackDestroyer.run();
+    stackDestroyer.run(false);
 });
+
+
+$("#force-destroy-btn").click(function () {
+    const stackDestroyer = new StackDestroyer();
+    stackDestroyer.run(true);
+});
+
 
 class StackDestroyer {
     static updateViewToDestroyed() {
@@ -186,25 +193,29 @@ class StackDestroyer {
         $("#destroyed-icon").show();
     }
 
-    run() {
+    run(force) {
         hide_elements();
         stack_status.html("IN_PROGRESS");
         $("#loader-icon").show();
-        this.runDestroy();
+        this.runDestroy(force);
     }
 
-    runDestroy() {
+    runDestroy(force) {
         let operationId;
         $.ajax({
             type: "DELETE",
-            url: "/api/stack/" + stackName,
+            url: "/api/stack/" + stackName + "?" + $.param({"force": force}),
             cache: false,
             timeout: 600000,
             success: function (id) {
+                if (force === true) {
+                    StackDestroyer.updateViewToDestroyed();
+                    return;
+                }
                 operationId = id;
                 const operationLog = new OperationLog(id, StackDestroyer.updateViewToDestroyed, updateStackCardInfo);
                 operationLog.run();
-                console.log("SUCCESS get destroy operation id: ", stackName);
+                console.log("SUCCESS get destroy operation id: ", operationId);
             },
             error: function (e) {
                 console.log("ERROR on get destroy operation id: ", e);

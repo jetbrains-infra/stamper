@@ -46,7 +46,12 @@ class RestWebController constructor(
 
     @RequestMapping(value = "/stack/{id}", method = arrayOf(RequestMethod.DELETE))
     @ResponseBody
-    fun destroyStack(@PathVariable(value = "id") stackName: String): String {
+    fun destroyStack(@PathVariable(value = "id") stackName: String, @RequestParam(
+            value = "force") force: Boolean): String {
+        if (force) {
+            stackInfoService.deleteStack(stackName)
+            return "OK"
+        }
         return stackService.destroyStack(stackName)
     }
 }
