@@ -1,6 +1,7 @@
 stacks: ./data/stacks
 templates: ./data/templates
 terraform_commands: ./data/scripts-docker
+stack_volume: ${STACK_VOLUME}
 
 expire_day: ${EXPIRE_DAY}
 notify_day: ${NOTIFY_DAY}
