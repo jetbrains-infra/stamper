@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import java.net.Socket
+import java.security.SecureRandom
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
@@ -29,12 +30,15 @@ class TestEnvRunnerApplication : WebSecurityConfigurerAdapter() {
 }
 
 fun main(args: Array<String>) {
-    val trustAllCerts = disableSalSilicateCheck()
-
-    val sslContext = SSLContext.getInstance("SSL")
-    sslContext.init(null, trustAllCerts, java.security.SecureRandom())
-    HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.socketFactory)
+    disableSSLSertificateCheck()
     SpringApplication.run(TestEnvRunnerApplication::class.java, *args)
+}
+
+private fun disableSSLSertificateCheck() {
+    val trustAllCerts = disableSalSilicateCheck()
+    val sslContext = SSLContext.getInstance("SSL")
+    sslContext.init(null, trustAllCerts, SecureRandom())
+    HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.socketFactory)
 }
 
 private fun disableSalSilicateCheck(): Array<TrustManager> {

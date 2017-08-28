@@ -1,5 +1,6 @@
 package ru.jetbrains.testenvrunner.service
 
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import ru.jetbrains.testenvrunner.exception.NotFoundOperationException
 import ru.jetbrains.testenvrunner.model.ExecuteOperation
@@ -22,6 +23,7 @@ final class OperationService(private val operationRepository: OperationRepositor
     }
 
     private val operations: ConcurrentHashMap<String, ExecuteOperation> = ConcurrentHashMap()
+    private val logger = KotlinLogging.logger {}
 
     fun create(command: String, directory: String = "", keepInSystem: Boolean = true,
                title: String = command): ExecuteOperation {
@@ -48,13 +50,13 @@ final class OperationService(private val operationRepository: OperationRepositor
     fun fail(operation: ExecuteOperation) {
         operation.status = OperationStatus.FAILED
         complete(operation)
-        println("Operation fails during performing $operation")
+        logger.error { "Operation fails during performing $operation" }
     }
 
     fun success(operation: ExecuteOperation) {
         operation.status = OperationStatus.SUCCESS
         complete(operation)
-        println("Operation successfully performed $operation")
+        logger.debug { "Operation successfully performed $operation" }
     }
 
     fun isCompleted(operationId: String): Boolean {

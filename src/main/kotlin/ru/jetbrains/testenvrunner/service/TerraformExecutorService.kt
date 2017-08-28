@@ -2,6 +2,7 @@ package ru.jetbrains.testenvrunner.service
 
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import ru.jetbrains.testenvrunner.model.ExecuteResult
@@ -20,6 +21,7 @@ class TerraformExecutorService(val operationService: OperationService,
                                @Value("\${terraform_commands}") scriptFolderRelative: String,
                                @Value("\${stacks}") stackFolderRelative: String) {
 
+    private val logger = KotlinLogging.logger {}
     val scriptFolder: String = File(scriptFolderRelative).canonicalPath
     val stackFolder: String = File(stackFolderRelative).canonicalPath
 
@@ -48,10 +50,7 @@ class TerraformExecutorService(val operationService: OperationService,
      */
     fun getStatus(script: TerraformScript): ExecuteResult {
         val result = executeTerraformCommandSync("sh $scriptFolder/show.sh ${script.name}", script)
-        if (result.exception != null) {
-            println(result.exception!!)
-            result.exception!!
-        }
+        logExceptions("get status", result)
         return result
     }
 
@@ -62,11 +61,9 @@ class TerraformExecutorService(val operationService: OperationService,
     fun getOutputValues(script: TerraformScript): Map<String, String> {
         val result = executeTerraformCommandSync("sh $scriptFolder/output.sh ${script.name}", script)
         if (result.output.contains("The state file either has no outputs defined")) return emptyMap()
-        if (result.exception != null) {
-            println(result.exception!!)
-            result.exception!!
+        logExceptions("get output", result)
+        if (result.exception != null)
             return emptyMap()
-        }
         val json: JsonObject = Parser().parse(StringBuilder(result.output)) as JsonObject
         return json.map { (k, v) -> k to (v as JsonObject)["value"] as String }.toMap()
     }
@@ -75,6 +72,7 @@ class TerraformExecutorService(val operationService: OperationService,
                                              handler: TerraformResultHandler? = null): String {
         val fullCmd = "$cmd  $terraformImage $stackFolder $stackVolume"
         val operation = operationService.create(fullCmd, script.absolutePath, title = title)
+        logger.debug { "Start async executing operation ${operation.id} with command $fullCmd" }
         executeCommandAsync(operation, additionalHandler = handler)
         return operation.id
     }
@@ -82,6 +80,14 @@ class TerraformExecutorService(val operationService: OperationService,
     private fun executeTerraformCommandSync(cmd: String, script: TerraformScript): ExecuteResult {
         val fullCmd = "$cmd  $terraformImage $stackFolder $stackVolume"
         val operation = operationService.create(fullCmd, script.absolutePath, keepInSystem = false)
+        logger.debug { "Start async executing operation ${operation.id} with command $fullCmd" }
         return executeCommandSync(operation)
     }
+
+    private fun logExceptions(msg: String, result: ExecuteResult) {
+        if (result.exception != null) {
+            logger.error { "Exception during '$msg'\n Exception: ${result.exception}\nOutput: ${result.output}" }
+        }
+    }
+
 }

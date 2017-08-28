@@ -25,7 +25,6 @@ class StackDirectoryRepository constructor(@Value("\${stacks}") stackFolder: Str
                     param.value = v.toString()
             }
         }
-
         return script
     }
 
