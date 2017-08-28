@@ -39,7 +39,7 @@ apply plugin: 'org.springframework.boot'
 
 jar {
     baseName = 'test-env-runner'
-    version = '0.1'
+    version = '0.2'
 }
 
 version = jar.version
@@ -85,7 +85,7 @@ import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 task buildImageApp(type: DockerBuildImage, dependsOn: build) {
     mkdir('build/docker')
     inputDir = file('build/docker')
-    tag = 'nashikhmin/stamper:0.1'
+    tag = 'nashikhmin/stamper:0.2'
     doFirst {
         copy {
             from jar
@@ -120,7 +120,7 @@ task buildImageEnv(type: DockerBuildImage) {
 
 task pushImageApp(type: DockerPushImage, dependsOn: buildImageApp) {
     imageName = 'nashikhmin/stamper'
-    version = 0.1
+    version = 0.2
 }
 
 task pushImageEnv(type: DockerPushImage, dependsOn: buildImageEnv) {
