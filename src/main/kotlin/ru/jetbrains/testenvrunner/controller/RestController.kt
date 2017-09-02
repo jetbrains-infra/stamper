@@ -2,10 +2,8 @@ package ru.jetbrains.testenvrunner.controller
 
 import org.springframework.web.bind.annotation.*
 import ru.jetbrains.testenvrunner.exception.StackNotFoundException
-import ru.jetbrains.testenvrunner.model.ExecuteOperation
-import ru.jetbrains.testenvrunner.model.ExecuteResultParticle
-import ru.jetbrains.testenvrunner.model.Stack
-import ru.jetbrains.testenvrunner.model.StackStatus
+import ru.jetbrains.testenvrunner.model.*
+import ru.jetbrains.testenvrunner.repository.TemplateRepository
 import ru.jetbrains.testenvrunner.service.OperationService
 import ru.jetbrains.testenvrunner.service.StackInfoService
 import ru.jetbrains.testenvrunner.service.StackService
@@ -15,7 +13,8 @@ import ru.jetbrains.testenvrunner.service.StackService
 class RestWebController constructor(
         val stackService: StackService,
         val operationService: OperationService,
-        val stackInfoService: StackInfoService) {
+        val stackInfoService: StackInfoService,
+        val templateRepository: TemplateRepository) {
 
     @RequestMapping(value = "/new-output", method = arrayOf(RequestMethod.GET))
     fun getOperationResult(@RequestParam("id") id: String, @RequestParam("start") start: Int): ExecuteResultParticle {
@@ -53,6 +52,12 @@ class RestWebController constructor(
             return "OK"
         }
         return stackService.destroyStack(stackName)
+    }
+
+    @RequestMapping(value = "/templates", method = arrayOf(RequestMethod.GET))
+    @ResponseBody
+    fun getTemplates(): List<TerraformScript> {
+        return templateRepository.getAll()
     }
 }
 

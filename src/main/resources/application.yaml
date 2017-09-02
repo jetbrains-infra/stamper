@@ -13,15 +13,15 @@ web_address: 127.0.0.1:8080
 security:
   oauth2:
     client:
-      clientId: c7442f0f-d891-4163-a9bd-698016427c11
-      clientSecret: WL8jAmjsRFut
-      accessTokenUri: https://hub-staging.labs.intellij.net/api/rest/oauth2/token
-      userAuthorizationUri: https://hub-staging.labs.intellij.net/api/rest/oauth2/auth
+      clientId: 759913667428-fnjj8ofelfk9asa0lnoadrnqun5l5veo.apps.googleusercontent.com
+      clientSecret: ZwLBr4iqlscXdfD7hFK7_-Dy
+      accessTokenUri: https://www.googleapis.com/oauth2/v4/token
+      userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
       scope:
         - openid
         - email
     resource:
-      userInfoUri: https://hub-staging.labs.intellij.net/api/rest/oauth2/userinfo
+      userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
 spring:
   data:
     mongodb:

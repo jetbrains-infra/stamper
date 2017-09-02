@@ -34,6 +34,11 @@ class IndexController constructor(
         return "index"
     }
 
+    @RequestMapping(value = "/react", method = arrayOf(RequestMethod.GET))
+    fun indexReactGet(): String {
+        return "react"
+    }
+
     @RequestMapping(value = "/result_terraform", method = arrayOf(RequestMethod.POST), params = arrayOf("action=run"))
     fun runStack(model: Model, req: HttpServletRequest, auth: OAuth2Authentication): String {
         val templateName = req.getParameter("script_name")

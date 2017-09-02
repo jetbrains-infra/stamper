@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = '1.1.4-2'
+        kotlinVersion = ' 1.1.4'
         springBootVersion = '1.5.4.RELEASE'
     }
     repositories {
@@ -12,6 +12,7 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+        classpath 'org.springframework:springloaded:1.2.6.RELEASE'
         classpath 'com.bmuschko:gradle-docker-plugin:3.0.12'
         classpath 'io.spring.gradle:propdeps-plugin:0.0.9.RELEASE'
     }
@@ -73,11 +74,21 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile 'org.springframework.boot:spring-boot-starter-mail'
     compile 'com.beust:klaxon:0.30'
+    compile("org.springframework.boot:spring-boot-devtools")
     testCompile group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: '1.1.3-2'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
 
 apply plugin: 'com.bmuschko.docker-remote-api'
+
+
+idea {
+    module {
+        inheritOutputDirs = false
+        outputDir = file("$buildDir/classes/main/")
+    }
+}
+
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
