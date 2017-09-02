@@ -24,7 +24,6 @@ class TerraformScriptParams : ArrayList<TerraformScriptParam>()
 data class TerraformScript(val scriptDir: File, val params: TerraformScriptParams) {
     val absolutePath: String
         get() = scriptDir.canonicalPath
-    val name: String
-        get() = scriptDir.name
+    val name: String = scriptDir.name
 }
 
