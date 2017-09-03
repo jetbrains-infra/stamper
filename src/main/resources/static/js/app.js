@@ -1,9 +1,13 @@
 const Template = React.createClass({
+    runStack: function () {
+        alert('hello!');
+    },
+
     render: function () {
         return (
             <li className="list-group-item">
                 <span>{this.props.template.name}</span>
-                <button name="action" className="btn btn-xs btn-success pull-right" value="run"> Run</button>
+                <button className="btn btn-xs btn-success pull-right" onClick={this.runStack}>Run</button>
             </li>
         );
     }
@@ -25,8 +29,40 @@ const TemplateList = React.createClass({
     }
 });
 
+const StackList = React.createClass({
+    render: function () {
+        const rows = [];
+        this.props.stacks.forEach(function (stack) {
+            rows.push(<Stack stack={stack} key={stack.name}/>);
+        });
+        return (
+            <div>
+                <h2>Running Stacks:</h2>
+                <ul className="list-group">
+                    {rows}
+                </ul>
+            </div>);
+    }
+});
+
+const Stack = React.createClass({
+    destroy: function () {
+        alert('destroy!');
+    },
+
+    render: function () {
+        return (
+            <li className="list-group-item">
+                <span id="icon" className="fa fa-circle-o-notch fa-spin"/>
+                <a href="/script/{this.props.template.name}">{this.props.stack.name}</a>
+                <button className="btn btn-xs btn-danger pull-right" onClick={this.destroy}>Destroy</button>
+            </li>
+        );
+    }
+});
+
 const App = React.createClass({
-    loadTemplatesFormServer: function () {
+    loadTemplatesFromServer: function () {
         const self = this;
         $.ajax({
             type: "GET",
@@ -37,17 +73,31 @@ const App = React.createClass({
         });
     },
 
+    loadStacksFromServer: function () {
+        const self = this;
+        $.ajax({
+            type: "GET",
+            url: "/api/stacks",
+            cache: false
+        }).then(function (data) {
+            self.setState({stacks: data});
+        });
+    },
+
     getInitialState: function () {
-        return {templates: []};
+        return {templates: [], stacks: []};
     },
 
     componentDidMount: function () {
-        this.loadTemplatesFormServer();
+        this.loadTemplatesFromServer();
+        this.loadStacksFromServer();
     },
 
     render() {
         return ( <div className="container">
             <TemplateList templates={this.state.templates}/>
+            <br/>
+            <StackList stacks={this.state.stacks}/>
         </div> );
     }
 });

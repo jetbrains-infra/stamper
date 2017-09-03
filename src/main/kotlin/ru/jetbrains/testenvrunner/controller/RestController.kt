@@ -59,6 +59,12 @@ class RestWebController constructor(
     fun getTemplates(): List<TerraformScript> {
         return templateRepository.getAll()
     }
+
+    @RequestMapping(value = "/stacks", method = arrayOf(RequestMethod.GET))
+    @ResponseBody
+    fun getStacks(): List<Stack> {
+        return stackService.getAllStacks()
+    }
 }
 
 data class OutputStatus(val stackStatus: StackStatus, val output: String? = null,
