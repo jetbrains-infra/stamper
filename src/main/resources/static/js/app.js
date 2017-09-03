@@ -61,6 +61,19 @@ const Stack = React.createClass({
     }
 });
 
+const Menu = React.createClass({
+    render: function () {
+        return (
+            <div className="masthead">
+                <ul className="nav nav-pills pull-right">
+                </ul>
+                <h1><a href="/react" className="muted">Stamper</a></h1>
+            </div>
+        );
+    }
+});
+
+
 const App = React.createClass({
     loadTemplatesFromServer: function () {
         const self = this;
@@ -95,6 +108,7 @@ const App = React.createClass({
 
     render() {
         return ( <div className="container">
+            <Menu/>
             <TemplateList templates={this.state.templates}/>
             <br/>
             <StackList stacks={this.state.stacks}/>
