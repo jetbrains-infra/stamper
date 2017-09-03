@@ -25,7 +25,6 @@ data/stacks/*
 nbproject/private/
 build/
 nbbuild/
-dist/
 nbdist/
 .nb-gradle/
 
@@ -45,3 +44,5 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 # End of https://www.gitignore.io/api/gradle
+/src/main/resources/static/js/bundle.js
+/node_modules/

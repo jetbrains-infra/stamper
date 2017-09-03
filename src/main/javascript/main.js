@@ -1,20 +1,24 @@
-const Template = React.createClass({
-    runStack: function () {
-        alert('hello!');
-    },
+import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
+import {Header} from './header';
 
-    render: function () {
+class Template extends Component {
+    static runStack() {
+        alert('hello!');
+    }
+
+    render() {
         return (
             <li className="list-group-item">
                 <span>{this.props.template.name}</span>
-                <button className="btn btn-xs btn-success pull-right" onClick={this.runStack}>Run</button>
+                <button className="btn btn-xs btn-success pull-right" onClick={Template.runStack}>Run</button>
             </li>
         );
     }
-});
+}
 
-const TemplateList = React.createClass({
-    render: function () {
+class TemplateList extends Component {
+    render() {
         const rows = [];
         this.props.templates.forEach(function (template) {
             rows.push(<Template template={template} key={template.name}/>);
@@ -27,10 +31,10 @@ const TemplateList = React.createClass({
                 </ul>
             </div>);
     }
-});
+}
 
-const StackList = React.createClass({
-    render: function () {
+class StackList extends Component {
+    render() {
         const rows = [];
         this.props.stacks.forEach(function (stack) {
             rows.push(<Stack stack={stack} key={stack.name}/>);
@@ -43,39 +47,31 @@ const StackList = React.createClass({
                 </ul>
             </div>);
     }
-});
+}
 
-const Stack = React.createClass({
-    destroy: function () {
+class Stack extends Component {
+    static destroy() {
         alert('destroy!');
-    },
+    }
 
-    render: function () {
+    render() {
         return (
             <li className="list-group-item">
                 <span id="icon" className="fa fa-circle-o-notch fa-spin"/>
                 <a href="/script/{this.props.template.name}">{this.props.stack.name}</a>
-                <button className="btn btn-xs btn-danger pull-right" onClick={this.destroy}>Destroy</button>
+                <button className="btn btn-xs btn-danger pull-right" onClick={Stack.destroy}>Destroy</button>
             </li>
         );
     }
-});
+}
 
-const Menu = React.createClass({
-    render: function () {
-        return (
-            <div className="masthead">
-                <ul className="nav nav-pills pull-right">
-                </ul>
-                <h1><a href="/react" className="muted">Stamper</a></h1>
-            </div>
-        );
+class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {templates: [], stacks: []};
     }
-});
 
-
-const App = React.createClass({
-    loadTemplatesFromServer: function () {
+    loadTemplatesFromServer() {
         const self = this;
         $.ajax({
             type: "GET",
@@ -84,9 +80,9 @@ const App = React.createClass({
         }).then(function (data) {
             self.setState({templates: data});
         });
-    },
+    }
 
-    loadStacksFromServer: function () {
+    loadStacksFromServer() {
         const self = this;
         $.ajax({
             type: "GET",
@@ -95,26 +91,22 @@ const App = React.createClass({
         }).then(function (data) {
             self.setState({stacks: data});
         });
-    },
+    }
 
-    getInitialState: function () {
-        return {templates: [], stacks: []};
-    },
-
-    componentDidMount: function () {
+    componentDidMount() {
         this.loadTemplatesFromServer();
         this.loadStacksFromServer();
-    },
+    }
 
     render() {
         return ( <div className="container">
-            <Menu/>
+            <Header/>
             <TemplateList templates={this.state.templates}/>
             <br/>
             <StackList stacks={this.state.stacks}/>
         </div> );
     }
-});
+}
 
 
 ReactDOM.render(<App/>, document.getElementById('root'));

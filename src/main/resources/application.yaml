@@ -42,3 +42,6 @@ spring:
           writetimeout: 5000
     username: ${EMAIL_LOGIN}
     password: ${EMAIL_PASSWORD}
+  resources:
+    static-locations: file:src/main/javascript/,classpath:/static/
+    cache-period: 0

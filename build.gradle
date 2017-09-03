@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = ' 1.1.4'
+        kotlinVersion = '1.1.4-3'
         springBootVersion = '1.5.4.RELEASE'
     }
     repositories {
@@ -87,6 +87,18 @@ idea {
         inheritOutputDirs = false
         outputDir = file("$buildDir/classes/main/")
     }
+}
+
+task clientDependenciesDev(type: Exec) {
+    commandLine 'npm', 'install', '--save', 'mocha', 'jsdom', 'react-addons-test-utils', 'chai', 'sinon', 'enzyme'
+}
+
+task clientDependencies(type: Exec, dependsOn: 'clientDependenciesDev') {
+    commandLine 'npm', 'install', '--save', 'react', 'react-dom', 'babelify', 'babel-core', 'babel-preset-react', 'babel-preset-es2015'
+}
+
+task browserify(type: Exec) {
+    commandLine 'browserify', '-t', '[', 'babelify', ']', 'src/main/javascript/main.js', '-o', 'src/main/resources/static/js/bundle.js'
 }
 
 

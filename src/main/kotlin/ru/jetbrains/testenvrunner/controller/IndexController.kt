@@ -35,7 +35,9 @@ class IndexController constructor(
     }
 
     @RequestMapping(value = "/react", method = arrayOf(RequestMethod.GET))
-    fun indexReactGet(): String {
+    fun indexReactGet(model: Model): String {
+        val bundleJavaScript = false
+        model.addAttribute("bundleJavaScript", bundleJavaScript)
         return "react"
     }
 
