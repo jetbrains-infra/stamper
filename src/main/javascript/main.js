@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {Header} from './header';
 
+import {BrowserRouter, Link, Route} from './temp/react-router-dom';
+
 class Template extends Component {
     static runStack() {
         alert('hello!');
@@ -58,12 +60,33 @@ class Stack extends Component {
         return (
             <li className="list-group-item">
                 <span id="icon" className="fa fa-circle-o-notch fa-spin"/>
-                <a href="/script/{this.props.template.name}">{this.props.stack.name}</a>
+                <Link to="/react/temp">{this.props.stack.name}</Link>
                 <button className="btn btn-xs btn-danger pull-right" onClick={Stack.destroy}>Destroy</button>
             </li>
         );
     }
 }
+
+class MainPage extends Component {
+    render() {
+        return (
+            <div>
+                <TemplateList templates={this.props.templates}/>
+                <br/>
+                <StackList stacks={this.props.stacks}/>
+            </div>
+        );
+    }
+}
+
+class Temp extends Component {
+    render() {
+        return (
+            <h1>Hi!</h1>
+        );
+    }
+}
+
 
 class App extends Component {
     constructor(props) {
@@ -101,12 +124,16 @@ class App extends Component {
     render() {
         return ( <div className="container">
             <Header/>
-            <TemplateList templates={this.state.templates}/>
-            <br/>
-            <StackList stacks={this.state.stacks}/>
+            <Route exact path='/react/' render={() => (
+                <MainPage templates={this.state.templates} stacks={this.state.stacks}/>
+            )}/>
+            <Route exact path='/react/temp/' component={Temp}/>
+
         </div> );
     }
 }
 
 
-ReactDOM.render(<App/>, document.getElementById('root'));
+ReactDOM.render(<BrowserRouter>
+    <App/>
+</BrowserRouter>, document.getElementById('root'));
