@@ -1,83 +1,10 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {Header} from './header';
+import {MainPage} from './main-page';
 
-import {BrowserRouter, Link, Route} from './temp/react-router-dom';
+import {BrowserRouter, Route} from './temp/react-router-dom';
 
-class Template extends Component {
-    static runStack() {
-        alert('hello!');
-    }
-
-    render() {
-        return (
-            <li className="list-group-item">
-                <span>{this.props.template.name}</span>
-                <button className="btn btn-xs btn-success pull-right" onClick={Template.runStack}>Run</button>
-            </li>
-        );
-    }
-}
-
-class TemplateList extends Component {
-    render() {
-        const rows = [];
-        this.props.templates.forEach(function (template) {
-            rows.push(<Template template={template} key={template.name}/>);
-        });
-        return (
-            <div>
-                <h2>Available Templates:</h2>
-                <ul className="list-group">
-                    {rows}
-                </ul>
-            </div>);
-    }
-}
-
-class StackList extends Component {
-    render() {
-        const rows = [];
-        this.props.stacks.forEach(function (stack) {
-            rows.push(<Stack stack={stack} key={stack.name}/>);
-        });
-        return (
-            <div>
-                <h2>Running Stacks:</h2>
-                <ul className="list-group">
-                    {rows}
-                </ul>
-            </div>);
-    }
-}
-
-class Stack extends Component {
-    static destroy() {
-        alert('destroy!');
-    }
-
-    render() {
-        return (
-            <li className="list-group-item">
-                <span id="icon" className="fa fa-circle-o-notch fa-spin"/>
-                <Link to="/react/temp">{this.props.stack.name}</Link>
-                <button className="btn btn-xs btn-danger pull-right" onClick={Stack.destroy}>Destroy</button>
-            </li>
-        );
-    }
-}
-
-class MainPage extends Component {
-    render() {
-        return (
-            <div>
-                <TemplateList templates={this.props.templates}/>
-                <br/>
-                <StackList stacks={this.props.stacks}/>
-            </div>
-        );
-    }
-}
 
 class Temp extends Component {
     render() {
@@ -89,44 +16,10 @@ class Temp extends Component {
 
 
 class App extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {templates: [], stacks: []};
-    }
-
-    loadTemplatesFromServer() {
-        const self = this;
-        $.ajax({
-            type: "GET",
-            url: "/api/templates",
-            cache: false
-        }).then(function (data) {
-            self.setState({templates: data});
-        });
-    }
-
-    loadStacksFromServer() {
-        const self = this;
-        $.ajax({
-            type: "GET",
-            url: "/api/stacks",
-            cache: false
-        }).then(function (data) {
-            self.setState({stacks: data});
-        });
-    }
-
-    componentDidMount() {
-        this.loadTemplatesFromServer();
-        this.loadStacksFromServer();
-    }
-
     render() {
         return ( <div className="container">
             <Header/>
-            <Route exact path='/react/' render={() => (
-                <MainPage templates={this.state.templates} stacks={this.state.stacks}/>
-            )}/>
+            <Route exact path='/react/' component={MainPage}/>
             <Route exact path='/react/temp/' component={Temp}/>
 
         </div> );
