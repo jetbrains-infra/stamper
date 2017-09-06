@@ -10,7 +10,8 @@ class Template extends Component {
         return (
             <li className="list-group-item">
                 <span>{this.props.template.name}</span>
-                <button className="btn btn-xs btn-success pull-right" onClick={Template.runStack}>Run</button>
+                <Link to={`/react/template/${this.props.template.name}/run`}
+                      className="btn btn-xs btn-success pull-right">Run</Link>
             </li>
         );
     }

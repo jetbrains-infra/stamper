@@ -2,17 +2,9 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {Header} from './header';
 import {MainPage} from './main-page';
+import {RunForm} from './run-form';
 
 import {BrowserRouter, Route} from './temp/react-router-dom';
-
-
-class Temp extends Component {
-    render() {
-        return (
-            <h1>Hi!</h1>
-        );
-    }
-}
 
 
 class App extends Component {
@@ -20,7 +12,7 @@ class App extends Component {
         return ( <div className="container">
             <Header/>
             <Route exact path='/react/' component={MainPage}/>
-            <Route exact path='/react/temp/' component={Temp}/>
+            <Route path='/react/template/:template_name/run' component={RunForm}/>
 
         </div> );
     }
