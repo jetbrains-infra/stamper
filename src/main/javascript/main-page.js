@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import {Link} from './temp/react-router-dom';
+import React, {Component} from "react";
+import {Link} from "./temp/react-router-dom";
 
 class Template extends Component {
     static runStack() {
-        alert('hello!');
+        alert("hello!");
     }
 
     render() {
@@ -51,7 +51,7 @@ class StackList extends Component {
 
 class Stack extends Component {
     static destroy() {
-        alert('destroy!');
+        alert("destroy!");
     }
 
     render() {
@@ -74,9 +74,7 @@ export class MainPage extends Component {
     loadTemplatesFromServer() {
         const self = this;
         $.ajax({
-            type: "GET",
-            url: "/api/templates",
-            cache: false
+            type: "GET", url: "/api/templates", cache: false
         }).then(function (data) {
             self.setState({templates: data});
         });
@@ -85,9 +83,7 @@ export class MainPage extends Component {
     loadStacksFromServer() {
         const self = this;
         $.ajax({
-            type: "GET",
-            url: "/api/stacks",
-            cache: false
+            type: "GET", url: "/api/stacks", cache: false
         }).then(function (data) {
             self.setState({stacks: data});
         });

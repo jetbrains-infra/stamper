@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*
 import ru.jetbrains.testenvrunner.exception.StackNotFoundException
 import ru.jetbrains.testenvrunner.model.*
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
+import ru.jetbrains.testenvrunner.service.DockerService
 import ru.jetbrains.testenvrunner.service.OperationService
 import ru.jetbrains.testenvrunner.service.StackInfoService
 import ru.jetbrains.testenvrunner.service.StackService
@@ -14,7 +15,8 @@ class RestWebController constructor(
         val stackService: StackService,
         val operationService: OperationService,
         val stackInfoService: StackInfoService,
-        val templateRepository: TemplateRepository) {
+        val templateRepository: TemplateRepository,
+        val dockerService: DockerService) {
 
     @RequestMapping(value = "/new-output", method = arrayOf(RequestMethod.GET))
     fun getOperationResult(@RequestParam("id") id: String, @RequestParam("start") start: Int): ExecuteResultParticle {
@@ -57,7 +59,9 @@ class RestWebController constructor(
     @RequestMapping(value = "/templates/{id}", method = arrayOf(RequestMethod.GET))
     @ResponseBody
     fun getTemplate(@PathVariable(value = "id") name: String): TerraformScript {
-        return templateRepository.get(name)
+        val template = templateRepository.get(name)
+        dockerService.fillAvailableDockerTags(template)
+        return template
     }
 
     @RequestMapping(value = "/templates", method = arrayOf(RequestMethod.GET))

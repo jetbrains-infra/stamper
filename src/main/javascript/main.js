@@ -1,11 +1,10 @@
-import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
-import {Header} from './header';
-import {MainPage} from './main-page';
-import {RunForm} from './run-form';
+import React, {Component} from "react";
+import ReactDOM from "react-dom";
+import {Header} from "./header";
+import {MainPage} from "./main-page";
+import {RunForm} from "./run-form";
 
-import {BrowserRouter, Route} from './temp/react-router-dom';
-
+import {BrowserRouter, Route} from "./temp/react-router-dom";
 
 class App extends Component {
     render() {
@@ -18,7 +17,6 @@ class App extends Component {
     }
 }
 
-
 ReactDOM.render(<BrowserRouter>
     <App/>
-</BrowserRouter>, document.getElementById('root'));
+</BrowserRouter>, document.getElementById("root"));
