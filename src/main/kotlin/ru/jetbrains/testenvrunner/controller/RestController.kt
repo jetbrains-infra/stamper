@@ -54,6 +54,12 @@ class RestWebController constructor(
         return stackService.destroyStack(stackName)
     }
 
+    @RequestMapping(value = "/templates/{id}", method = arrayOf(RequestMethod.GET))
+    @ResponseBody
+    fun getTemplate(@PathVariable(value = "id") name: String): TerraformScript {
+        return templateRepository.get(name)
+    }
+
     @RequestMapping(value = "/templates", method = arrayOf(RequestMethod.GET))
     @ResponseBody
     fun getTemplates(): List<TerraformScript> {
