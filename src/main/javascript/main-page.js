@@ -58,7 +58,7 @@ class Stack extends Component {
         return (
             <li className="list-group-item">
                 <span id="icon" className="fa fa-circle-o-notch fa-spin"/>
-                <Link to="/react/temp">{this.props.stack.name}</Link>
+                <Link to={`/react/stack/${this.props.stack.name}`}>{this.props.stack.name}</Link>
                 <button className="btn btn-xs btn-danger pull-right" onClick={Stack.destroy}>Destroy</button>
             </li>
         );
