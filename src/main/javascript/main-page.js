@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Link} from "./temp/react-router-dom";
+import {Link} from "react-router-dom";
 
 class Template extends Component {
     static runStack() {

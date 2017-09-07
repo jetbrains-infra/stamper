@@ -4,6 +4,8 @@
   "dependencies": {
     "jquery": "^3.2.1",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "react-timestamp": "latest",
+    "react-router-dom": "latest"
   }
 }

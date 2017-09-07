@@ -18,9 +18,12 @@
 <script th:if="${not bundleJavaScript}">
     System.config({
         transpiler: 'babel',
-        babelOptions: {},
+        babelOptions: {}, map: {
+            "react-timestamp": "npm:react-timestamp@4.2.1", "react-router-dom": "npm:react-router-dom@4.2.2"
+        }
     });
     System.import('./main.js');
+    System.set("jQuery", System.newModule({"default": window.jQuery}));
 </script>
 </body>
 </html>

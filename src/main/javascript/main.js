@@ -1,11 +1,11 @@
 import React, {Component} from "react";
 import ReactDOM from "react-dom";
+
+import {BrowserRouter, Route} from "react-router-dom";
 import {Header} from "./header";
 import {MainPage} from "./main-page";
 import {RunForm} from "./run-form";
 import {StackCard} from "./stack-card";
-
-import {BrowserRouter, Route} from "./temp/react-router-dom";
 
 class App extends Component {
     render() {

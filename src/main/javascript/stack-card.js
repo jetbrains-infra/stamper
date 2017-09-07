@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import Timestamp from "react-timestamp";
 
 export class StackCard extends Component {
     constructor(props) {
@@ -22,8 +23,32 @@ export class StackCard extends Component {
     render() {
         return (
             <div>
-                <h1>Hi!</h1>
+                <MainInfo stack={this.state.stack}/>
             </div>
+        );
+    }
+}
+
+class MainInfo extends Component {
+    render() {
+        const stack = this.props.stack;
+        return (
+            <div>
+                <h1>Stack: {stack.name}</h1>
+                <DateInfoParam name="createdDate" value={stack.createdDate}/>
+                <DateInfoParam name="notificationDate" value={stack.notificationDate}/>
+                <DateInfoParam name="expiredDate" value={stack.expiredDate}/>
+            </div>);
+    }
+}
+
+class DateInfoParam extends Component {
+    render() {
+        if (this.props.value === undefined) {
+            return (<div/>);
+        }
+        return (
+            <p><strong>{this.props.name}:</strong> <Timestamp time={this.props.value} format='ago'/></p>
         );
     }
 }
