@@ -32,23 +32,32 @@ export class StackCard extends Component {
 class MainInfo extends Component {
     render() {
         const stack = this.props.stack;
+        if (Object.keys(stack).length === 0) {
+            return (<div/>);
+        }
         return (
             <div>
                 <h1>Stack: {stack.name}</h1>
                 <DateInfoParam name="createdDate" value={stack.createdDate}/>
                 <DateInfoParam name="notificationDate" value={stack.notificationDate}/>
                 <DateInfoParam name="expiredDate" value={stack.expiredDate}/>
+                <UserInfoParam user={stack.user}/>
             </div>);
     }
 }
 
 class DateInfoParam extends Component {
     render() {
-        if (this.props.value === undefined) {
-            return (<div/>);
-        }
         return (
             <p><strong>{this.props.name}:</strong> <Timestamp time={this.props.value} format='ago'/></p>
+        );
+    }
+}
+
+class UserInfoParam extends Component {
+    render() {
+        return (
+            <p><strong>User:</strong> {this.props.user.name} ({this.props.user.email}) </p>
         );
     }
 }
