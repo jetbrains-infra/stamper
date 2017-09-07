@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import Timestamp from "react-timestamp";
+import {StatusIcon} from "./common";
 
 export class StackCard extends Component {
     constructor(props) {
@@ -38,10 +39,11 @@ class MainInfo extends Component {
         return (
             <div>
                 <h1>Stack: {stack.name}</h1>
+                <StatusInfoParam status={stack.status}/>
+                <UserInfoParam user={stack.user}/>
                 <DateInfoParam name="createdDate" value={stack.createdDate}/>
                 <DateInfoParam name="notificationDate" value={stack.notificationDate}/>
                 <DateInfoParam name="expiredDate" value={stack.expiredDate}/>
-                <UserInfoParam user={stack.user}/>
             </div>);
     }
 }
@@ -61,3 +63,14 @@ class UserInfoParam extends Component {
         );
     }
 }
+
+class StatusInfoParam extends Component {
+    render() {
+        return (
+            <p>
+                <strong>Status:</strong> {this.props.status} <StatusIcon status={this.props.status}/>
+            </p>
+        );
+    }
+}
+

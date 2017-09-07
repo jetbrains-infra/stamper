@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {Link} from "react-router-dom";
+import {StatusIcon} from "./common";
 
 class Template extends Component {
     static runStack() {
@@ -57,7 +58,7 @@ class Stack extends Component {
     render() {
         return (
             <li className="list-group-item">
-                <span id="icon" className="fa fa-circle-o-notch fa-spin"/>
+                <StatusIcon status={this.props.stack.status}/> {" "}
                 <Link to={`/react/stack/${this.props.stack.name}`}>{this.props.stack.name}</Link>
                 <button className="btn btn-xs btn-danger pull-right" onClick={Stack.destroy}>Destroy</button>
             </li>
