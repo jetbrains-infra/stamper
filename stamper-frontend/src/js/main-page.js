@@ -1,12 +1,13 @@
 import React, {Component} from "react";
 import {Link} from "react-router-dom";
 import {StatusIcon} from "./common";
+import $ from 'jquery'
+import jQuery from 'jquery'
 
 class Template extends Component {
     static runStack() {
         alert("hello!");
     }
-
     render() {
         return (
             <li className="list-group-item">

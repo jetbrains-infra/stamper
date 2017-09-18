@@ -1,4 +1,6 @@
 import React, {Component} from "react";
+import $ from 'jquery'
+import jQuery from 'jquery'
 
 export class RunForm extends Component {
     constructor() {
