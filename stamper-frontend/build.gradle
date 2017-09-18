@@ -1,0 +1,20 @@
+plugins {
+    id "com.moowork.node" version "1.1.1"
+}
+
+apply plugin: 'java'
+
+buildDir = 'dist'
+
+task runClient(type: Exec) {
+    commandLine 'yarn', 'start'
+}
+
+task compileClient(type: Exec) {
+    commandLine 'yarn', 'build'
+}
+
+clean {
+    delete 'dist'
+    delete 'build'
+}

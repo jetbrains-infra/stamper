@@ -102,6 +102,13 @@ task browserify(type: Exec) {
 }
 
 
+jar {
+    from('../stamer-frontend/dist') {
+        into 'static'
+    }
+}
+
+
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 

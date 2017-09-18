@@ -3,23 +3,12 @@ target/
 
 out/
 data/stacks/*
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
 
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
-
-*.tfplan
-*.tfstate*
-*.tfvars*
 
 ### NetBeans ###
 nbproject/private/
@@ -43,6 +32,10 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 
-# End of https://www.gitignore.io/api/gradle
-/src/main/resources/static/js/bundle.js
-/node_modules/
+#terraform
+*.tfplan
+*.tfstate*
+*.tfvars*
+
+
+

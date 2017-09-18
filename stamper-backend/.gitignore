@@ -1,0 +1,9 @@
+build/
+
+
+*.tfplan
+*.tfstate*
+*.tfvars*
+
+
+
