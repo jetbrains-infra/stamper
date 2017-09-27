@@ -6,7 +6,7 @@ export class Header extends Component {
             <div className="masthead">
                 <ul className="nav nav-pills pull-right">
                 </ul>
-                <h1><a href="/react" className="muted">Stamper</a></h1>
+                <h1><a href="/" className="muted">Stamper</a></h1>
             </div>
         );
     }

@@ -12,7 +12,7 @@ class Template extends Component {
         return (
             <li className="list-group-item">
                 <span>{this.props.template.name}</span>
-                <Link to={`/react/template/${this.props.template.name}/run`}
+                <Link to={`/template/${this.props.template.name}/run`}
                       className="btn btn-xs btn-success pull-right">Run</Link>
             </li>
         );
@@ -60,7 +60,7 @@ class Stack extends Component {
         return (
             <li className="list-group-item">
                 <StatusIcon status={this.props.stack.status}/> {" "}
-                <Link to={`/react/stack/${this.props.stack.name}`}>{this.props.stack.name}</Link>
+                <Link to={`/stack/${this.props.stack.name}`}>{this.props.stack.name}</Link>
                 <button className="btn btn-xs btn-danger pull-right" onClick={Stack.destroy}>Destroy</button>
             </li>
         );
