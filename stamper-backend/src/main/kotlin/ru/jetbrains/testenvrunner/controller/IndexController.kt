@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import ru.jetbrains.testenvrunner.exception.DeleteBeforeDestroyException
+import ru.jetbrains.testenvrunner.model.User
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
 import ru.jetbrains.testenvrunner.service.DockerService
 import ru.jetbrains.testenvrunner.service.StackInfoService
@@ -42,7 +43,7 @@ class IndexController constructor(
     }
 
     @RequestMapping(value = "/result_terraform", method = arrayOf(RequestMethod.POST), params = arrayOf("action=run"))
-    fun runStack(model: Model, req: HttpServletRequest, auth: OAuth2Authentication): String {
+    fun runStack(model: Model, req: HttpServletRequest, auth: OAuth2Authentication?): String {
         val templateName = req.getParameter("script_name")
         val stackName = req.getParameter("name")
 
@@ -51,7 +52,8 @@ class IndexController constructor(
             !excludeParams.contains(it.key)
         }.map { it.key to it.value[0] }.toMap()
 
-        val user = userService.getUserByAuth(auth)
+        //TODO: auth
+        val user = User("Nikita","Nikita", mutableListOf())
 
         stackService.runStack(templateName, stackName, parameterMap, user)
         return "redirect:/script/$stackName"
