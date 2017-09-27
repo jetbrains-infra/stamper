@@ -26,6 +26,7 @@ export class StackCard extends Component {
         return (
             <div>
                 <MainInfo stack={this.state.stack}/>
+                <Tabs/>
             </div>
         );
     }
@@ -75,3 +76,28 @@ class StatusInfoParam extends Component {
     }
 }
 
+class Tabs extends Component {
+    render() {
+        return (<div>
+            <ParamTab/>
+            <br/>
+            <LogTab/>
+        </div>);
+    }
+}
+
+class ParamTab extends Component {
+    render() {
+        return (<div>
+            Hello world!
+        </div>);
+    }
+}
+
+class LogTab extends Component {
+    render() {
+        return (<div>
+            Hello world2!
+        </div>);
+    }
+}
