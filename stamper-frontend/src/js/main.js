@@ -5,7 +5,7 @@ import {BrowserRouter, Route} from "react-router-dom";
 import {Header} from "./header";
 import {MainPage} from "./main-page";
 import {RunForm} from "./run-form";
-import {StackCard} from "./stack-card";
+import {StackCard} from "./stack_card/stack-card";
 
 export default class App extends Component {
     render() {
