@@ -1,13 +1,12 @@
 package ru.jetbrains.testenvrunner.controller
 
+import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.*
 import ru.jetbrains.testenvrunner.exception.StackNotFoundException
 import ru.jetbrains.testenvrunner.model.*
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
-import ru.jetbrains.testenvrunner.service.DockerService
-import ru.jetbrains.testenvrunner.service.OperationService
-import ru.jetbrains.testenvrunner.service.StackInfoService
-import ru.jetbrains.testenvrunner.service.StackService
+import ru.jetbrains.testenvrunner.service.*
+
 
 @RestController
 @RequestMapping("/api/")
@@ -16,7 +15,8 @@ class RestWebController constructor(
         val operationService: OperationService,
         val stackInfoService: StackInfoService,
         val templateRepository: TemplateRepository,
-        val dockerService: DockerService) {
+        val dockerService: DockerService,
+        val userService: UserService) {
 
     @RequestMapping(value = "/new-output", method = arrayOf(RequestMethod.GET))
     fun getOperationResult(@RequestParam("id") id: String, @RequestParam("start") start: Int): ExecuteResultParticle {
@@ -74,6 +74,11 @@ class RestWebController constructor(
     @ResponseBody
     fun getStacks(): List<Stack> {
         return stackService.getAllStacks()
+    }
+
+    @RequestMapping("/user")
+    fun getAuthUser(auth: OAuth2Authentication?): User? {
+        return userService.getUserByAuth(auth)
     }
 }
 

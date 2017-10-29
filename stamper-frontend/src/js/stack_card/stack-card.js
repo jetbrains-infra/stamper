@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import Timestamp from "react-timestamp";
-import {StatusIcon} from "./common";
+import {StatusIcon} from "../common";
 import $ from 'jquery'
 
 export class StackCard extends Component {

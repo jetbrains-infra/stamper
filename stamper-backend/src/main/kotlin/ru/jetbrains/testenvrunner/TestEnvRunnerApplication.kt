@@ -4,31 +4,19 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso
 import org.springframework.scheduling.annotation.EnableScheduling
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import java.net.Socket
 import java.security.SecureRandom
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
 
+
 @EnableScheduling
 @SpringBootApplication
-class TestEnvRunnerApplication : WebSecurityConfigurerAdapter() {
-
-    override fun configure(http: HttpSecurity) {
-        http
-                .antMatcher("/**")
-                .authorizeRequests()
-                .antMatchers("/**", "/login**", "/webjars/**","/health")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and().logout().logoutSuccessUrl("/").permitAll()
-                .and().csrf().disable()
-    }
-
+@EnableOAuth2Sso
+class TestEnvRunnerApplication {
 }
+
 
 fun main(args: Array<String>) {
     disableSSLSertificateCheck()

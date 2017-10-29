@@ -32,7 +32,7 @@ class IndexController constructor(
         model.addAttribute("user", user)
         model.addAttribute("templates", templateRepository.getAll())
         model.addAttribute("stacks", stackService.getAllStacks())
-        return "index"
+        return "redirect:http://localhost:3000/"
     }
 
     @RequestMapping(value = "/react", method = arrayOf(RequestMethod.GET))
@@ -52,8 +52,7 @@ class IndexController constructor(
             !excludeParams.contains(it.key)
         }.map { it.key to it.value[0] }.toMap()
 
-        //TODO: auth
-        val user = User("Nikita","Nikita", mutableListOf())
+        val user = userService.getUserByAuth(auth)
 
         stackService.runStack(templateName, stackName, parameterMap, user)
         return "redirect:/script/$stackName"

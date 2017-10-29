@@ -11,6 +11,8 @@ web_address: 127.0.0.1:8080
 
 
 security:
+  basic:
+    enabled: false
   oauth2:
     client:
       clientId: 759913667428-fnjj8ofelfk9asa0lnoadrnqun5l5veo.apps.googleusercontent.com
