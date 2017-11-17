@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {MainInfo} from "./main_info";
-import {Tabs} from "./tabs";
+import {StackTabs} from "./tabs";
 
 export class StackCard extends Component {
     constructor(props) {
@@ -22,7 +22,7 @@ export class StackCard extends Component {
         return (
             <div>
                 <MainInfo stack={this.state.stack}/>
-                <Tabs/>
+                <StackTabs stack={this.state.stack}/>
             </div>
         );
     }

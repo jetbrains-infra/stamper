@@ -1,21 +1,41 @@
 import React from "react";
-export const Tabs = (props) => (
+import {Tab, TabList, TabPanel, Tabs} from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+
+export const StackTabs = (props) => (
     <div>
-        <ParamTab/>
-        <br/>
-        <LogTab/>
+        <Tabs>
+            <TabList>
+                <Tab>Detailed Info</Tab>
+                <Tab>Logs</Tab>
+            </TabList>
+
+            <TabPanel>
+                <InfoTab params={props.stack.params}/>
+            </TabPanel>
+            <TabPanel>
+                <LogTab stack={props.stack}/>
+            </TabPanel>
+        </Tabs>
     </div>
 );
 
 
 const LogTab = (props) => (
-    <div>
-        Hello world2 cpnst!
-    </div>
+    <div>Hello log</div>
 );
 
-const ParamTab = (props) => (
-    <div>
-        Hello world
-    </div>
-);
+const InfoTab = (props) => {
+    if (props.params === undefined) {
+        props = {};
+        props.params = {};
+    }
+    const render_params = Object.keys(props.params).map(key =>
+        <p>{key}: {props.params[key]}</p>
+    );
+    return (
+        <div>
+            {render_params}
+        </div>
+    );
+};

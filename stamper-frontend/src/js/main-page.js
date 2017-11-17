@@ -22,7 +22,7 @@ class Template extends Component {
 class TemplateList extends Component {
     render() {
         const rows = [];
-        this.props.templates.forEach(function (template) {
+        this.props.templates.forEach(template => {
             rows.push(<Template template={template} key={template.name}/>);
         });
         return (

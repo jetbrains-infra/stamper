@@ -4,15 +4,13 @@ import java.io.File
 
 fun createTerraformParam(name: String, param: Map<String, Any?>): TerraformScriptParam {
     return TerraformScriptParam(name = name,
-            value = param["value"] as String? ?: "",
-            defaultValue = param["default"] as String? ?: "",
+            value = param["default"] as String? ?: "",
             description = param["description"] as String? ?: ""
     )
 }
 
 data class TerraformScriptParam(val name: String,
                                 var value: String = "",
-                                val defaultValue: String = "",
                                 val description: String = "") {
 
     var availableValues: List<String> = emptyList()

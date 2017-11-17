@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import $ from 'jquery'
-import jQuery from 'jquery'
+import {Redirect} from "react-router-dom";
 
 export class RunForm extends Component {
     constructor() {
@@ -10,6 +10,7 @@ export class RunForm extends Component {
 
     loadTemplateFromServer() {
         const self = this;
+
         $.ajax({
             type: "GET", url: `/api/templates/${this.props.match.params.template_name}`, cache: false
         }).then(function (data) {
@@ -21,29 +22,82 @@ export class RunForm extends Component {
         this.loadTemplateFromServer();
     }
 
+
     render() {
         const name = this.props.match.params.template_name;
         return (
             <div>
                 <h1>Run configuration of {name} template</h1>
-                <InputParams params={this.state.template.params}/>
-                <button id="run-script-btn" className="btn btn-primary">Run stack</button>
+                <InputParams params={this.state.template.params} templateName={name}/>
+
             </div>
         );
     }
 }
 
 class InputParams extends Component {
+    constructor(props) {
+        super(props);
+        this.templateName = props.templateName;
+        this.state = {};
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.getParams = this.getParams.bind(this);
+    }
+
+    handleChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+
+        this.setState({
+            [name]: value
+        });
+    }
+
+    getParams() {
+        if (this.props.params.length === 0) {
+            return [];
+        }
+        const a = Object.assign(...this.props.params.map(d => ({[d.name]: d})));
+        const b = Object.values(this.state);
+        for (let key in this.state) {
+            const value = this.state[key];
+            a[key].value = value;
+        }
+        return a;
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        const params = this.getParams();
+        fetch(`/api/template/${this.templateName}`, {method: 'post', credentials: 'same-origin',body: JSON.stringify(params)})
+           .then(result => this.setState({goToStackCard: true}));
+        //this.setState({goToStackCard: true});
+
+    }
+
     render() {
-        const rows = this.props.params.map(param => (<InputParam param={param} key={param.name}/>));
+        const redirect = this.state.goToStackCard;
+
+        if (redirect) {
+            return <Redirect to='/stack/mysql'/>;
+        }
+
+        const rows = Object.values(this.getParams()).map(param => (<InputParam param={param} key={param.name}/>));
         return (
             <div>
                 <h2>Run params:</h2>
-                <form className="form-horizontal">
+                <form className="form-horizontal" method="POST" onChange={this.handleChange}
+                      onSubmit={this.handleSubmit}>
                     {rows}
+                    <button id="run-script-btn" className="btn btn-primary">Run stack
+                    </button>
                 </form>
             </div>);
     }
+
+
 }
 
 class InputParam extends Component {
@@ -56,6 +110,7 @@ class InputParam extends Component {
     }
 
     render() {
+
         const param = this.props.param;
         return (
             <div className="form-group">
@@ -74,7 +129,7 @@ class BasicInput extends Component {
         const param = this.props.param;
         return (
             <input className="form-control"
-                   defaultValue={param.defaultValue}
+                   defaultValue={param.value}
                    name={param.name}/>
         );
     }
@@ -85,7 +140,7 @@ class SelectListInput extends Component {
         const param = this.props.param;
         const options = param.availableValues.map(item => (<option value={item} key={item}>{item}</option>));
         return (
-            <select className="form-control" name={param.name} defaultValue={param.defaultValue}
+            <select className="form-control" name={param.name} defaultValue={param.value}
                     data-live-search="true">
                 {options}
             </select>

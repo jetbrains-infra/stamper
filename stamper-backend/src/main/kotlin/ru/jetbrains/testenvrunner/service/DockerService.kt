@@ -20,6 +20,9 @@ class DockerService {
     fun fillAvailableDockerTags(terraformScript: TerraformScript) {
         terraformScript.params.forEach {
             it.availableValues = getTags(it)
+            if (it.availableValues.isNotEmpty()) {
+                it.value=it.availableValues.first()
+            }
         }
     }
 

@@ -1,11 +1,14 @@
 package ru.jetbrains.testenvrunner.controller
 
 import org.springframework.security.oauth2.provider.OAuth2Authentication
+import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import ru.jetbrains.testenvrunner.exception.StackNotFoundException
 import ru.jetbrains.testenvrunner.model.*
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
 import ru.jetbrains.testenvrunner.service.*
+import javax.servlet.http.HttpServletRequest
+import javax.xml.ws.RequestWrapper
 
 
 @RestController
@@ -79,6 +82,18 @@ class RestWebController constructor(
     @RequestMapping("/user")
     fun getAuthUser(auth: OAuth2Authentication?): User? {
         return userService.getUserByAuth(auth)
+    }
+
+    @RequestMapping(value = "/template/{id}", method = arrayOf(RequestMethod.POST))
+    fun runStack(@PathVariable(value = "id") templateName: String, @RequestBody data: Map<String,String>, auth: OAuth2Authentication?) {
+        val stackName = data.get("name")
+
+        val excludeParams = setOf("action", "script_name")
+        val parameterMap = data
+
+        val user = userService.getUserByAuth(auth)
+
+        //stackService.runStack(templateName, stackName, parameterMap, user)
     }
 }
 
