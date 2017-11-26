@@ -71,7 +71,13 @@ class InputParams extends Component {
     handleSubmit(e) {
         e.preventDefault();
         const params = this.getParams();
-        fetch(`/api/template/${this.templateName}`, {method: 'post', credentials: 'same-origin',body: JSON.stringify(params)})
+        const object = {};
+        Object.keys(params).forEach(key => object[key]= params[key].value);
+        const formData = new FormData();
+        for ( let key in object ) {
+            formData.append(key, object[key]);
+        }
+        fetch(`/api/template/${this.templateName}`, {method: 'post', credentials: 'same-origin',body:  formData})
            .then(result => this.setState({goToStackCard: true}));
         //this.setState({goToStackCard: true});
 

@@ -5,8 +5,10 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import ru.jetbrains.testenvrunner.exception.StackNotFoundException
 import ru.jetbrains.testenvrunner.model.*
+import ru.jetbrains.testenvrunner.model.Stack
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
 import ru.jetbrains.testenvrunner.service.*
+import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.xml.ws.RequestWrapper
 
@@ -85,15 +87,12 @@ class RestWebController constructor(
     }
 
     @RequestMapping(value = "/template/{id}", method = arrayOf(RequestMethod.POST))
-    fun runStack(@PathVariable(value = "id") templateName: String, @RequestBody data: Map<String,String>, auth: OAuth2Authentication?) {
-        val stackName = data.get("name")
-
-        val excludeParams = setOf("action", "script_name")
-        val parameterMap = data
-
+    fun runStack(req:HttpServletRequest, @PathVariable(value = "id") templateName: String , auth: OAuth2Authentication?) {
+        val data = req.parameterMap.map { it.key to it.value.get(0) }.toMap()
+        val stackName = data["name"]?: throw Exception()
         val user = userService.getUserByAuth(auth)
 
-        //stackService.runStack(templateName, stackName, parameterMap, user)
+        stackService.runStack(templateName, stackName, data, user)
     }
 }
 
