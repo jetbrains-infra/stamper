@@ -25,7 +25,11 @@ export class StackCard extends Component {
         fetch(`/api/log/${id}`, {method: 'get', credentials: 'same-origin'})
             .then(result => result.json())
             .then(data => {
-                this.setState({logs: { [id]: data}});
+                this.setState((prevState) => {
+                    const newState = prevState;
+                    newState.logs[id] = data;
+                    return newState;
+                });
             });
     }
 
