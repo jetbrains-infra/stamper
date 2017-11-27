@@ -39,6 +39,7 @@ fun executeCommandAsync(executeOperation: ExecuteOperation,
             resultHandler.add(line)
         }
     })
+    val t = EnvironmentUtils.getProcEnvironment()
     executor.execute(cmdLine, EnvironmentUtils.getProcEnvironment(), resultHandler)
     executeOperation.status = OperationStatus.RUNNING
     return resultHandler

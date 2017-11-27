@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-terraform output -no-color -json
+/opt/terraform/terraform output -no-color -json

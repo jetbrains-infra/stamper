@@ -149,9 +149,9 @@ class StackService constructor(
 
     private fun applyStack(stackDir: TerraformScript,
                            stack: Stack): String {
+        stack.status = StackStatus.IN_PROGRESS
         val id = terraformExecutorService.applyTerraformScript(stackDir, terraformResultHandler)
         stack.operations.add(id)
-        stack.status = StackStatus.IN_PROGRESS
         saveStack(stack)
         return id
     }

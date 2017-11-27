@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
-terraform workspace select $1 -no-color
-terraform show -no-color
+/opt/terraform/terraform workspace select $1 -no-color
+/opt/terraform/terraform show -no-color

@@ -94,6 +94,11 @@ class RestWebController constructor(
 
         stackService.runStack(templateName, stackName, data, user)
     }
+
+
+    @RequestMapping(value = "/log/{id}", method = arrayOf(RequestMethod.GET))
+    @ResponseBody
+    fun getLog(@PathVariable(value = "id") id: String): ExecuteOperation = operationService.get(id)
 }
 
 data class OutputStatus(val stackStatus: StackStatus, val output: String? = null,

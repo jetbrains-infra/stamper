@@ -14,16 +14,30 @@ export const StackTabs = (props) => (
                 <InfoTab params={props.stack.params}/>
             </TabPanel>
             <TabPanel>
-                <LogTab stack={props.stack}/>
+                <LogTab logs={props.logs}/>
             </TabPanel>
         </Tabs>
     </div>
 );
 
 
-const LogTab = (props) => (
-    <div>Hello log</div>
-);
+const LogTab = (props) => {
+    const logs = Object.keys(props.logs).map(key =>
+        <LogElement key={key} log={props.logs[key]}/>
+    );
+    return (<div>
+        {logs}
+    </div>);
+};
+
+const LogElement = (props) => {
+    const log = props.log;
+    return (
+        <div>
+            <h3>{log.title}</h3>
+            <pre>{log["executeResult"]["output"]}</pre>
+        </div>);
+};
 
 const InfoTab = (props) => {
     if (props.params === undefined) {
@@ -31,7 +45,7 @@ const InfoTab = (props) => {
         props.params = {};
     }
     const render_params = Object.keys(props.params).map(key =>
-        <p>{key}: {props.params[key]}</p>
+        <p key={key}>{key}: {props.params[key]}</p>
     );
     return (
         <div>
