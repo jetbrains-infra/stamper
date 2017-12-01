@@ -72,22 +72,20 @@ class InputParams extends Component {
         e.preventDefault();
         const params = this.getParams();
         const object = {};
-        Object.keys(params).forEach(key => object[key]= params[key].value);
+        Object.keys(params).forEach(key => object[key] = params[key].value);
         const formData = new FormData();
-        for ( let key in object ) {
+        for (let key in object) {
             formData.append(key, object[key]);
         }
-        fetch(`/api/template/${this.templateName}`, {method: 'post', credentials: 'same-origin',body:  formData})
-           .then(result => this.setState({goToStackCard: true}));
-        //this.setState({goToStackCard: true});
-
+        fetch(`/api/template/${this.templateName}`, {method: 'post', credentials: 'same-origin', body: formData})
+            .then(result => this.setState({goToStackCard: true, runStack: object.name}));
     }
 
     render() {
         const redirect = this.state.goToStackCard;
 
         if (redirect) {
-            return <Redirect to='/stack/mysql'/>;
+            return <Redirect to={`/stack/${this.state.runStack}`}/>;
         }
 
         const rows = Object.values(this.getParams()).map(param => (<InputParam param={param} key={param.name}/>));

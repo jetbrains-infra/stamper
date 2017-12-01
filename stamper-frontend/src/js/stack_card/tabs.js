@@ -40,9 +40,8 @@ const LogElement = (props) => {
 };
 
 const InfoTab = (props) => {
-    if (props.params === undefined) {
-        props = {};
-        props.params = {};
+    if (props.params === undefined || Object.keys(props.params).length === 0) {
+        return <p>There is not information about stack yet</p>;
     }
     const render_params = Object.keys(props.params).map(key =>
         <p key={key}>{key}: {props.params[key]}</p>

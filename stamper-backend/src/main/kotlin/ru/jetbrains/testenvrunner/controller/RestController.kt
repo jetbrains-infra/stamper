@@ -50,6 +50,7 @@ class RestWebController constructor(
         return stackInfoService.getStackLogs(stack)
     }
 
+    
     @RequestMapping(value = "/stack/{id}", method = arrayOf(RequestMethod.DELETE))
     @ResponseBody
     fun destroyStack(@PathVariable(value = "id") stackName: String, @RequestParam(
