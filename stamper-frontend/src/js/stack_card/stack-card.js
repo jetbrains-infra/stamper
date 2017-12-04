@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import {MenuItem, SplitButton} from "react-bootstrap";
 import {MainInfo} from "./main_info";
 import {StackTabs} from "./tabs";
 
@@ -46,7 +47,7 @@ export class StackCard extends Component {
             .then(() => this.updateStatus(true))
             .catch((error) => {
                 this.stopUpdate();
-                console.log("error");
+                console.log(error);
             });
     }
 
@@ -112,21 +113,11 @@ const StackDestroy = (props) => {
         return <div/>;
     }
     return (
-        <div className="btn-group button-right" id="destroy-group">
-            <button type="button" id="destroy-btn" className="btn btn-danger margin-btn"
-                    onClick={() => props.destroy(false)}>Destroy
-            </button>
-            <button type="button" className="btn btn-danger dropdown-toggle" data-toggle="dropdown">
-                <span className="caret"/>
-            </button>
-            <ul className="dropdown-menu" role="menu">
-                <li>
-                    <button type="button" id="force-destroy-btn" className="btn btn-danger margin-btn"
-                            onClick={() => props.destroy(true)}>Force
-                        destroy
-                    </button>
-                </li>
-            </ul>
+        <div className="btn-group button-right margin-btn">
+            <SplitButton bsStyle='danger' title='Destroy' id='destroy-btn'
+                         onClick={() => props.destroy(false)}>
+                <MenuItem eventKey="1" onClick={() => props.destroy(true)}>Force Destroy</MenuItem>
+            </SplitButton>
         </div>
     );
 };
