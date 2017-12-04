@@ -7,27 +7,30 @@ export class StackCard extends Component {
         super(props);
         this.state = {stack: {}, logs: {}};
         this.applyStack = this.applyStack.bind(this);
+        this.deleteStack = this.deleteStack.bind(this);
     }
 
     loadStackFromServer() {
-        fetch(`/api/stack/${this.props.match.params.stack_name}`, {method: 'get', credentials: 'same-origin'})
+        fetch(`/api/stack/${this.props.match.params.stack_name}`, {method: "get", credentials: "same-origin"})
             .then(result => result.json())
             .then(data => {
                 if (data.status === "APPLIED" || data.status === "FAILED") {
-                    clearInterval(this.updateStackTimer);
+                    this.stopUpdate();
                 }
-
                 this.setState({stack: data});
                 this.updateLogs(data.operations);
+            })
+            .catch(() => {
+                this.stopUpdate();
             });
     }
 
     applyStack() {
-        fetch(`/api/stack/${this.state.stack.name}/apply`, {method: 'post', credentials: 'same-origin'})
+        fetch(`/api/stack/${this.state.stack.name}/apply`, {method: "post", credentials: "same-origin"})
             .then(() => this.updateStatus(true));
     }
 
-    async updateStatus(firstTime) {
+    updateStatus(firstTime) {
         if (firstTime === true) {
             this.updateStackTimer = setInterval(
                 () => this.updateStatus(false), 1000);
@@ -38,10 +41,17 @@ export class StackCard extends Component {
     }
 
     deleteStack(force) {
-        const url = new URL(`/api/stack/${this.state.stack.name}/destroy`),
-            params = {force: force};
-        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-        fetch(url, {method: 'delete', credentials: 'same-origin'});
+        const url = `/api/stack/${this.state.stack.name}?force=${force}`;
+        fetch(url, {method: "delete", credentials: "same-origin"})
+            .then(() => this.updateStatus(true))
+            .catch((error) => {
+                this.stopUpdate();
+                console.log("error");
+            });
+    }
+
+    stopUpdate() {
+        clearInterval(this.updateStackTimer);
     }
 
     updateLogs(operations) {
@@ -49,7 +59,7 @@ export class StackCard extends Component {
     }
 
     updateLog(id) {
-        fetch(`/api/log/${id}`, {method: 'get', credentials: 'same-origin'})
+        fetch(`/api/log/${id}`, {method: "get", credentials: "same-origin"})
             .then(result => result.json())
             .then(data => {
                 this.setState((prevState) => {
@@ -87,19 +97,19 @@ export class StackCard extends Component {
 
 const StackApply = (props) => {
     if (props.stack.status !== "FAILED") {
-        return <div/>
+        return <div/>;
     }
     return (
         <button id="apply-btn" onClick={props.apply} className="btn btn-success  margin-btn">
             Apply
         </button>
-    )
+    );
 };
 
 
 const StackDestroy = (props) => {
     if (props.stack.status !== "APPLIED" && props.stack.status !== "FAILED") {
-        return <div/>
+        return <div/>;
     }
     return (
         <div className="btn-group button-right" id="destroy-group">
@@ -118,5 +128,5 @@ const StackDestroy = (props) => {
                 </li>
             </ul>
         </div>
-    )
+    );
 };

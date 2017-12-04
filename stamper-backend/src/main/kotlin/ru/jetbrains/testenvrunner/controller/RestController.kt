@@ -10,16 +10,14 @@ import ru.jetbrains.testenvrunner.repository.TemplateRepository
 import ru.jetbrains.testenvrunner.service.*
 import javax.servlet.http.HttpServletRequest
 
-
 @RestController
 @RequestMapping("/api/")
-class RestWebController constructor(
-        val stackService: StackService,
-        val operationService: OperationService,
-        val stackInfoService: StackInfoService,
-        val templateRepository: TemplateRepository,
-        val dockerService: DockerService,
-        val userService: UserService) {
+class RestWebController constructor(val stackService: StackService,
+                                    val operationService: OperationService,
+                                    val stackInfoService: StackInfoService,
+                                    val templateRepository: TemplateRepository,
+                                    val dockerService: DockerService,
+                                    val userService: UserService) {
 
     @RequestMapping(value = "/new-output", method = arrayOf(RequestMethod.GET))
     fun getOperationResult(@RequestParam("id") id: String, @RequestParam("start") start: Int): ExecuteResultParticle {
@@ -48,16 +46,13 @@ class RestWebController constructor(
         return stackInfoService.getStackLogs(stack)
     }
 
-
     @RequestMapping(value = "/stack/{id}", method = arrayOf(RequestMethod.DELETE))
     @ResponseBody
-    fun destroyStack(@PathVariable(value = "id") stackName: String, @RequestParam(
-            value = "force") force: Boolean): String {
+    fun destroyStack(@PathVariable(value = "id") stackName: String, @RequestParam(value = "force") force: Boolean) {
         if (force) {
             stackInfoService.deleteStack(stackName)
-            return "OK"
         }
-        return stackService.destroyStack(stackName)
+        stackService.destroyStack(stackName)
     }
 
     @RequestMapping(value = "/templates/{id}", method = arrayOf(RequestMethod.GET))
@@ -86,7 +81,8 @@ class RestWebController constructor(
     }
 
     @RequestMapping(value = "/template/{id}", method = arrayOf(RequestMethod.POST))
-    fun runStack(req: HttpServletRequest, @PathVariable(value = "id") templateName: String, auth: OAuth2Authentication?) {
+    fun runStack(req: HttpServletRequest, @PathVariable(value = "id") templateName: String,
+                 auth: OAuth2Authentication?) {
         val data = req.parameterMap.map { it.key to it.value.get(0) }.toMap()
         val stackName = data["name"] ?: throw Exception()
         val user = userService.getUserByAuth(auth)
@@ -103,5 +99,4 @@ class RestWebController constructor(
     fun getLog(@PathVariable(value = "id") id: String): ExecuteOperation = operationService.get(id)
 }
 
-data class OutputStatus(val stackStatus: StackStatus, val output: String? = null,
-                        val commandId: String?)
+data class OutputStatus(val stackStatus: StackStatus, val output: String? = null, val commandId: String?)
