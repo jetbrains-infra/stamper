@@ -51,6 +51,7 @@ class RestWebController constructor(val stackService: StackService,
     fun destroyStack(@PathVariable(value = "id") stackName: String, @RequestParam(value = "force") force: Boolean) {
         if (force) {
             stackInfoService.markStackDeleted(stackName)
+            return
         }
         stackService.destroyStack(stackName)
     }
