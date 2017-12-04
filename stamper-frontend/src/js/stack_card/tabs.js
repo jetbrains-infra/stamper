@@ -8,11 +8,15 @@ export const StackTabs = (props) => (
         <Tabs>
             <TabList>
                 <Tab>Detailed Info</Tab>
+                <Tab>Stack State Info</Tab>
                 <Tab>Logs</Tab>
             </TabList>
 
             <TabPanel>
                 <InfoTab params={props.stack.params}/>
+            </TabPanel>
+            <TabPanel>
+                <StateInfoTab stateInfo={props.stateInfo}/>
             </TabPanel>
             <TabPanel>
                 <LogTab logs={props.logs}/>
@@ -53,3 +57,13 @@ const InfoTab = (props) => {
         </div>
     );
 };
+
+const StateInfoTab = (props) => {
+    const state = props.stateInfo;
+    return (
+        <pre>
+            {state}
+        </pre>
+    );
+};
+

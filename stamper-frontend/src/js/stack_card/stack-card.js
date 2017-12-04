@@ -6,7 +6,7 @@ import {StackTabs} from "./tabs";
 export class StackCard extends Component {
     constructor(props) {
         super(props);
-        this.state = {stack: {}, logs: {}};
+        this.state = {stack: {}, logs: {}, stateInfo: "There are any info yet"};
         this.applyStack = this.applyStack.bind(this);
         this.deleteStack = this.deleteStack.bind(this);
     }
@@ -20,6 +20,7 @@ export class StackCard extends Component {
                 }
                 this.setState({stack: data});
                 this.updateLogs(data.operations);
+                this.updateStateInfo();
             })
             .catch(() => {
                 this.stopUpdate();
@@ -71,6 +72,19 @@ export class StackCard extends Component {
             });
     }
 
+    updateStateInfo() {
+        const stack = this.state.stack;
+        fetch(`/api/stack/${stack.name}/status`, {method: "get", credentials: "same-origin"})
+            .then(result => result.json())
+            .then(data => {
+                this.setState((prevState) => {
+                    const newState = prevState;
+                    newState.stateInfo = data.stateInfo;
+                    return newState;
+                });
+            });
+    }
+
     componentDidMount() {
         this.updateStatus(true);
     }
@@ -90,7 +104,7 @@ export class StackCard extends Component {
                     </div>
                 </div>
 
-                <StackTabs stack={this.state.stack} logs={this.state.logs}/>
+                <StackTabs stack={this.state.stack} logs={this.state.logs} stateInfo={this.state.stateInfo}/>
             </div>
         );
     }

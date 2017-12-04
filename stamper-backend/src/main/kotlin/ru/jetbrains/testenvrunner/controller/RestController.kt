@@ -33,10 +33,9 @@ class RestWebController constructor(val stackService: StackService,
 
     @RequestMapping(value = "/stack/{id}/status", method = arrayOf(RequestMethod.GET))
     @ResponseBody
-    fun getStackStatus(@PathVariable(value = "id") stackName: String): OutputStatus {
+    fun getStackStatus(@PathVariable(value = "id") stackName: String): Map<String, String> {
         val stack = stackService.getStack(stackName) ?: throw StackNotFoundException()
-        return OutputStatus(stack.status, stackInfoService.getTerraformStatus(stack),
-                stackInfoService.getLastCommandId(stack))
+        return mapOf("stateInfo" to stackInfoService.getTerraformStatus(stack))
     }
 
     @RequestMapping(value = "/stack/{id}/logs", method = arrayOf(RequestMethod.GET))
