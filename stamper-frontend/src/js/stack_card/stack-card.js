@@ -6,19 +6,35 @@ export class StackCard extends Component {
     constructor(props) {
         super(props);
         this.state = {stack: {}, logs: {}};
+        this.applyStack = this.applyStack.bind(this);
     }
 
     loadStackFromServer() {
         fetch(`/api/stack/${this.props.match.params.stack_name}`, {method: 'get', credentials: 'same-origin'})
             .then(result => result.json())
             .then(data => {
+                if (data.status === "APPLIED" || data.status === "FAILED") {
+                    clearInterval(this.updateStackTimer);
+                }
+
                 this.setState({stack: data});
                 this.updateLogs(data.operations);
             });
     }
 
     applyStack() {
-        fetch(`/api/stack/${this.state.stack.name}/apply`, {method: 'post', credentials: 'same-origin'});
+        fetch(`/api/stack/${this.state.stack.name}/apply`, {method: 'post', credentials: 'same-origin'})
+            .then(() => this.updateStatus(true));
+    }
+
+    async updateStatus(firstTime) {
+        if (firstTime === true) {
+            this.updateStackTimer = setInterval(
+                () => this.updateStatus(false), 1000);
+        }
+        this.loadStackFromServer();
+
+
     }
 
     deleteStack(force) {
@@ -45,7 +61,7 @@ export class StackCard extends Component {
     }
 
     componentDidMount() {
-        this.loadStackFromServer();
+        this.updateStatus(true);
     }
 
     render() {
@@ -56,7 +72,7 @@ export class StackCard extends Component {
                         <MainInfo stack={this.state.stack}/>
                     </div>
                     <div className="col-md-4">
-                        <div  className="row button-group flex pull-right">
+                        <div className="row button-group flex pull-right">
                             <StackApply stack={this.state.stack} apply={this.applyStack}/>
                             <StackDestroy stack={this.state.stack} destroy={this.deleteStack}/>
                         </div>
@@ -82,7 +98,7 @@ const StackApply = (props) => {
 
 
 const StackDestroy = (props) => {
-    if (props.stack.status !== "RUN" && props.stack.status !== "FAILED") {
+    if (props.stack.status !== "APPLIED" && props.stack.status !== "FAILED") {
         return <div/>
     }
     return (

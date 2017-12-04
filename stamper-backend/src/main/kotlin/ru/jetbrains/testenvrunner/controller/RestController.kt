@@ -3,14 +3,12 @@ package ru.jetbrains.testenvrunner.controller
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import ru.jetbrains.testenvrunner.exception.StackNotFoundException
 import ru.jetbrains.testenvrunner.model.*
-import ru.jetbrains.testenvrunner.model.Stack
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
 import ru.jetbrains.testenvrunner.service.*
-import java.util.*
 import javax.servlet.http.HttpServletRequest
-import javax.xml.ws.RequestWrapper
 
 
 @RestController
@@ -50,7 +48,7 @@ class RestWebController constructor(
         return stackInfoService.getStackLogs(stack)
     }
 
-    
+
     @RequestMapping(value = "/stack/{id}", method = arrayOf(RequestMethod.DELETE))
     @ResponseBody
     fun destroyStack(@PathVariable(value = "id") stackName: String, @RequestParam(
@@ -88,14 +86,17 @@ class RestWebController constructor(
     }
 
     @RequestMapping(value = "/template/{id}", method = arrayOf(RequestMethod.POST))
-    fun runStack(req:HttpServletRequest, @PathVariable(value = "id") templateName: String , auth: OAuth2Authentication?) {
+    fun runStack(req: HttpServletRequest, @PathVariable(value = "id") templateName: String, auth: OAuth2Authentication?) {
         val data = req.parameterMap.map { it.key to it.value.get(0) }.toMap()
-        val stackName = data["name"]?: throw Exception()
+        val stackName = data["name"] ?: throw Exception()
         val user = userService.getUserByAuth(auth)
 
         stackService.runStack(templateName, stackName, data, user)
     }
 
+    @RequestMapping(value = "/stack/{id}/apply", method = arrayOf(RequestMethod.POST))
+    fun applyStack(model: Model, @PathVariable(value = "id") stackName: String,
+                   redirectAttrs: RedirectAttributes) = stackService.reapplyStack(stackName)
 
     @RequestMapping(value = "/log/{id}", method = arrayOf(RequestMethod.GET))
     @ResponseBody
