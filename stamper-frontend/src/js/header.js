@@ -1,11 +1,12 @@
 import React, {Component} from "react";
+import {Link} from "react-router-dom";
 
 export class Header extends Component {
     render() {
         return (
             <div className="masthead">
                 <UserForm/>
-                <h1><a href="/" className="muted">Stamper</a></h1>
+                <h1><Link to={"/"}>Stamper</Link></h1>
 
             </div>
         );
@@ -30,7 +31,7 @@ class UserForm extends Component {
     logout() {
         console.log("logout");
         fetch('/logout', {method: 'post', credentials: 'same-origin'})
-            .then(res => this.setState({name: null}));
+            .then(() => this.setState({name: null}));
     }
 
     render() {
@@ -57,7 +58,7 @@ const LogoutComponent = (props) => (
     </li>
 );
 
-const LoginForm = (props) => (
+const LoginForm = () => (
     <li>
         <form action="http://localhost:8080/login" method="get">
             <input className="btn btn-sm btn-success " type="submit" value="Login"/>
