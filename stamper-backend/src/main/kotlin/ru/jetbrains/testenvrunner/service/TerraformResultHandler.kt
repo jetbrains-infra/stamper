@@ -26,7 +26,7 @@ class TerraformResultHandler(val stackRepository: StackRepository,
                 logger.debug { "Operation 'terraform apply' with id ${operation.id} is successful completed." }
             }
             "terraform destroy" -> {
-                stackInfoService.deleteStack(stack.name)
+                stackInfoService.markStackDeleted(stack.name)
                 logger.debug { "Operation 'terraform destroy' with id ${operation.id} is successful completed." }
             }
         }

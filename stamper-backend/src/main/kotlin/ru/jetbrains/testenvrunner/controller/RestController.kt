@@ -50,7 +50,7 @@ class RestWebController constructor(val stackService: StackService,
     @ResponseBody
     fun destroyStack(@PathVariable(value = "id") stackName: String, @RequestParam(value = "force") force: Boolean) {
         if (force) {
-            stackInfoService.deleteStack(stackName)
+            stackInfoService.markStackDeleted(stackName)
         }
         stackService.destroyStack(stackName)
     }
@@ -72,7 +72,7 @@ class RestWebController constructor(val stackService: StackService,
     @RequestMapping(value = "/stacks", method = arrayOf(RequestMethod.GET))
     @ResponseBody
     fun getStacks(): List<Stack> {
-        return stackService.getAllStacks()
+        return stackService.getAllExistStacks()
     }
 
     @RequestMapping("/user")

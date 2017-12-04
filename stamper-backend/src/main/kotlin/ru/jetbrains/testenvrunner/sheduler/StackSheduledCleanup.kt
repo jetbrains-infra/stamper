@@ -6,10 +6,11 @@ import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import ru.jetbrains.testenvrunner.model.Stack
+import ru.jetbrains.testenvrunner.service.StackInfoService
 import ru.jetbrains.testenvrunner.service.StackService
 
 @Component
-class ScheduledCleanup constructor(val stackService: StackService,
+class ScheduledCleanup constructor(val stackInfoService: StackInfoService, val stackService: StackService,
                                    val sender: JavaMailSender,
                                    @Value("\${web_address}") val webAddress: String) {
 

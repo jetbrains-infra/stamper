@@ -2,7 +2,6 @@ package ru.jetbrains.testenvrunner.service
 
 import org.apache.commons.exec.ExecuteException
 import org.springframework.stereotype.Service
-import ru.jetbrains.testenvrunner.exception.DeleteBeforeDestroyException
 import ru.jetbrains.testenvrunner.model.ExecuteOperation
 import ru.jetbrains.testenvrunner.model.Stack
 import ru.jetbrains.testenvrunner.model.StackStatus
@@ -58,12 +57,22 @@ class StackInfoService constructor(val operationService: OperationService,
     }
 
     /**
-     * Delete the stack
+     * Delete the stack from database
      * @param stackName name of stack that should be deleted
-     * @throws [DeleteBeforeDestroyException] if the user tries to delete the not destroyed stack
      */
-    fun deleteStack(stackName: String) {
+    fun markStackDeleted(stackName: String) {
         val stack = stackRepository.findByName(stackName) ?: throw Exception("The stack is not found in Database")
+        stack.status = StackStatus.DESTROYED
+        stackRepository.save(stack)
+    }
+
+
+
+    /**
+     * Delete the stack from database
+     * @param stack stack that should be deleted
+     */
+    fun deleteStack(stack: Stack) {
         val user = userRepository.findByEmail(stack.user.email) ?: throw Exception("The user is not found in Database")
         stackDirectoryRepository.remove(stack.name)
         user.listOfStacks.remove(stack.name)

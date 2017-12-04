@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
-import ru.jetbrains.testenvrunner.exception.DeleteBeforeDestroyException
-import ru.jetbrains.testenvrunner.model.User
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
 import ru.jetbrains.testenvrunner.service.DockerService
 import ru.jetbrains.testenvrunner.service.StackInfoService
@@ -31,7 +29,7 @@ class IndexController constructor(
         val user = userService.getUserByAuth(auth)
         model.addAttribute("user", user)
         model.addAttribute("templates", templateRepository.getAll())
-        model.addAttribute("stacks", stackService.getAllStacks())
+        model.addAttribute("stacks", stackService.getAllExistStacks())
         return "redirect:http://localhost:3000/"
     }
 
@@ -58,26 +56,6 @@ class IndexController constructor(
         return "redirect:/script/$stackName"
     }
 
-    @RequestMapping(value = "/result_terraform", method = arrayOf(RequestMethod.POST),
-            params = arrayOf("action=destroy", "script-name"))
-    fun destroyStack(model: Model, req: HttpServletRequest): String {
-        val stackName = req.getParameter("script-name")
-        stackService.destroyStack(stackName)
-        return "redirect:/#"
-    }
-
-    @RequestMapping(value = "/delete_stack", method = arrayOf(RequestMethod.POST))
-    fun deleteStack(model: Model, @RequestParam(value = "stack_name") stackName: String,
-                    redirectAttrs: RedirectAttributes): String {
-        try {
-            stackInfoService.deleteStack(stackName)
-            redirectAttrs.addFlashAttribute("msg", "The stack is successfully deleted")
-        } catch (e: DeleteBeforeDestroyException) {
-            redirectAttrs.addFlashAttribute("msg_error",
-                    "The stack '${e.stack.name}' cannot be deleted. Destroy the stack  and try to delete the stack again.")
-        }
-        return "redirect:/#"
-    }
 
 
     @RequestMapping(value = "/run_param", method = arrayOf(RequestMethod.POST),

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
 import ru.jetbrains.testenvrunner.model.TerraformScript
 import java.io.File
-import java.io.IOException
 
 @Repository
 class StackDirectoryRepository constructor(@Value("\${stacks}") stackFolder: String) : ScriptRepository(stackFolder) {
@@ -36,7 +35,8 @@ class StackDirectoryRepository constructor(@Value("\${stacks}") stackFolder: Str
      */
     fun create(name: String, template: TerraformScript, paramValues: Map<String, Any>): TerraformScript {
         val dir = File("$scriptFolder/$name")
-        if (!dir.mkdir()) throw IOException("The directory already exists")
+        dir.delete()
+        dir.mkdir()
         template.scriptDir.listFiles().forEach { it.copyRecursively(File("${dir.absolutePath}/${it.name}")) }
         setParamValue(name, paramValues)
         return get(name)

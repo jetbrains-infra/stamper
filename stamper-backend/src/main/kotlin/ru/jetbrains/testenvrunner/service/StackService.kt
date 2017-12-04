@@ -31,7 +31,16 @@ class StackService constructor(
     /**
      * @return all run Stack in the system
      */
-    fun getAllStacks(): List<Stack> = stackRepository.findAll()
+    fun getAllExistStacks(): List<Stack> {
+        return stackRepository.findAll().filter { it.status != StackStatus.DESTROYED }
+    }
+
+    /**
+     * @return all destroyed Stacks in the system
+     */
+    fun getAllDestroyedStacks(): List<Stack> {
+        return stackRepository.findAll().filter { it.status == StackStatus.DESTROYED }
+    }
 
     /**
      * Get stack by name,
@@ -75,7 +84,7 @@ class StackService constructor(
      * @param stackName name of stack that should be destroyed
      * @return operation ID
      */
-    fun destroyStack(stackName: String): String {
+    fun destroyStack(stackName: String) {
         val stack = stackRepository.findByName(stackName) ?: throw Exception("The stack is not found in the Database")
         val script = stackDirectoryRepository.get(stackName)
 
@@ -85,22 +94,20 @@ class StackService constructor(
         val id = terraformExecutorService.destroyTerraformScript(script, terraformResultHandler)
         stack.operations.add(id)
         stackRepository.save(stack)
-
-        return id
     }
 
     /**
      * Get stacks that are expired
      */
     fun getExpiredStacks(): List<Stack> {
-        return getAllStacks().filter { dateUtils.getCurrentDate().after(it.expiredDate) }
+        return getAllExistStacks().filter { dateUtils.getCurrentDate().after(it.expiredDate) }
     }
 
     /**
      * Get stacks which users should be notified about stacks that will be expired
      */
     fun getNotifyStacks(): List<Stack> {
-        return getAllStacks().filter { dateUtils.getCurrentDate().after(it.notificationDate) }
+        return getAllExistStacks().filter { dateUtils.getCurrentDate().after(it.notificationDate) }
     }
 
     /**
