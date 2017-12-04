@@ -1,6 +1,7 @@
 import React from "react";
-import {Tab, TabList, TabPanel, Tabs} from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
+import {Panel} from "react-bootstrap";
+import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
+import "react-tabs/style/react-tabs.css";
 
 export const StackTabs = (props) => (
     <div>
@@ -25,18 +26,18 @@ const LogTab = (props) => {
     const logs = Object.keys(props.logs).map(key =>
         <LogElement key={key} log={props.logs[key]}/>
     );
+
     return (<div>
-        {logs}
+        {logs.reverse()}
     </div>);
 };
 
 const LogElement = (props) => {
     const log = props.log;
     return (
-        <div>
-            <h3>{log.title}</h3>
+        <Panel collapsible header={log.title}>
             <pre>{log["executeResult"]["output"]}</pre>
-        </div>);
+        </Panel>);
 };
 
 const InfoTab = (props) => {

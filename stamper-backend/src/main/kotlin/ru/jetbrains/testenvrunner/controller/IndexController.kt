@@ -56,8 +56,6 @@ class IndexController constructor(
         return "redirect:/script/$stackName"
     }
 
-
-
     @RequestMapping(value = "/run_param", method = arrayOf(RequestMethod.POST),
             params = arrayOf("action=run", "script-name"))
     fun openScriptRunForm(model: Model, @RequestParam(value = "script-name") templateName: String): String {
