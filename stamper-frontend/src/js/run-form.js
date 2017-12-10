@@ -1,5 +1,6 @@
+import $ from "jquery";
 import React, {Component} from "react";
-import $ from 'jquery'
+import {Alert} from "react-bootstrap";
 import {Redirect} from "react-router-dom";
 
 export class RunForm extends Component {
@@ -39,7 +40,7 @@ class InputParams extends Component {
     constructor(props) {
         super(props);
         this.templateName = props.templateName;
-        this.state = {};
+        this.state = {params: {}};
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.getParams = this.getParams.bind(this);
@@ -50,8 +51,10 @@ class InputParams extends Component {
         const value = target.value;
         const name = target.name;
 
-        this.setState({
-            [name]: value
+        this.setState((prevState) => {
+            const newState = prevState;
+            newState.params[name] = value;
+            return newState;
         });
     }
 
@@ -60,16 +63,15 @@ class InputParams extends Component {
             return [];
         }
         const a = Object.assign(...this.props.params.map(d => ({[d.name]: d})));
-        const b = Object.values(this.state);
-        for (let key in this.state) {
-            const value = this.state[key];
-            a[key].value = value;
+        for (let key in this.state.params) {
+            a[key].value = this.state.params[key];
         }
         return a;
     }
 
     handleSubmit(e) {
         e.preventDefault();
+        this.setState({msgError: null});
         const params = this.getParams();
         const object = {};
         Object.keys(params).forEach(key => object[key] = params[key].value);
@@ -77,8 +79,14 @@ class InputParams extends Component {
         for (let key in object) {
             formData.append(key, object[key]);
         }
-        fetch(`/api/template/${this.templateName}`, {method: 'post', credentials: 'same-origin', body: formData})
-            .then(result => this.setState({goToStackCard: true, runStack: object.name}));
+        fetch(`/api/template/${this.templateName}`, {method: "post", credentials: "same-origin", body: formData})
+            .then((response) => {
+                if (response.status === 403) {
+                    response.json().then((data) => this.setState({msgError: data["msg"]}));
+                } else {
+                    this.setState({goToStackCard: true, runStack: object.name});
+                }
+            });
     }
 
     render() {
@@ -87,10 +95,16 @@ class InputParams extends Component {
         if (redirect) {
             return <Redirect to={`/stack/${this.state.runStack}`}/>;
         }
-
+        let alert = <div/>;
+        if (this.state.msgError) {
+            alert = <Alert bsStyle="danger">
+                <strong>Error!</strong> {this.state.msgError}
+            </Alert>;
+        }
         const rows = Object.values(this.getParams()).map(param => (<InputParam param={param} key={param.name}/>));
         return (
             <div>
+                {alert}
                 <h2>Run params:</h2>
                 <form className="form-horizontal" method="POST" onChange={this.handleChange}
                       onSubmit={this.handleSubmit}>
