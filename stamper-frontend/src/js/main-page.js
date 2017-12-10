@@ -1,13 +1,12 @@
 import React, {Component} from "react";
 import {Link} from "react-router-dom";
 import {StatusIcon} from "./common";
-import $ from 'jquery'
-import jQuery from 'jquery'
 
 class Template extends Component {
     static runStack() {
         alert("hello!");
     }
+
     render() {
         return (
             <li className="list-group-item">
@@ -74,26 +73,23 @@ export class MainPage extends Component {
     }
 
     loadTemplatesFromServer() {
-        const self = this;
-        $.ajax({
-            type: "GET", url: "/api/templates", cache: false
-        }).then(function (data) {
-            self.setState({templates: data});
-        });
+        fetch("/api/templates", {method: "get", credentials: "same-origin"})
+            .then(result => result.json())
+            .then(data => this.setState({templates: data}));
     }
 
     loadStacksFromServer() {
-        const self = this;
-        $.ajax({
-            type: "GET", url: "/api/stacks", cache: false
-        }).then(function (data) {
-            self.setState({stacks: data});
-        });
+        fetch("/api/stacks", {method: "get", credentials: "same-origin"})
+            .then(result => result.json())
+            .then(data => this.setState({stacks: data}));
     }
 
     componentDidMount() {
         this.loadTemplatesFromServer();
         this.loadStacksFromServer();
+        setInterval(() => {
+            this.loadStacksFromServer();
+        }, 2000);
     }
 
     render() {
