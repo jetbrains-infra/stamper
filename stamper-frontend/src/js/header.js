@@ -7,12 +7,10 @@ export class Header extends Component {
             <div className="masthead">
                 <UserForm/>
                 <h1><Link to={"/"}>Stamper</Link></h1>
-
             </div>
         );
     }
 }
-
 
 class UserForm extends Component {
     constructor(...args) {
@@ -21,16 +19,23 @@ class UserForm extends Component {
     }
 
     componentDidMount() {
-        fetch('/api/user', {credentials: 'same-origin'})
+        this.updateUser();
+        setInterval(() => this.updateUser(), 5000);
+    }
+
+    updateUser() {
+        fetch("/api/user", {credentials: "same-origin"})
             .then(res => res.json())
             .then(json => {
-                if (json !== null) this.setState({name: json.name})
+                if (json !== null) {
+                    this.setState({name: json.name});
+                }
             });
     }
 
     logout() {
         console.log("logout");
-        fetch('/logout', {method: 'post', credentials: 'same-origin'})
+        fetch("/logout", {method: "post", credentials: "same-origin"})
             .then(() => this.setState({name: null}));
     }
 
@@ -42,18 +47,17 @@ class UserForm extends Component {
             <ul className="nav nav-pills pull-right">
                 {profile}
             </ul>
-        )
+        );
 
     }
 }
-
 
 const LogoutComponent = (props) => (
     <li>
         <form className="form-inline" method="post" action="http://localhost:8080/logout">
             <b>User:</b>
             <span>{props.name}</span>
-            <button className="btn btn-sm btn-success">Logout</button>
+            <button className="btn btn-sm button-right btn-success">Logout</button>
         </form>
     </li>
 );
