@@ -6,6 +6,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
+import ru.jetbrains.testenvrunner.exception.CreateStackWithExistNameException
 import ru.jetbrains.testenvrunner.exception.StackNotFoundException
 import ru.jetbrains.testenvrunner.model.*
 import ru.jetbrains.testenvrunner.repository.TemplateRepository
@@ -90,8 +91,13 @@ class RestWebController constructor(val stackService: StackService,
         val user = userService.getUserByAuth(auth) ?: return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 mapOf("msg" to "You should be authenticated in the system"))
 
-        stackService.runStack(templateName, stackName, data, user)
-        return ResponseEntity.ok(null)
+        return try {
+            stackService.runStack(templateName, stackName, data, user)
+            ResponseEntity.ok(null)
+        } catch (e: CreateStackWithExistNameException) {
+            ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    mapOf("msg" to e.message))
+        }
     }
 
     @RequestMapping(value = ["/stack/{id}/apply"], method = [(RequestMethod.POST)])

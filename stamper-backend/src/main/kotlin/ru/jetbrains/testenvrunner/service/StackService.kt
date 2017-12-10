@@ -2,6 +2,7 @@ package ru.jetbrains.testenvrunner.service
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import ru.jetbrains.testenvrunner.exception.CreateStackWithExistNameException
 import ru.jetbrains.testenvrunner.exception.StackNotFoundException
 import ru.jetbrains.testenvrunner.model.Stack
 import ru.jetbrains.testenvrunner.model.StackStatus
@@ -54,17 +55,31 @@ class StackService constructor(
      * @param stackName name of running stack
      * @param parameterMap running params of stack
      * @param user user that run script
+     * @throws CreateStackWithExistNameException when there is stack with the same name
      * @return result handler
      */
     fun runStack(templateName: String, stackName: String, parameterMap: Map<String, String>,
                  user: User?): String {
         val templateScript = templateRepository.get(templateName)
         if (user == null) {
-            throw Exception("Sorry, you should bw logged before to run stack")
+            throw Exception("User is null")
         }
+        validateStackIsNotExists(stackName)
         val stackDir = stackDirectoryRepository.create(stackName, templateScript, parameterMap)
         val stack = createStack(stackName, user)
         return applyStack(stackDir, stack)
+    }
+
+    /**
+     * Validate that stack with this name is nonexistent or destroyed
+     * @param name - name of the stack
+     * @throws CreateStackWithExistNameException when there is stack with the same name
+     */
+    private fun validateStackIsNotExists(name: String) {
+        val stack = stackRepository.findByName(name)
+        if (stack == null || stack.status == StackStatus.DESTROYED)
+            return
+        throw CreateStackWithExistNameException(name)
     }
 
     fun reapplyStack(stackName: String) {

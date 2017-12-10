@@ -16,3 +16,8 @@ class DeleteBeforeDestroyException(val stack: Stack) : StackException() {
 }
 
 class StackNotFoundException : StackException()
+
+class CreateStackWithExistNameException(private val stackName: String) : StackException() {
+    override val message: String
+        get() = "A stack  \"$stackName\" exists in the system"
+}
