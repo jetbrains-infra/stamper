@@ -53,6 +53,8 @@ export class StackCard extends Component {
     }
 
     stopUpdate() {
+        this.updateStackTimer && clearInterval(this.updateStackTimer);
+        this.updateStackTimer = false;
         clearInterval(this.updateStackTimer);
     }
 
@@ -89,6 +91,9 @@ export class StackCard extends Component {
         this.updateStatus(true);
     }
 
+    componentWillUnmount() {
+        this.stopUpdate();
+    }
     render() {
         return (
             <div>
