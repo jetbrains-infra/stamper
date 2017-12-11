@@ -18,15 +18,27 @@ class UserForm extends Component {
         this.state = {name: null};
     }
 
+
+    componentWillUnmount() {
+        this.loadInterval && clearInterval(this.loadInterval);
+        this.loadInterval = false;
+    }
+
+
     componentDidMount() {
-        this.updateUser();
+        this.loadInterval = this.updateUser();
         setInterval(() => this.updateUser(), 5000);
     }
 
     updateUser() {
         fetch("/api/user", {credentials: "same-origin"})
-            .then(res => res.json())
-            .then(json => {
+            .then(res => res.text())
+            .then(text => {
+                if (text === "") {
+                    this.setState({name: ""});
+                    return;
+                }
+                const json = JSON.parse(text);
                 if (json !== null) {
                     this.setState({name: json.name});
                 }

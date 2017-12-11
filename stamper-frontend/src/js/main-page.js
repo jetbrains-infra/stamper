@@ -34,25 +34,33 @@ class TemplateList extends Component {
     }
 }
 
-class StackList extends Component {
-    render() {
-        const rows = [];
-        this.props.stacks.forEach(function (stack) {
-            rows.push(<Stack stack={stack} key={stack.name}/>);
-        });
-        return (
-            <div>
-                <h2>Running Stacks:</h2>
-                <ul className="list-group">
-                    {rows}
-                </ul>
-            </div>);
-    }
-}
+const StackList = (props) => {
+    const rows = [];
+    props.stacks.forEach(stack => {
+        rows.push(<Stack stack={stack} key={stack.name}/>);
+    });
+    return (
+        <div>
+            <h2>Running Stacks:</h2>
+            <ul className="list-group">
+                {rows}
+            </ul>
+        </div>);
+};
 
 class Stack extends Component {
-    static destroy() {
-        alert("destroy!");
+    constructor(props) {
+        super(props);
+        this.destroy = this.destroy.bind(this);
+    }
+
+    destroy() {
+        const url = `/api/stack/${this.props.stack.name}?force=${false}`;
+        fetch(url, {method: "delete", credentials: "same-origin"})
+            .then(() => console.log("Stack destroyed"))
+            .catch((error) => {
+                console.log(error);
+            });
     }
 
     render() {
@@ -60,7 +68,7 @@ class Stack extends Component {
             <li className="list-group-item">
                 <StatusIcon status={this.props.stack.status}/> {" "}
                 <Link to={`/stack/${this.props.stack.name}`}>{this.props.stack.name}</Link>
-                <button className="btn btn-xs btn-danger pull-right" onClick={Stack.destroy}>Destroy</button>
+                <button className="btn btn-xs btn-danger pull-right" onClick={this.destroy}>Destroy</button>
             </li>
         );
     }
@@ -87,9 +95,14 @@ export class MainPage extends Component {
     componentDidMount() {
         this.loadTemplatesFromServer();
         this.loadStacksFromServer();
-        setInterval(() => {
+        this.loadInterval = setInterval(() => {
             this.loadStacksFromServer();
         }, 2000);
+    }
+
+    componentWillUnmount() {
+        this.loadInterval && clearInterval(this.loadInterval);
+        this.loadInterval = false;
     }
 
     render() {
