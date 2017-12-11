@@ -60,7 +60,6 @@ class UserForm extends Component {
                 {profile}
             </ul>
         );
-
     }
 }
 

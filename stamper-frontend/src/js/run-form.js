@@ -110,8 +110,6 @@ class InputParams extends Component {
                 </form>
             </div>);
     }
-
-
 }
 
 class InputParam extends Component {
