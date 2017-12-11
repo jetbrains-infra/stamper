@@ -34,8 +34,6 @@ final class OperationService(private val operationRepository: OperationRepositor
         return executeOperation
     }
 
-    fun removeAll(operations: List<ExecuteOperation>) = operationRepository.delete(operations)
-
     fun get(operationId: String): ExecuteOperation {
         var operation = operations[operationId]
         if (operation == null)
@@ -63,9 +61,6 @@ final class OperationService(private val operationRepository: OperationRepositor
         return !operations.containsKey(operationId)
     }
 
-    fun getAll(): List<ExecuteOperation> {
-        return operationRepository.findAll()
-    }
 
     private fun complete(operation: ExecuteOperation) {
         if (operation.keepInSystem)

@@ -14,9 +14,7 @@ import javax.net.ssl.*
 @EnableScheduling
 @SpringBootApplication
 @EnableOAuth2Sso
-class TestEnvRunnerApplication {
-}
-
+class TestEnvRunnerApplication
 
 fun main(args: Array<String>) {
     disableSSLSertificateCheck()

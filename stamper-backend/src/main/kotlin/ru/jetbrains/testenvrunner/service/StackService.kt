@@ -138,6 +138,7 @@ class StackService constructor(
      * @param stacks that will prolonged
      */
     fun prolongExpireDate(vararg stacks: Stack) {
+        //TODO: Implement it in React
         val curDate = dateUtils.getCurrentDate()
         stacks.forEach { it.expiredDate = dateUtils.addDaysToDate(curDate, expireDate) }
         stacks.forEach { it.notificationDate = dateUtils.addDaysToDate(curDate, notifyDate) }

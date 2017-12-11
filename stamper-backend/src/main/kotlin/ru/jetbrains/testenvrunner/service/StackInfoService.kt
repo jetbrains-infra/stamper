@@ -52,9 +52,6 @@ class StackInfoService constructor(val operationService: OperationService,
         return operations.reversed()
     }
 
-    fun getLastCommandId(stack: Stack): String? {
-        return stack.operations.last()
-    }
 
     /**
      * Delete the stack from database

@@ -13,8 +13,3 @@ task runClient(type: Exec) {
 task compileClient(type: Exec) {
     commandLine 'yarn', 'build'
 }
-
-clean {
-    delete 'dist'
-    delete 'build'
-}

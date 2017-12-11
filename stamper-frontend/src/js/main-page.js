@@ -3,10 +3,6 @@ import {Link} from "react-router-dom";
 import {StatusIcon} from "./common";
 
 class Template extends Component {
-    static runStack() {
-        alert("hello!");
-    }
-
     render() {
         return (
             <li className="list-group-item">

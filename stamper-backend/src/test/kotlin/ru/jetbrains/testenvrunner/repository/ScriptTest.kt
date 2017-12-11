@@ -16,7 +16,7 @@ import java.io.File
 import java.io.IOException
 
 @RunWith(SpringRunner::class)
-@TestPropertySource(locations = arrayOf("classpath:test.properties"))
+@TestPropertySource(locations = ["classpath:test.properties"])
 @SpringBootTest
 class ScriptTest : Assert() {
     @Value("\${stacks}")

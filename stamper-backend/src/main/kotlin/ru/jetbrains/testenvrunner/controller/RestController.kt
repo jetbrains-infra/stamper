@@ -86,7 +86,7 @@ class RestWebController constructor(val stackService: StackService,
     @RequestMapping(value = ["/template/{id}"], method = [(RequestMethod.POST)])
     fun runStack(req: HttpServletRequest, @PathVariable(value = "id") templateName: String,
                  auth: OAuth2Authentication?): ResponseEntity<Map<String, String>>? {
-        val data = req.parameterMap.map { it.key to it.value.get(0) }.toMap()
+        val data = req.parameterMap.map { it.key to it.value[0] }.toMap()
         val stackName = data["name"] ?: throw Exception()
         val user = userService.getUserByAuth(auth) ?: return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 mapOf("msg" to "You should be authenticated in the system"))

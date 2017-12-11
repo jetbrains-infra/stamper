@@ -1,23 +1,19 @@
-import $ from "jquery";
 import React, {Component} from "react";
 import {Alert} from "react-bootstrap";
 import {Redirect} from "react-router-dom";
 
 export class RunForm extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {template: {params: []}};
     }
 
     loadTemplateFromServer() {
-        const self = this;
-
-        $.ajax({
-            type: "GET", url: `/api/templates/${this.props.match.params.template_name}`, cache: false
-        }).then(function (data) {
-            self.setState({template: data});
-        });
+        fetch(`/api/templates/${this.props.match.params.template_name}`,
+            {method: "get", credentials: "same-origin"}).then(result => result.json())
+            .then(data => this.setState({template: data}));
     }
+
 
     componentDidMount() {
         this.loadTemplateFromServer();
@@ -132,7 +128,7 @@ class InputParam extends Component {
         const param = this.props.param;
         return (
             <div className="form-group">
-                <label htmlFor={param.name} className="col-xs-2 control-label">
+                <label className="col-xs-2 control-label">
                     {param.name}
                 </label>
                 <div className="col-xs-3">
