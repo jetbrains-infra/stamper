@@ -42,8 +42,8 @@ class TemplateRepositoryTest : ScriptTest() {
         val script = templateRepository.get(scriptName)
 
         val expectedParams = emptyTerraformScriptParams()
-        expectedParams.add(TerraformScriptParam("name", defaultValue = "name"))
-        expectedParams.add(TerraformScriptParam("version", defaultValue = "latest"))
+        expectedParams.add(TerraformScriptParam("name"))
+        expectedParams.add(TerraformScriptParam("version"))
         assertEquals("Parameters are not the same", expectedParams, script.params)
     }
 
