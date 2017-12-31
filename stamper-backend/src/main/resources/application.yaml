@@ -7,7 +7,9 @@ terraform_image: jetbrainsinfra/terraform
 
 expire_day: 5
 notify_day: 4
-web_address: 127.0.0.1:8080
+
+frontend_address: http://127.0.0.1:3000
+backend_address: http://127.0.0.1:8080
 
 
 security:

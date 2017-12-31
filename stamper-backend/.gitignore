@@ -5,6 +5,3 @@ build/
 *.tfstate*
 *.tfvars*
 
-
-
-/src/test/kotlin/ru/jetbrains/testenvrunner/selenium/run_vcn.sh

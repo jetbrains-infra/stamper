@@ -20,7 +20,8 @@ class RestWebController constructor(val stackService: StackService,
                                     val stackInfoService: StackInfoService,
                                     val templateRepository: TemplateRepository,
                                     val dockerService: DockerService,
-                                    val userService: UserService) {
+                                    val userService: UserService,
+                                    val appService: AppService) {
 
     @RequestMapping(value = ["/new-output"], method = [(RequestMethod.GET)])
     fun getOperationResult(@RequestParam("id") id: String, @RequestParam("start") start: Int): ExecuteResultParticle {
@@ -107,4 +108,7 @@ class RestWebController constructor(val stackService: StackService,
     @RequestMapping(value = ["/log/{id}"], method = [(RequestMethod.GET)])
     @ResponseBody
     fun getLog(@PathVariable(value = "id") id: String): ExecuteOperation = operationService.get(id)
+
+    @RequestMapping(value = ["/serveraddress"], method = [(RequestMethod.GET)])
+    fun getServerAddress() = appService.backendAddress
 }

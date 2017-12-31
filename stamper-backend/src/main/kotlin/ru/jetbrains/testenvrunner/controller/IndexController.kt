@@ -5,12 +5,13 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import ru.jetbrains.testenvrunner.service.AppService
 
 @Controller
 @RequestMapping("/")
-class IndexController {
+class IndexController(val appService: AppService) {
     @RequestMapping(method = [RequestMethod.GET])
     fun indexGet(model: Model, auth: OAuth2Authentication?): String {
-        return "redirect:http://localhost:3000/"
+        return "redirect:${appService.frontendAddress}"
     }
 }

@@ -15,9 +15,19 @@ export class Header extends Component {
 class UserForm extends Component {
     constructor(...args) {
         super(...args);
-        this.state = {name: null};
+        this.state = {name: null, serverAddress: ""};
+        this.getServerAddress = this.getServerAddress.bind(this);
+        this.serverAddress = "";
     }
 
+
+    getServerAddress() {
+        fetch("/api/serveraddress", {credentials: "same-origin"})
+            .then(res => res.text())
+            .then(text => {
+                this.setState({serverAddress: text});
+            });
+    }
 
     componentWillUnmount() {
         this.loadInterval && clearInterval(this.loadInterval);
@@ -26,6 +36,7 @@ class UserForm extends Component {
 
 
     componentDidMount() {
+        this.getServerAddress(this);
         this.loadInterval = this.updateUser();
         setInterval(() => this.updateUser(), 5000);
     }
@@ -53,8 +64,9 @@ class UserForm extends Component {
 
     render() {
         const profile = this.state.name ?
-            <LogoutComponent name={this.state.name} logout={() => this.logout()}/> :
-            <LoginForm/>;
+            <LogoutComponent name={this.state.name} serverAddress={this.state.serverAddress}
+                             logout={() => this.logout()}/> :
+            <LoginForm serverAddress={this.state.serverAddress}/>;
         return (
             <ul className="nav nav-pills pull-right">
                 {profile}
@@ -65,7 +77,7 @@ class UserForm extends Component {
 
 const LogoutComponent = (props) => (
     <li>
-        <form className="form-inline" method="post" action="http://localhost:8080/logout">
+        <form className="form-inline" method="post" action={`${props.serverAddress}/logout`}>
             <b>User:</b>
             <span>{props.name}</span>
             <button className="btn btn-sm button-right btn-success">Logout</button>
@@ -73,9 +85,9 @@ const LogoutComponent = (props) => (
     </li>
 );
 
-const LoginForm = () => (
+const LoginForm = (props) => (
     <li>
-        <form action="http://localhost:8080/login" method="get">
+        <form action={`${props.serverAddress}/login`} method="get">
             <input className="btn btn-sm btn-success " type="submit" value="Login"/>
         </form>
     </li>

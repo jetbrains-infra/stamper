@@ -31,6 +31,7 @@ class SeleniumContainerTest {
     @Test
     fun simplePlainSeleniumTest() {
         val vncAddress = browser.vncAddress.split("@")[1]
+        //потому что я рукожоп
         val file = File("/home/nashikhmin/git/stamper/stamper-backend/src/test/kotlin/ru/jetbrains/testenvrunner/selenium/run_vcn.sh")
         file.writeText("#!/usr/bin/env bash\n" +
                 "nohup /bin/sh -c \"echo secret | /usr/bin/vncviewer  -autopass $vncAddress\"  > /dev/null 2>&1 &")

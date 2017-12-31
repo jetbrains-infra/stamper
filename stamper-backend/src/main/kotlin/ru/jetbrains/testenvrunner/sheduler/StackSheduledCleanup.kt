@@ -6,12 +6,13 @@ import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import ru.jetbrains.testenvrunner.model.Stack
+import ru.jetbrains.testenvrunner.service.AppService
 import ru.jetbrains.testenvrunner.service.StackService
 
 @Component
 class ScheduledCleanup constructor(val stackService: StackService,
                                    val sender: JavaMailSender,
-                                   @Value("\${web_address}") val webAddress: String) {
+                                   val appService: AppService) {
 
     val relativeAddress = "/stack/%s/prolong"
 
@@ -30,7 +31,7 @@ class ScheduledCleanup constructor(val stackService: StackService,
                 "Terraform Script Executor. The stack ${stack.name} will be deleted soon.\n")
         helper.setText("The stack ${stack.name} will be deleted soon.\n" +
                 "Please follow the next link " +
-                "$webAddress${relativeAddress.format(
+                "${appService.frontendAddress}${relativeAddress.format(
                         stack.name)} to prolong the stack for ${stackService.expireDate} days")
 
         sender.send(message)
