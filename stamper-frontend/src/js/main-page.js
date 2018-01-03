@@ -22,8 +22,8 @@ class TemplateList extends Component {
         });
         return (
             <div>
-                <h2>Available Templates:</h2>
-                <ul className="list-group">
+                <h2 id="template-list-name">Available Templates:</h2>
+                <ul id="template-list" className="list-group">
                     {rows}
                 </ul>
             </div>);

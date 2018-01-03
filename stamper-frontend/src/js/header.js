@@ -6,7 +6,7 @@ export class Header extends Component {
         return (
             <div className="masthead">
                 <UserForm/>
-                <h1><Link to={"/"}>Stamper</Link></h1>
+                <h1><Link id="app-logo" to={"/"}>Stamper</Link></h1>
             </div>
         );
     }
@@ -79,7 +79,7 @@ const LogoutComponent = (props) => (
     <li>
         <form className="form-inline" method="post" action={`${props.serverAddress}/logout`}>
             <b>User:</b>
-            <span>{props.name}</span>
+            <span id="username-span">{props.name}</span>
             <button className="btn btn-sm button-right btn-success">Logout</button>
         </form>
     </li>
@@ -88,7 +88,7 @@ const LogoutComponent = (props) => (
 const LoginForm = (props) => (
     <li>
         <form action={`${props.serverAddress}/login`} method="get">
-            <input className="btn btn-sm btn-success " type="submit" value="Login"/>
+            <input id="login-btn" className="btn btn-sm btn-success " type="submit" value="Login"/>
         </form>
     </li>
 );

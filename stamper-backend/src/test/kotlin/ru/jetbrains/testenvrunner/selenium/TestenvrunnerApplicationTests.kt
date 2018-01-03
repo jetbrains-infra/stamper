@@ -1,59 +1,30 @@
 package ru.jetbrains.testenvrunner.selenium
 
-import org.apache.commons.exec.CommandLine
-import org.apache.commons.exec.DefaultExecutor
-import org.apache.commons.exec.environment.EnvironmentUtils
-import org.junit.Rule
+import com.codeborne.selenide.Condition
+import com.codeborne.selenide.Condition.text
 import org.junit.Test
-import org.openqa.selenium.remote.DesiredCapabilities
-import org.openqa.selenium.remote.RemoteWebDriver
-import org.rnorth.visibleassertions.VisibleAssertions.assertTrue
-import org.testcontainers.containers.BrowserWebDriverContainer
-import org.testcontainers.containers.BrowserWebDriverContainer.VncRecordingMode.RECORD_ALL
-import java.io.File
-
-class KBrowserWebDriverContainer : BrowserWebDriverContainer<KBrowserWebDriverContainer>()
+import org.openqa.selenium.By
+import kotlin.test.assertTrue
 
 /**
- * Simple example of plain Selenium usage.
+ * Test elements of main page
  */
-class SeleniumContainerTest {
-    @Rule
-    @JvmField
-    var browser: KBrowserWebDriverContainer = KBrowserWebDriverContainer()
-            .withDesiredCapabilities(DesiredCapabilities.chrome())
-            .withRecordingMode(RECORD_ALL, File("/home/nashikhmin/git"))
-
-    init {
-
+class MainPageTest : SeleniumTest() {
+    @Test
+    fun testHeader() {
+        openMainPage()
+        get(By.id("app-logo")).`is`(Condition.appear)
+        get(By.id("login-btn")).`is`(Condition.appear)
     }
 
     @Test
-    fun simplePlainSeleniumTest() {
-        val vncAddress = browser.vncAddress.split("@")[1]
-        //потому что я рукожоп
-        val file = File("/home/nashikhmin/git/stamper/stamper-backend/src/test/kotlin/ru/jetbrains/testenvrunner/selenium/run_vcn.sh")
-        file.writeText("#!/usr/bin/env bash\n" +
-                "nohup /bin/sh -c \"echo secret | /usr/bin/vncviewer  -autopass $vncAddress\"  > /dev/null 2>&1 &")
-        val command = CommandLine(
-                file)
-        val executor = DefaultExecutor()
-        executor.execute(command, EnvironmentUtils.getProcEnvironment())
-
-        val driver: RemoteWebDriver = browser.webDriver
-        driver.get("https://wikipedia.org")
-        val t = browser.vncAddress
-        val searchInput = driver.findElementByName("search")
-        searchInput.sendKeys("Rick Astley")
-        searchInput.submit()
-
-        val otherPage = driver.findElementByLinkText("Rickrolling")
-        otherPage.click()
-
-        val expectedTextFound = driver.findElementsByCssSelector("p")
-                .stream()
-                .anyMatch { element -> element.text.contains("meme") }
-
-        assertTrue("The word 'meme' is found on a page about rickrolling", expectedTextFound)
+    fun testAvailableTemplates() {
+        openMainPage()
+        get(By.id("template-list-name")).`is`(Condition.appear)
+        get(By.id("template-list-name")).`is`(text("Available Templates:"))
+        val templates = all("//*[@id=\"template-list\"]/li/span")
+        templates.shouldHaveSize(4)
+        val texts = templates.texts()
+        assertTrue(texts.containsAll(listOf("ubuntu", "mysql")))
     }
 }
