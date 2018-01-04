@@ -51,7 +51,7 @@ class UserForm extends Component {
                 }
                 const json = JSON.parse(text);
                 if (json !== null) {
-                    this.setState({name: json.name});
+                    this.setState({name: json.name + " (" + json.email + ")"});
                 }
             });
     }
@@ -80,7 +80,7 @@ const LogoutComponent = (props) => (
         <form className="form-inline" method="post" action={`${props.serverAddress}/logout`}>
             <b>User:</b>
             <span id="username-span">{props.name}</span>
-            <button className="btn btn-sm button-right btn-success">Logout</button>
+            <button id="logout-btn" className="btn btn-sm button-right btn-success">Logout</button>
         </form>
     </li>
 );
