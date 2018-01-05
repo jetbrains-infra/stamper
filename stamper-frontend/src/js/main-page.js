@@ -5,7 +5,7 @@ import {StatusIcon} from "./common";
 class Template extends Component {
     render() {
         return (
-            <li className="list-group-item">
+            <li id={`${this.props.template.name}-template`} className="list-group-item">
                 <span>{this.props.template.name}</span>
                 <Link to={`/template/${this.props.template.name}/run`}
                       className="btn btn-xs btn-success pull-right">Run</Link>

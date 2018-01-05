@@ -93,11 +93,12 @@ class InputParams extends Component {
         }
         let alert = <div/>;
         if (this.state.msgError) {
-            alert = <Alert bsStyle="danger">
-                <strong>Error!</strong> {this.state.msgError}
+            alert = <Alert id="alert-msg" bsStyle="danger">
+                <strong>Error!</strong> <span>{this.state.msgError}</span>
             </Alert>;
         }
-        const rows = Object.values(this.getParams()).map(param => (<InputParam param={param} key={param.name}/>));
+        const rows = Object.values(this.getParams())
+            .map(param => (<InputParam id={param.name} param={param} key={param.name}/>));
         return (
             <div>
                 {alert}

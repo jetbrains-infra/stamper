@@ -10,7 +10,7 @@ export class MainInfo extends Component {
         }
         return (
             <div>
-                <h1>Stack: {stack.name}</h1>
+                <h1 id="stack-name-title">Stack: {stack.name}</h1>
                 <StatusInfoParam status={stack.status}/>
                 <UserInfoParam user={stack.user}/>
                 <DateInfoParam name="createdDate" value={stack.createdDate}/>
@@ -22,17 +22,17 @@ export class MainInfo extends Component {
 
 
 const DateInfoParam = (props) => (
-    <p><strong>{props.name}:</strong> <Timestamp time={props.value} format='ago'/></p>
+    <p id={props.name}><strong>{props.name}:</strong> <Timestamp time={props.value} format='ago'/></p>
 );
 
 const UserInfoParam = (props) => (
-    <p>
-        <strong>User:</strong> {props.user.name} ({props.user.email})
+    <p id="user-info">
+        <strong>User:</strong> <span>{props.user.name}</span>({props.user.email})
     </p>
 );
 
 const StatusInfoParam = (props) => (
-    <p>
-        <strong>Status:</strong> {props.status} <StatusIcon status={props.status}/>
+    <p id="stack-status">
+        <strong>Status:</strong> <span>{props.status}</span><StatusIcon status={props.status}/>
     </p>
 );
