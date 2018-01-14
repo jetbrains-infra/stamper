@@ -2,6 +2,7 @@ package ru.jetbrains.testenvrunner.selenium
 
 import com.codeborne.selenide.Condition
 import com.codeborne.selenide.Condition.*
+import com.codeborne.selenide.SelenideElement
 import org.junit.Test
 import org.openqa.selenium.By
 import ru.jetbrains.testenvrunner.utils.generateRandomWord
@@ -77,22 +78,64 @@ class UseCaseTest : AbstractSeleniumTest() {
         loginByGoogle()
         get("//li[@id='ubuntu-template']/a").click()
         val name = generateRandomWord()
-
-        get("//input[@name='name']").clear()
-        get("//input[@name='name']").sendKeys(name)
-        get("//select[@name='version']").selectOption("16.04")
-        get(By.id("run-script-btn")).click()
-        get(By.id("stack-name-title")).should(appear)
+        val version = "16.04"
+        inputStackParam(name, version)
 
         val stackStatusElement = get("//*[@id=\"stack-status\"]/span")
         stackStatusElement.shouldHave(text("IN_PROGRESS"))
         stackStatusElement.waitUntil(text("APPLIED"), 60 * 1000)
 
+        validateMainStackForm()
+        validateDetailInfo(name, version)
+        validateStateInfo()
+        validateLogs()
+
+        clickDestroy(stackStatusElement)
+    }
+
+    private fun clickDestroy(stackStatusElement: SelenideElement) {
+        get("//button[text()='Destroy']").click()
+        stackStatusElement.shouldHave(text("DESTROYED"))
+    }
+
+    private fun validateMainStackForm() {
         get(By.id("user-info")).shouldHave(text("stamper.app.test@gmail.com"))
         get(By.id("createdDate")).should(appear)
         get(By.id("notificationDate")).should(appear)
         get(By.id("expiredDate")).should(appear)
-        get("//button[text()='Destroy']").click()
-        stackStatusElement.shouldHave(text("DESTROYED"))
+    }
+
+    private fun validateDetailInfo(name: String, version: String) {
+        get("//li[text()='Detailed Info']").click()
+        get(By.id("detailed-info-tab")).shouldBe(visible)
+        get("//p[@id='name']/span[1]").shouldBe(text("name"))
+        get("//p[@id='name']/span[2]").shouldBe(text(name))
+        get("//p[@id='version']/span[1]").shouldBe(text("version"))
+        get("//p[@id='version']/span[2]").shouldBe(text(version))
+    }
+
+    private fun validateStateInfo() {
+        get("//li[text()='Stack State Info']").click()
+        val stateInfo = get(By.id("state-info-tab"))
+        stateInfo.shouldBe(visible)
+        stateInfo.shouldHave(text("docker_container.ubuntu"))
+    }
+
+    private fun validateLogs() {
+        get("//li[text()='Logs']").click()
+        val logs = get(By.id("logs-tab"))
+        logs.shouldBe(visible)
+        get("//*[@id='logs-tab']//a[text()='terraform apply']").click()
+        val log = get("//*[@id='logs-tab']//pre")
+        log.shouldBe(visible)
+        log.shouldHave(text("Apply complete!"))
+    }
+
+    private fun inputStackParam(name: String, version: String) {
+        get("//input[@name='name']").clear()
+        get("//input[@name='name']").sendKeys(name)
+        get("//select[@name='version']").selectOption(version)
+        get(By.id("run-script-btn")).click()
+        get(By.id("stack-name-title")).should(appear)
     }
 }

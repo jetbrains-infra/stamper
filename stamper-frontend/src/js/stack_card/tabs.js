@@ -31,7 +31,7 @@ const LogTab = (props) => {
         <LogElement key={key} log={props.logs[key]}/>
     );
 
-    return (<div>
+    return (<div id='logs-tab'>
         {logs.reverse()}
     </div>);
 };
@@ -49,10 +49,10 @@ const InfoTab = (props) => {
         return <p>There is not information about stack yet</p>;
     }
     const render_params = Object.keys(props.params).map(key =>
-        <p key={key}>{key}: {props.params[key]}</p>
+        <p id={key} key={key}><span>{key}</span>: <span>{props.params[key]}</span></p>
     );
     return (
-        <div>
+        <div id='detailed-info-tab'>
             {render_params}
         </div>
     );
@@ -61,7 +61,7 @@ const InfoTab = (props) => {
 const StateInfoTab = (props) => {
     const state = props.stateInfo;
     return (
-        <pre>
+        <pre id='state-info-tab'>
             {state}
         </pre>
     );
